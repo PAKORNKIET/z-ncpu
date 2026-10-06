@@ -1,0 +1,118 @@
+{
+  "id": "user.dff",
+  "name": {
+    "th": "D Flip-Flop",
+    "en": "D Flip-Flop"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "d",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "clk",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "q",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "not1",
+        "defId": "user.not",
+        "x": 160,
+        "y": 80,
+        "rotation": 0
+      },
+      {
+        "id": "dlatch1",
+        "defId": "user.dlatch",
+        "x": 300,
+        "y": -40,
+        "rotation": 0
+      },
+      {
+        "id": "dlatch2",
+        "defId": "user.dlatch",
+        "x": 460,
+        "y": 0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "not1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "d"
+        },
+        "to": {
+          "inst": "dlatch1",
+          "pin": "d"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "dlatch1",
+          "pin": "e"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "dlatch1",
+          "pin": "q"
+        },
+        "to": {
+          "inst": "dlatch2",
+          "pin": "d"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "dlatch2",
+          "pin": "e"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "dlatch2",
+          "pin": "q"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "q"
+        }
+      }
+    ]
+  }
+}

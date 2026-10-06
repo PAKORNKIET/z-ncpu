@@ -1,6 +1,6 @@
 // หน้าด่าน (M1-3): รายการด่าน → บทเรียน → ต่อวงจร → ทดสอบ → ปลดล็อกชิ้นใหม่
 import { ComponentLibrary, contentHash } from '@z-ncpu/engine';
-import { GLOSSARY, HINTS_TH, LEVELS } from '@z-ncpu/content';
+import { CHAPTERS, GLOSSARY, HINTS_TH, LEVELS } from '@z-ncpu/content';
 import type { ComponentDef, Diagnostic, LevelDef, SignalValue, TestReport } from '@z-ncpu/shared';
 import { useState } from 'react';
 import { EngineClosedError } from '../engine-client';
@@ -37,7 +37,7 @@ export function paletteFor(ids: readonly string[]): PaletteItem[] {
     const prim = PRIMITIVE_PALETTE[id];
     if (prim) return prim;
     const from = LEVELS.find((l) => l.unlocks.includes(id));
-    return { defId: id, title: partName(id), desc: from ? `สร้างเองในด่าน "${from.title.th}"` : 'ชิ้นที่สร้างเอง' };
+    return { defId: id, title: partName(id, LEVELS), desc: from ? `สร้างเองในด่าน "${from.title.th}"` : 'ชิ้นที่สร้างเอง' };
   });
 }
 
@@ -50,28 +50,36 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
   return (
     <div className="game">
       <nav className="levels" aria-label="ด่าน">
-        <h2>บทที่ 1 · ตรรกะพื้นฐาน</h2>
-        <ol>
-          {LEVELS.map((l, i) => (
-            <li key={l.id}>
-              <button
-                className={`level-item ${statuses[i]} ${i === index ? 'current' : ''}`}
-                disabled={statuses[i] === 'locked'}
-                aria-current={i === index ? 'step' : undefined}
-                onClick={() => setIndex(i)}
-                aria-label={`ด่าน ${i + 1} ${l.title.th}: ${STATUS_TEXT[statuses[i]!]}`}
-              >
-                <span className="level-icon" aria-hidden>
-                  {STATUS_ICON[statuses[i]!]}
-                </span>
-                <span>
-                  {i + 1}. {l.title.th}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ol>
-        <p className="muted small">ด่าน OR, XOR, Adder และ Flip-Flop จะเพิ่มในขั้นถัดไป</p>
+        {Object.entries(CHAPTERS).map(([ch, title]) => (
+          <section key={ch} className="chapter">
+            <h2>
+              บทที่ {ch} · {title.th}
+            </h2>
+            <ol>
+              {LEVELS.map((l, i) =>
+                l.chapter !== Number(ch) ? null : (
+                  <li key={l.id}>
+                    <button
+                      className={`level-item ${statuses[i]} ${i === index ? 'current' : ''}`}
+                      disabled={statuses[i] === 'locked'}
+                      aria-current={i === index ? 'step' : undefined}
+                      onClick={() => setIndex(i)}
+                      aria-label={`ด่าน ${i + 1} ${l.title.th}: ${STATUS_TEXT[statuses[i]!]}`}
+                    >
+                      <span className="level-icon" aria-hidden>
+                        {STATUS_ICON[statuses[i]!]}
+                      </span>
+                      <span>
+                        {i + 1}. {l.title.th}
+                      </span>
+                    </button>
+                  </li>
+                ),
+              )}
+            </ol>
+          </section>
+        ))}
+        <p className="muted small">บทถัดไป (ALU, หน่วยความจำ, CPU) มาใน M2–M3</p>
       </nav>
 
       <div className="level-main">
@@ -185,16 +193,23 @@ function TestPanel(props: {
         {state.k === 'running' ? 'กำลังทดสอบ…' : '▶ ทดสอบ'}
       </button>
 
-      <TruthTable level={level} report={stale ? null : (result?.report ?? null)} />
+      {level.tests.type === 'truth-table' ? (
+        <TruthTable level={level} report={stale ? null : (result?.report ?? null)} />
+      ) : (
+        <SequenceTable level={level} report={stale ? null : (result?.report ?? null)} />
+      )}
 
       <div role="status" aria-live="polite" className="test-result">
         {stale ? <p className="muted">วงจรเปลี่ยนแล้ว กดทดสอบอีกครั้ง</p> : null}
         {result && !stale && result.report && !result.report.passed ? (
           <p className="error">
             ✗ ยังไม่ผ่าน: ถูก {result.report.total - result.report.failed} จาก {result.report.total} แถว
-            {result.report.firstFailure ? ` · ดูแถวที่ ${result.report.firstFailure.index + 1}` : ''}
+            {result.report.firstFailure
+              ? ` · ดู${level.tests.type === 'sequence' ? 'ขั้น' : 'แถว'}ที่ ${result.report.firstFailure.index + 1}`
+              : ''}
           </p>
         ) : null}
+        {result && !stale && result.report?.error ? <p className="error">⚠ {result.report.error.message.th}</p> : null}
         {result && !stale && !result.report ? (
           <>
             <p className="error">✗ วงจรนี้ยังจำลองไม่ได้</p>
@@ -204,7 +219,7 @@ function TestPanel(props: {
         {passed ? (
           <div className="pass">
             <p>
-              <strong>✓ ผ่านด่านแล้ว!</strong> {level.unlocks.map(partName).join(', ')} อยู่ในกล่องชิ้นส่วนของด่านถัดไปแล้ว
+              <strong>✓ ผ่านด่านแล้ว!</strong> {level.unlocks.map((id) => partName(id, LEVELS)).join(', ')} อยู่ในกล่องชิ้นส่วนของด่านถัดไปแล้ว
             </p>
             {result.nand !== null ? (
               <p className="small">
@@ -252,6 +267,7 @@ function TruthTable({ level, report }: { level: LevelDef; report: TestReport | n
   const ins = level.target.pins.filter((p) => p.dir === 'in').map((p) => p.name);
   const outs = level.target.pins.filter((p) => p.dir === 'out').map((p) => p.name);
   return (
+    <div className="table-scroll">
     <table className="truth-table" aria-label="ตารางความจริง">
       <thead>
         <tr>
@@ -295,5 +311,58 @@ function TruthTable({ level, report }: { level: LevelDef; report: TestReport | n
         })}
       </tbody>
     </table>
+    </div>
+  );
+}
+
+/** การทดสอบแบบลำดับเวลา (วงจรจำค่า): แต่ละขั้นตั้งค่าขาเข้า เดินนาฬิกา แล้วตรวจขาออก */
+function SequenceTable({ level, report }: { level: LevelDef; report: TestReport | null }) {
+  if (level.tests.type !== 'sequence') return null;
+  const steps = level.tests.steps;
+  const outs = level.target.pins.filter((p) => p.dir === 'out').map((p) => p.name);
+  const setText = (set: Record<string, SignalValue> | undefined): string =>
+    set ? Object.entries(set).map(([k, v]) => `${k}=${show(v)}`).join(' ') : '–';
+  return (
+    <div className="table-scroll">
+      <table className="truth-table" aria-label="ลำดับการทดสอบ">
+        <thead>
+          <tr>
+            <th scope="col">ขั้น</th>
+            <th scope="col">ตั้งค่า</th>
+            {level.tests.clock ? <th scope="col">นาฬิกา</th> : null}
+            {outs.map((n) => (
+              <th key={n} scope="col">
+                {n} ที่ต้องได้
+              </th>
+            ))}
+            {report
+              ? outs.map((n) => (
+                  <th key={`a${n}`} scope="col">
+                    {n} ที่ได้
+                  </th>
+                ))
+              : null}
+            {report ? <th scope="col">ผล</th> : null}
+          </tr>
+        </thead>
+        <tbody>
+          {steps.map((step, i) => {
+            const r = report?.results.find((x) => x.index === i);
+            return (
+              <tr key={i} className={r ? (r.ok ? 'ok' : 'fail') : undefined}>
+                <td>{i + 1}</td>
+                <td className="left">{setText(step.set)}</td>
+                {level.tests.type === 'sequence' && level.tests.clock ? <td>{step.tick ? `⏱×${step.tick}` : '–'}</td> : null}
+                {outs.map((n) => (
+                  <td key={n}>{show(step.expect?.[n])}</td>
+                ))}
+                {report ? outs.map((n) => <td key={`a${n}`}>{show(r?.actual[n])}</td>) : null}
+                {report ? <td aria-label={r ? (r.ok ? 'ถูก' : 'ผิด') : 'ไม่ได้ตรวจ'}>{r ? (r.ok ? '✓' : '✗') : ''}</td> : null}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }

@@ -1,0 +1,112 @@
+{
+  "id": "memory.d-latch",
+  "chapter": 3,
+  "title": {
+    "th": "D Latch: จำค่าตามสั่ง",
+    "en": "D Latch"
+  },
+  "lesson": "memory/d-latch",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.srlatch"
+  ],
+  "target": {
+    "defId": "user.dlatch",
+    "pins": [
+      {
+        "name": "d",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "e",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "q",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "steps": [
+      {
+        "set": {
+          "d": 1,
+          "e": 1
+        },
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "set": {
+          "d": 0
+        },
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "e": 0
+        },
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "d": 1
+        },
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "e": 1
+        },
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "set": {
+          "e": 0
+        },
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "set": {
+          "d": 0
+        },
+        "expect": {
+          "q": 1
+        }
+      }
+    ]
+  },
+  "optimize": {
+    "bestNand": 4
+  },
+  "unlocks": [
+    "user.dlatch"
+  ],
+  "hints": [
+    "memory/d-latch/h1",
+    "memory/d-latch/h2"
+  ],
+  "glossary": [
+    "d-latch",
+    "latch"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "arith.half-adder",
+  "chapter": 2,
+  "title": {
+    "th": "วงจรบวกครึ่ง (Half Adder)",
+    "en": "Half Adder"
+  },
+  "lesson": "arith/half-adder",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor"
+  ],
+  "target": {
+    "defId": "user.ha",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "sum",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "carry",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "optimize": {
+    "bestNand": 5
+  },
+  "unlocks": [
+    "user.ha"
+  ],
+  "hints": [
+    "arith/half-adder/h1",
+    "arith/half-adder/h2"
+  ],
+  "glossary": [
+    "half-adder",
+    "carry"
+  ],
+  "tests": {
+    "type": "truth-table",
+    "rows": [
+      {"in": {"a": 0, "b": 0}, "out": {"sum": 0, "carry": 0}},
+      {"in": {"a": 0, "b": 1}, "out": {"sum": 1, "carry": 0}},
+      {"in": {"a": 1, "b": 0}, "out": {"sum": 1, "carry": 0}},
+      {"in": {"a": 1, "b": 1}, "out": {"sum": 0, "carry": 1}}
+    ]
+  }
+}

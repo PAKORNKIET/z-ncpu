@@ -1,0 +1,75 @@
+{
+  "id": "arith.full-adder",
+  "chapter": 2,
+  "title": {
+    "th": "วงจรบวกเต็ม (Full Adder)",
+    "en": "Full Adder"
+  },
+  "lesson": "arith/full-adder",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.ha"
+  ],
+  "target": {
+    "defId": "user.fa",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "cin",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "sum",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "cout",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "optimize": {
+    "bestNand": 9
+  },
+  "unlocks": [
+    "user.fa"
+  ],
+  "hints": [
+    "arith/full-adder/h1",
+    "arith/full-adder/h2",
+    "arith/full-adder/h3"
+  ],
+  "glossary": [
+    "full-adder",
+    "carry"
+  ],
+  "tests": {
+    "type": "truth-table",
+    "rows": [
+      {"in": {"a": 0, "b": 0, "cin": 0}, "out": {"sum": 0, "cout": 0}},
+      {"in": {"a": 0, "b": 0, "cin": 1}, "out": {"sum": 1, "cout": 0}},
+      {"in": {"a": 0, "b": 1, "cin": 0}, "out": {"sum": 1, "cout": 0}},
+      {"in": {"a": 0, "b": 1, "cin": 1}, "out": {"sum": 0, "cout": 1}},
+      {"in": {"a": 1, "b": 0, "cin": 0}, "out": {"sum": 1, "cout": 0}},
+      {"in": {"a": 1, "b": 0, "cin": 1}, "out": {"sum": 0, "cout": 1}},
+      {"in": {"a": 1, "b": 1, "cin": 0}, "out": {"sum": 0, "cout": 1}},
+      {"in": {"a": 1, "b": 1, "cin": 1}, "out": {"sum": 1, "cout": 1}}
+    ]
+  }
+}

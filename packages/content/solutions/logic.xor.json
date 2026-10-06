@@ -1,0 +1,158 @@
+{
+  "id": "user.xor",
+  "name": {
+    "th": "XOR",
+    "en": "XOR"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "y",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "nand1",
+        "defId": "prim.nand",
+        "x": 160,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "nand2",
+        "defId": "prim.nand",
+        "x": 300,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "nand3",
+        "defId": "prim.nand",
+        "x": 300,
+        "y": 60,
+        "rotation": 0
+      },
+      {
+        "id": "nand4",
+        "defId": "prim.nand",
+        "x": 440,
+        "y": 0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "nand1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "nand1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "nand2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "nand1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "nand3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "nand1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "nand2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "nand3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "nand4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "y"
+        }
+      }
+    ]
+  }
+}

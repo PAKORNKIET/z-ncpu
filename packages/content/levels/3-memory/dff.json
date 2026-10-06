@@ -1,0 +1,108 @@
+{
+  "id": "memory.dff",
+  "chapter": 3,
+  "title": {
+    "th": "D Flip-Flop: จำค่าตอนนาฬิกาเดิน",
+    "en": "D Flip-Flop"
+  },
+  "lesson": "memory/dff",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.srlatch",
+    "user.dlatch"
+  ],
+  "target": {
+    "defId": "user.dff",
+    "pins": [
+      {
+        "name": "d",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "q",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "clock": "clk",
+    "steps": [
+      {
+        "set": {
+          "d": 1
+        },
+        "tick": 1,
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "set": {
+          "d": 0
+        },
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "tick": 1,
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "d": 1
+        },
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "tick": 1,
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "tick": 1,
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "set": {
+          "d": 0
+        },
+        "tick": 2,
+        "expect": {
+          "q": 0
+        }
+      }
+    ]
+  },
+  "unlocks": [
+    "user.dff"
+  ],
+  "hints": [
+    "memory/dff/h1",
+    "memory/dff/h2",
+    "memory/dff/h3"
+  ],
+  "glossary": [
+    "flip-flop",
+    "clock",
+    "edge"
+  ]
+}

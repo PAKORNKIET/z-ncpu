@@ -1,0 +1,107 @@
+{
+  "id": "user.or",
+  "name": {
+    "th": "OR",
+    "en": "OR"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "y",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "not1",
+        "defId": "user.not",
+        "x": 200,
+        "y": -40,
+        "rotation": 0
+      },
+      {
+        "id": "not2",
+        "defId": "user.not",
+        "x": 200,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "nand1",
+        "defId": "prim.nand",
+        "x": 360,
+        "y": 0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "not1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "not2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "not2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "nand1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "y"
+        }
+      }
+    ]
+  }
+}

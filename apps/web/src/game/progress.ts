@@ -37,14 +37,18 @@ export function availableParts(level: LevelDef, levels: readonly LevelDef[], sav
   return level.available.filter((id) => id.startsWith('prim.') || unlocked.has(id));
 }
 
-/** ชื่อของชิ้นที่ผู้เล่นสร้าง เช่น user.not → NOT */
-export const partName = (defId: string): string => (defId.split('.').pop() ?? defId).toUpperCase();
+/** ชื่อของชิ้นที่ผู้เล่นสร้าง เช่น user.ha → "Half Adder" (จากชื่อด่านภาษาอังกฤษที่ตัด "Build " ออก) */
+export function partName(defId: string, levels: readonly LevelDef[] = []): string {
+  const from = levels.find((l) => l.target.defId === defId);
+  if (from) return from.title.en.replace(/^Build\s+/, '');
+  return (defId.split('.').pop() ?? defId).toUpperCase();
+}
 
 /** วงจรที่กำลังทำในด่านนี้ (ร่างที่บันทึกไว้ หรือวงจรเปล่าตาม pin ที่ด่านกำหนด) */
 export function draftFor(level: LevelDef, save: SaveFile): ComponentDef {
   const existing = componentOf(save, level.target.defId);
   if (existing) return existing;
-  const n = partName(level.target.defId);
+  const n = partName(level.target.defId, [level]);
   return {
     id: level.target.defId,
     name: { th: n, en: n },

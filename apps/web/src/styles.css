@@ -246,7 +246,7 @@ select:focus-visible {
 
 .editor {
   display: grid;
-  grid-template-columns: 190px minmax(0, 1fr) 240px;
+  grid-template-columns: 190px minmax(0, 1fr) 280px;
   gap: 12px;
   margin-top: 12px;
 }
@@ -612,4 +612,72 @@ button.primary {
 .xray-pins h3 {
   margin: 12px 0 0;
   font-size: 14px;
+}
+
+/* ---------- M1-5: บัส นาฬิกา และตารางยาว ---------- */
+
+.chapter + .chapter {
+  margin-top: 10px;
+}
+
+.table-scroll {
+  max-height: 300px;
+  overflow: auto;
+  margin: 8px 0;
+}
+
+.table-scroll .truth-table {
+  margin: 0;
+}
+
+.table-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+}
+
+.truth-table td.left {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.bus-input {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2px 8px 8px;
+  margin: 0;
+}
+
+.bus-input legend {
+  font-weight: 600;
+  padding: 0 4px;
+}
+
+.bus-bits {
+  display: flex;
+  gap: 4px;
+}
+
+.bus-bits .bit {
+  min-width: 28px;
+  padding: 2px 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.bus-bits .bit.on {
+  border-color: var(--signal-high);
+  color: var(--signal-high);
+  border-width: 2px;
+}
+
+.led.bus {
+  align-items: flex-start;
+}
+
+.led-bus-value {
+  font-size: 15px;
+}
+
+button.tick {
+  margin: 4px 0 8px;
 }

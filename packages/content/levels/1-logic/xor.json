@@ -1,0 +1,58 @@
+{
+  "id": "logic.xor",
+  "chapter": 1,
+  "title": {
+    "th": "สร้าง XOR",
+    "en": "Build XOR"
+  },
+  "lesson": "logic/xor",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or"
+  ],
+  "target": {
+    "defId": "user.xor",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "optimize": {
+    "bestNand": 4
+  },
+  "unlocks": [
+    "user.xor"
+  ],
+  "hints": [
+    "logic/xor/h1",
+    "logic/xor/h2",
+    "logic/xor/h3"
+  ],
+  "glossary": [
+    "xor"
+  ],
+  "tests": {
+    "type": "truth-table",
+    "rows": [
+      {"in": {"a": 0, "b": 0}, "out": {"y": 0}},
+      {"in": {"a": 0, "b": 1}, "out": {"y": 1}},
+      {"in": {"a": 1, "b": 0}, "out": {"y": 1}},
+      {"in": {"a": 1, "b": 1}, "out": {"y": 0}}
+    ]
+  }
+}

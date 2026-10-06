@@ -1,0 +1,324 @@
+{
+  "id": "user.fa",
+  "name": {
+    "th": "Full Adder",
+    "en": "Full Adder"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "cin",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "sum",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "cout",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "nand1",
+        "defId": "prim.nand",
+        "x": 120,
+        "y": 60,
+        "rotation": 0
+      },
+      {
+        "id": "nand2",
+        "defId": "prim.nand",
+        "x": 190,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "nand3",
+        "defId": "prim.nand",
+        "x": 260,
+        "y": 60,
+        "rotation": 0
+      },
+      {
+        "id": "nand4",
+        "defId": "prim.nand",
+        "x": 330,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "nand5",
+        "defId": "prim.nand",
+        "x": 400,
+        "y": 60,
+        "rotation": 0
+      },
+      {
+        "id": "nand6",
+        "defId": "prim.nand",
+        "x": 470,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "nand7",
+        "defId": "prim.nand",
+        "x": 540,
+        "y": 60,
+        "rotation": 0
+      },
+      {
+        "id": "nand8",
+        "defId": "prim.nand",
+        "x": 610,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "nand9",
+        "defId": "prim.nand",
+        "x": 680,
+        "y": 60,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "nand1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "nand1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "nand2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "nand1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "nand3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "nand1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "nand2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "nand3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "nand4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand5",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "self",
+          "pin": "cin"
+        },
+        "to": {
+          "inst": "nand5",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "nand4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand6",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "nand5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand6",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "self",
+          "pin": "cin"
+        },
+        "to": {
+          "inst": "nand7",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "nand5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand7",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "nand6",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand8",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "nand7",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand8",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "nand1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand9",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "nand5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand9",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "nand8",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "sum"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "nand9",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "cout"
+        }
+      }
+    ]
+  }
+}

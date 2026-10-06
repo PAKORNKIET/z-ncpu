@@ -5,7 +5,7 @@ import type { ComponentDef, Diagnostic, SignalValue } from '@z-ncpu/shared';
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { EngineClient, EngineClosedError } from '../engine-client';
 import { useEngine } from '../use-engine';
-import { Diagnostics, Led, Switch } from '../ui/widgets';
+import { BusInput, Diagnostics, Led, Switch } from '../ui/widgets';
 import { CircuitCanvas, DND_TYPE } from './CircuitCanvas';
 import { EditorModel, useEditorModel } from './model';
 
@@ -13,12 +13,16 @@ export interface PaletteItem {
   defId: string;
   title: string;
   desc: string;
+  params?: Record<string, number>;
 }
 
 export const PRIMITIVE_PALETTE: Record<string, PaletteItem> = {
   'prim.nand': { defId: 'prim.nand', title: 'NAND', desc: 'ได้ 0 เฉพาะตอนขาเข้าเป็น 1 ทั้งคู่' },
   'prim.const0': { defId: 'prim.const0', title: 'ค่าคงที่ 0', desc: 'ส่ง 0 ออกตลอดเวลา' },
   'prim.const1': { defId: 'prim.const1', title: 'ค่าคงที่ 1', desc: 'ส่ง 1 ออกตลอดเวลา' },
+  // M1 ใช้บัส 4 บิตเท่านั้น ความกว้างอื่นเลือกได้ใน M2
+  'prim.split': { defId: 'prim.split', title: 'แยก bus', desc: 'บัส 4 บิต → b0…b3 (b0 = บิตขวาสุด)', params: { width: 4 } },
+  'prim.merge': { defId: 'prim.merge', title: 'รวม bus', desc: 'b0…b3 → บัส 4 บิต', params: { width: 4 } },
 };
 
 /** สิ่งที่หน้าที่ใช้ Workbench อ่านได้ (เช่นเอาไปทดสอบ) */
@@ -71,7 +75,7 @@ export function Workbench(props: {
   const { editor, ui } = model;
   const def = editor.def;
   const { client, scope, pins } = useEngine();
-  const [inputs, setInputs] = useState<Record<string, 0 | 1>>(() =>
+  const [inputs, setInputs] = useState<Record<string, number>>(() =>
     Object.fromEntries(def.pins.filter((p) => p.dir === 'in').map((p) => [p.name, 0])),
   );
   const [compiled, setCompiled] = useState<{ gates: number | null; diagnostics: Diagnostic[] }>({ gates: null, diagnostics: [] });
@@ -171,10 +175,24 @@ export function Workbench(props: {
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
-  const toggle = (pin: string): void => {
-    const value = inputs[pin] === 1 ? 0 : 1;
+  const setInput = (pin: string, value: number): void => {
     setInputs((s) => ({ ...s, [pin]: value }));
     client?.post({ type: 'setInput', pin, value });
+  };
+  /** คลิกขาเข้า: 1 บิตสลับ 0/1, บัสเพิ่มค่าทีละ 1 (วนกลับที่ 0) */
+  const toggle = (pin: string): void => {
+    const width = def.pins.find((p) => p.name === pin)?.width ?? 1;
+    const cur = inputs[pin] ?? 0;
+    setInput(pin, width === 1 ? (cur === 1 ? 0 : 1) : (cur + 1) % 2 ** width);
+  };
+  const hasClock = def.pins.some((p) => p.name === 'clk' && p.dir === 'in' && p.width === 1);
+  /** หนึ่งจังหวะนาฬิกา: clk 0 → 1 → 0 (worker ทำตามลำดับ จึงได้ขอบขาขึ้นหนึ่งครั้ง) */
+  const tick = (): void => {
+    if (!client) return;
+    if (inputs.clk !== 0) client.post({ type: 'setInput', pin: 'clk', value: 0 });
+    client.post({ type: 'setInput', pin: 'clk', value: 1 });
+    client.post({ type: 'setInput', pin: 'clk', value: 0 });
+    setInputs((s) => ({ ...s, clk: 0 }));
   };
   model.onToggleInput = toggle;
 
@@ -197,10 +215,10 @@ export function Workbench(props: {
             className={`palette-item ${ui.placing?.defId === p.defId ? 'active' : ''}`}
             draggable
             onDragStart={(e) => {
-              e.dataTransfer.setData(DND_TYPE, p.defId);
+              e.dataTransfer.setData(DND_TYPE, JSON.stringify({ defId: p.defId, ...(p.params ? { params: p.params } : {}) }));
               e.dataTransfer.effectAllowed = 'copy';
             }}
-            onClick={() => (ui.placing?.defId === p.defId ? ui.cancel() : ui.beginPlace({ defId: p.defId }))}
+            onClick={() => (ui.placing?.defId === p.defId ? ui.cancel() : ui.beginPlace({ defId: p.defId, ...(p.params ? { params: p.params } : {}) }))}
             aria-pressed={ui.placing?.defId === p.defId}
             disabled={inXRay}
           >
@@ -283,14 +301,23 @@ export function Workbench(props: {
           {def.pins
             .filter((p) => p.dir === 'in')
             .map((p) => (
-              <Switch key={p.name} label={p.name} value={top[p.name] ?? inputs[p.name]} onClick={() => toggle(p.name)} />
+              p.width > 1 ? (
+                <BusInput key={p.name} label={p.name} width={p.width} value={inputs[p.name] ?? 0} onChange={(v) => setInput(p.name, v)} />
+              ) : (
+                <Switch key={p.name} label={p.name} value={top[p.name] ?? inputs[p.name]} onClick={() => toggle(p.name)} />
+              )
             ))}
         </div>
+        {hasClock ? (
+          <button className="tick" onClick={tick} disabled={!client}>
+            ⏱ เดินนาฬิกา 1 จังหวะ
+          </button>
+        ) : null}
         <div className="row">
           {def.pins
             .filter((p) => p.dir === 'out')
             .map((p) => (
-              <Led key={p.name} label={p.name} value={top[p.name]} />
+              <Led key={p.name} label={p.name} value={top[p.name]} width={p.width} />
             ))}
         </div>
         {inner ? (
@@ -300,7 +327,7 @@ export function Workbench(props: {
             </h3>
             <div className="row">
               {inner.def.pins.map((p) => (
-                <Led key={p.name} label={`${chain.at(-1)!.id}.${p.name}`} value={values[`self.${p.name}`]} />
+                <Led key={p.name} label={`${chain.at(-1)!.id}.${p.name}`} value={values[`self.${p.name}`]} width={p.width} />
               ))}
             </div>
           </section>

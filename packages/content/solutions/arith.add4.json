@@ -1,0 +1,319 @@
+{
+  "id": "user.add4",
+  "name": {
+    "th": "4-bit Adder",
+    "en": "4-bit Adder"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 4
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 4
+    },
+    {
+      "name": "cin",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "sum",
+      "dir": "out",
+      "width": 4
+    },
+    {
+      "name": "cout",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": -120,
+        "rotation": 0,
+        "params": {
+          "width": 4
+        }
+      },
+      {
+        "id": "split2",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 120,
+        "rotation": 0,
+        "params": {
+          "width": 4
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 600,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 4
+        }
+      },
+      {
+        "id": "fa1",
+        "defId": "user.fa",
+        "x": 340,
+        "y": -180,
+        "rotation": 0
+      },
+      {
+        "id": "fa2",
+        "defId": "user.fa",
+        "x": 340,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "fa3",
+        "defId": "user.fa",
+        "x": 340,
+        "y": 60,
+        "rotation": 0
+      },
+      {
+        "id": "fa4",
+        "defId": "user.fa",
+        "x": 340,
+        "y": 180,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "split2",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "sum"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "fa1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "fa1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "self",
+          "pin": "cin"
+        },
+        "to": {
+          "inst": "fa1",
+          "pin": "cin"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "fa1",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "fa2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "split2",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "fa2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "fa1",
+          "pin": "cout"
+        },
+        "to": {
+          "inst": "fa2",
+          "pin": "cin"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "fa2",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "fa3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "split2",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "fa3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "fa2",
+          "pin": "cout"
+        },
+        "to": {
+          "inst": "fa3",
+          "pin": "cin"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "fa3",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "fa4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "split2",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "fa4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "fa3",
+          "pin": "cout"
+        },
+        "to": {
+          "inst": "fa4",
+          "pin": "cin"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "fa4",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "fa4",
+          "pin": "cout"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "cout"
+        }
+      }
+    ]
+  }
+}

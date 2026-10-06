@@ -7,9 +7,35 @@ import glossaryJson from '../i18n/glossary.json';
 import hintsTh from '../i18n/hints.th.json';
 import andLevel from '../levels/1-logic/and.json';
 import notLevel from '../levels/1-logic/not.json';
+import orLevel from '../levels/1-logic/or.json';
+import xorLevel from '../levels/1-logic/xor.json';
+import add4Level from '../levels/2-arith/add4.json';
+import fullAdderLevel from '../levels/2-arith/full-adder.json';
+import halfAdderLevel from '../levels/2-arith/half-adder.json';
+import dLatchLevel from '../levels/3-memory/d-latch.json';
+import dffLevel from '../levels/3-memory/dff.json';
+import srLatchLevel from '../levels/3-memory/sr-latch.json';
 
 /** ด่านเรียงตามลำดับที่เล่น */
-export const LEVELS: LevelDef[] = [notLevel, andLevel] as LevelDef[];
+export const LEVELS: LevelDef[] = [
+  notLevel,
+  andLevel,
+  orLevel,
+  xorLevel,
+  halfAdderLevel,
+  fullAdderLevel,
+  add4Level,
+  srLatchLevel,
+  dLatchLevel,
+  dffLevel,
+] as LevelDef[];
+
+/** ชื่อบท */
+export const CHAPTERS: Record<number, { th: string; en: string }> = {
+  1: { th: 'ตรรกะพื้นฐาน', en: 'Basic logic' },
+  2: { th: 'การบวกเลข', en: 'Arithmetic' },
+  3: { th: 'หน่วยความจำ', en: 'Memory' },
+};
 
 export const GLOSSARY: GlossaryEntry[] = glossaryJson;
 

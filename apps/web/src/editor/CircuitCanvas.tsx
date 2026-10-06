@@ -1,11 +1,30 @@
 // พื้นที่วาดวงจร: ส่งเหตุการณ์เมาส์/คีย์บอร์ดให้ Interaction และวาดด้วย Canvas2DRenderer ทุกครั้งที่มีอะไรเปลี่ยน
-import { Canvas2DRenderer, ghostNode, type Frame } from '@z-ncpu/canvas';
+import { Canvas2DRenderer, ghostNode, type Frame, type PlaceSpec } from '@z-ncpu/canvas';
 import type { SignalValue } from '@z-ncpu/shared';
 import { useEffect, useRef, type DragEvent, type PointerEvent } from 'react';
 import type { EditorModel } from './model';
 
 /** ชนิดข้อมูลตอนลากชิ้นส่วนจากกล่องเครื่องมือ */
 export const DND_TYPE = 'application/x-zncpu-def';
+
+/** ข้อมูลที่ลากมาจากกล่องชิ้นส่วน (อาจมาจากหน้าอื่นได้ จึงตรวจรูปแบบก่อนใช้) */
+function parseDrop(raw: string): PlaceSpec | null {
+  try {
+    const v = JSON.parse(raw) as { defId?: unknown; params?: unknown };
+    if (typeof v.defId !== 'string' || !/^(prim|user)\.[A-Za-z0-9_]{1,40}$/.test(v.defId)) return null;
+    const spec: PlaceSpec = { defId: v.defId };
+    if (v.params && typeof v.params === 'object') {
+      const params: Record<string, number> = {};
+      for (const [k, n] of Object.entries(v.params as Record<string, unknown>)) {
+        if (/^[a-z]{1,12}$/.test(k) && Number.isInteger(n) && (n as number) >= 1 && (n as number) <= 4096) params[k] = n as number;
+      }
+      spec.params = params;
+    }
+    return spec;
+  } catch {
+    return null;
+  }
+}
 
 declare global {
   interface Window {
@@ -118,11 +137,13 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
         }
       }}
       onDrop={(e: DragEvent) => {
-        const defId = e.dataTransfer.getData(DND_TYPE);
-        if (!defId) return;
+        const raw = e.dataTransfer.getData(DND_TYPE);
+        if (!raw) return;
         e.preventDefault();
+        const spec = parseDrop(raw);
+        if (!spec) return;
         const r = canvasRef.current!.getBoundingClientRect();
-        model.ui.dropAt({ x: e.clientX - r.left, y: e.clientY - r.top }, { defId });
+        model.ui.dropAt({ x: e.clientX - r.left, y: e.clientY - r.top }, spec);
         canvasRef.current!.focus({ preventScroll: true });
       }}
     >

@@ -1,0 +1,104 @@
+{
+  "id": "memory.sr-latch",
+  "chapter": 3,
+  "title": {
+    "th": "SR Latch: วงจรจำค่าแรก",
+    "en": "SR Latch"
+  },
+  "lesson": "memory/sr-latch",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or"
+  ],
+  "target": {
+    "defId": "user.srlatch",
+    "pins": [
+      {
+        "name": "s",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "r",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "q",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "steps": [
+      {
+        "set": {
+          "s": 1,
+          "r": 0
+        },
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "set": {
+          "s": 0
+        },
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "set": {
+          "r": 1
+        },
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "r": 0
+        },
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "s": 1
+        },
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "set": {
+          "s": 0
+        },
+        "expect": {
+          "q": 1
+        }
+      }
+    ]
+  },
+  "optimize": {
+    "bestNand": 4
+  },
+  "unlocks": [
+    "user.srlatch"
+  ],
+  "hints": [
+    "memory/sr-latch/h1",
+    "memory/sr-latch/h2",
+    "memory/sr-latch/h3"
+  ],
+  "glossary": [
+    "latch",
+    "feedback"
+  ]
+}
