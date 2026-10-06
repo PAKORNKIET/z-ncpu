@@ -86,6 +86,35 @@ export abstract class Simulator {
     const nets = this.netlist.outputs.get(name) ?? this.netlist.inputs.get(name);
     if (!nets) throw new Error(`ไม่มี pin ชื่อ "${name}"`);
     if (nets.length > 32) throw new RangeError(`pin "${name}" กว้าง ${nets.length} บิต ให้อ่านด้วย readBits`);
+    return this.valueOf(nets);
+  }
+
+  /**
+   * ค่าของขาทุกขาในชั้นบนสุด สำหรับระบายสีสายบนหน้าจอ
+   * key = "ชื่อชิ้น.ชื่อขา" และ "self.ชื่อขา" สำหรับขาของวงจรเอง
+   * ขาที่กว้างเกิน 32 บิต (มัดสาย) ได้ค่าสรุป: 'X' ถ้ามีบิตที่ไม่รู้ค่า, 1 ถ้ามีบิตใดเป็น 1, ไม่งั้น 0
+   */
+  readScope(): Record<string, SignalValue> {
+    const out: Record<string, SignalValue> = {};
+    const { inputs, outputs, scopePins } = this.netlist;
+    for (const [name, nets] of inputs) out[`self.${name}`] = this.summary(nets);
+    for (const [name, nets] of outputs) out[`self.${name}`] = this.summary(nets);
+    for (const [key, nets] of scopePins) out[key] = this.summary(nets);
+    return out;
+  }
+
+  private summary(nets: Int32Array): SignalValue {
+    if (nets.length <= 32) return this.valueOf(nets);
+    let any = 0;
+    for (const n of nets) {
+      const b = this.values[n];
+      if (b === X) return 'X';
+      any |= b as number;
+    }
+    return any;
+  }
+
+  private valueOf(nets: Int32Array): SignalValue {
     let v = 0;
     for (let i = 0; i < nets.length; i++) {
       const b = this.values[nets[i] as number];

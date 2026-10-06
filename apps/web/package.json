@@ -11,6 +11,7 @@
     "typecheck": "tsc -p . && tsc -p tsconfig.node.json"
   },
   "dependencies": {
+    "@z-ncpu/canvas": "workspace:*",
     "@z-ncpu/content": "workspace:*",
     "@z-ncpu/engine": "workspace:*",
     "@z-ncpu/isa": "workspace:*",

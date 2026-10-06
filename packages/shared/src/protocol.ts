@@ -17,6 +17,7 @@ export type UiToWorker =
   | { rid: number; type: 'test'; defId: string; tests: TestSuite; mode: SimMode }
   | { rid: number; type: 'probe'; net: number }
   | { rid: number; type: 'why'; net: number; cycle: number }
+  /** scopePath '' = ชั้นบนสุด (M1) ชั้นที่ลึกกว่าสำหรับ X-Ray มาทีหลัง */
   | { rid: number; type: 'subscribe'; scopePath: string };
 
 export interface CompileStats {
@@ -29,7 +30,14 @@ export interface CompileStats {
 export type WorkerToUi =
   | { rid: number; type: 'loaded'; components: number }
   | { rid: number; type: 'compiled'; defId: string; mode: SimMode; stats: CompileStats | null; diagnostics: Diagnostic[] }
-  | { rid: number; type: 'signals'; cycle: number; pins: Record<string, SignalValue> }
+  | {
+      rid: number;
+      type: 'signals';
+      cycle: number;
+      pins: Record<string, SignalValue>;
+      /** ค่าของทุกขาในชั้นบนสุด (key = "ชื่อชิ้น.ชื่อขา") ส่งมาเมื่อ subscribe scopePath '' แล้ว ใช้ระบายสีสาย */
+      scope?: Record<string, SignalValue>;
+    }
   | { rid: number; type: 'status'; cycle: number; running: boolean }
   | { rid: number; type: 'testResult'; defId: string; mode: SimMode; report: TestReport | null; diagnostics: Diagnostic[] }
   | { rid: number; type: 'diagnostics'; diagnostics: Diagnostic[] };

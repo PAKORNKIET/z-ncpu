@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 // Web Worker ที่ถือ engine ตัวเดียว (Spec ส่วน 3, 14)
-// UI ส่ง command มา ส่วน Worker ส่งกลับเฉพาะค่า pin ของชั้นบนสุด (M0 ยังไม่มี subscribe ตามชั้น)
+// UI ส่ง command มา ส่วน Worker ส่งค่า pin ของวงจรกลับ (และค่าทุกขาในชั้นบนสุดถ้า subscribe ไว้)
 
 import {
   ComponentLibrary,
@@ -19,6 +19,8 @@ let sim: Simulator | null = null;
 let clockPin: string | undefined;
 let simMode: SimMode = 'fast';
 let timer: ReturnType<typeof setInterval> | null = null;
+/** ส่งค่าของทุกขาในชั้นบนสุดไปด้วยไหม (เปิดด้วย subscribe scopePath '') */
+let scopeOn = false;
 
 const post = (msg: WorkerToUi): void => self.postMessage(msg);
 
@@ -27,6 +29,12 @@ function pins(): Record<string, SignalValue> {
   const out: Record<string, SignalValue> = {};
   for (const name of [...sim.netlist.inputs.keys(), ...sim.netlist.outputs.keys()]) out[name] = sim.read(name);
   return out;
+}
+
+function signals(rid: number): WorkerToUi {
+  const msg: Extract<WorkerToUi, { type: 'signals' }> = { rid, type: 'signals', cycle: sim?.cycle ?? 0, pins: pins() };
+  if (scopeOn && sim) msg.scope = sim.readScope();
+  return msg;
 }
 
 function stop(): void {
@@ -61,7 +69,7 @@ function step(rid: number, count: number): boolean {
       return false;
     }
   }
-  post({ rid, type: 'signals', cycle: sim.cycle, pins: pins() });
+  post(signals(rid));
   return true;
 }
 
@@ -98,7 +106,7 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
             : null,
           diagnostics,
         });
-        if (sim) post({ rid: msg.rid, type: 'signals', cycle: sim.cycle, pins: pins() });
+        if (sim) post(signals(msg.rid));
         return;
       }
 
@@ -107,7 +115,7 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         sim.setInput(msg.pin, msg.value);
         const r = sim.settle();
         if (!r.ok) reportOscillation(msg.rid, r.nets);
-        post({ rid: msg.rid, type: 'signals', cycle: sim.cycle, pins: pins() });
+        post(signals(msg.rid));
         return;
       }
 
@@ -136,7 +144,7 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
       case 'reset':
         stop();
         if (sim) sim = createSimulator(sim.netlist, simMode);
-        post({ rid: msg.rid, type: 'signals', cycle: 0, pins: pins() });
+        post(signals(msg.rid));
         post({ rid: msg.rid, type: 'status', cycle: 0, running: false });
         return;
 
@@ -146,10 +154,29 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         return;
       }
 
+      case 'subscribe':
+        if (msg.scopePath === '') {
+          scopeOn = true;
+          post({ rid: msg.rid, type: 'status', cycle: sim?.cycle ?? 0, running: timer !== null });
+          if (sim) post(signals(msg.rid));
+          return;
+        }
+        post({
+          rid: msg.rid,
+          type: 'diagnostics',
+          diagnostics: [
+            {
+              code: 'unsupported',
+              severity: 'warning',
+              message: { th: 'ดูค่าข้างในชิ้นส่วน (X-Ray) ยังไม่รองรับ', en: 'Inspecting inside components (X-Ray) is not supported yet' },
+            },
+          ],
+        });
+        return;
+
       case 'seek':
       case 'probe':
       case 'why':
-      case 'subscribe':
         // M1–M3: time travel, probe, Why? และ subscribe ตามชั้น
         post({
           rid: msg.rid,
@@ -158,7 +185,7 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
             {
               code: 'unsupported',
               severity: 'warning',
-              message: { th: `คำสั่ง ${msg.type} ยังไม่รองรับใน M0`, en: `${msg.type} is not supported in M0` },
+              message: { th: `คำสั่ง ${msg.type} ยังไม่รองรับ`, en: `${msg.type} is not supported yet` },
             },
           ],
         });

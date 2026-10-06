@@ -23,6 +23,8 @@ export interface Netlist {
   panels: PanelInfo[];
   inputs: Map<string, Int32Array>;
   outputs: Map<string, Int32Array>;
+  /** net ของขาทุกขาของชิ้นส่วนชั้นบนสุด key = "ชื่อชิ้น.ชื่อขา" ใช้ให้หน้าจอระบายสีสายตามค่า (Spec ส่วน 14) */
+  scopePins: Map<string, Int32Array>;
   inputPins: PinDef[];
   outputPins: PinDef[];
   /** ชื่อของ pin ที่อยู่บน net นั้น (ไม่เกิน maxNamesPerNet ชื่อ) ใช้กับ Probe และ Why? */
@@ -115,6 +117,8 @@ export function compile(lib: ComponentLibrary, topId: string, options: CompileOp
   const clockNodes: number[] = [];
   const panelNodes: { path: string; words: number; width: number; nodes: number[] }[] = [];
   let aborted = false;
+  /** ขาของชิ้นส่วนชั้นบนสุด (path = '') */
+  const scopeNodes = new Map<string, number[]>();
 
   const alloc = (width: number, label: string): number[] => {
     const nodes: number[] = [];
@@ -250,6 +254,7 @@ export function compile(lib: ComponentLibrary, topId: string, options: CompileOp
       }
       const map = new Map<string, number[]>();
       for (const p of pinDefs) map.set(p.name, alloc(p.width, `${ipath}.${p.name}`));
+      if (path === '') for (const [name, nodes] of map) scopeNodes.set(`${inst.id}.${name}`, nodes);
       const entry: InstEntry = { path: ipath, pins: map };
       if (inst.params) entry.params = inst.params;
       if (spec) entry.spec = spec;
@@ -444,6 +449,9 @@ export function compile(lib: ComponentLibrary, topId: string, options: CompileOp
       })),
       inputs: new Map(inputPins.map((p) => [p.name, toNets(p)])),
       outputs: new Map(outputPins.map((p) => [p.name, toNets(p)])),
+      scopePins: new Map(
+        [...scopeNodes].map(([key, nodes]) => [key, Int32Array.from(nodes, (n) => netOf[n] as number)]),
+      ),
       inputPins,
       outputPins,
       netNames,

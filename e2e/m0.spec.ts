@@ -1,4 +1,4 @@
-// หน้าทดสอบ engine ของ M0: ทุกเทสต์รันทั้งใน dev server และตัว build (ดู playwright.config.ts)
+// แท็บ "ตัวอย่าง engine" จาก M0: ทุกเทสต์รันทั้งใน dev server และตัว build (ดู playwright.config.ts)
 import { expect, test, type Page } from '@playwright/test';
 
 /** error ที่ไม่เกี่ยวกับแอป เช่นโหลดฟอนต์จาก Google ไม่ได้ในเครื่องที่ไม่มีเน็ต */
@@ -15,6 +15,7 @@ test.beforeEach(async ({ page }) => {
     }
   });
   await page.goto('/');
+  await page.getByRole('tab', { name: 'ตัวอย่าง engine' }).click();
 });
 
 test.afterEach(() => {

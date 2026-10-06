@@ -47,6 +47,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@z-ncpu/canvas':
+        specifier: workspace:*
+        version: link:../../packages/canvas
       '@z-ncpu/content':
         specifier: workspace:*
         version: link:../../packages/content

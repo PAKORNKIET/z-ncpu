@@ -5,7 +5,19 @@
 
 เอกสารออกแบบ: **Z-NCPU — Architecture Spec v3** (ส่วนที่อ้างในโค้ด เช่น "Spec ส่วน 6" หมายถึงเอกสารนี้)
 
-## สถานะ: M0 · โครง
+## สถานะ: M1 · ต่อวงจร (กำลังทำ)
+
+### M1
+
+| ส่วน | สถานะ |
+| --- | --- |
+| แกน editor: วาง ลบ ย้าย หมุน ต่อสาย undo/redo พร้อมตรวจการต่อสาย | ✅ |
+| หน้าต่อวงจร: ลากวาง ต่อสายด้วยเมาส์ ซูม เลื่อนจอ สายเปลี่ยนสีตามค่าแบบสด | ✅ |
+| ระบบด่าน: ทดสอบ ปลดล็อก บันทึกในเครื่อง | ⏳ |
+| X-Ray | ⏳ |
+| ด่าน NAND → D Flip-Flop พร้อมบทเรียนภาษาไทย | ⏳ |
+
+### M0 · โครง
 
 | ส่วน | สถานะ |
 | --- | --- |
@@ -20,9 +32,9 @@
 | มัดสาย (bundle) สูงสุด 4,096 บิต + แบ่ง bus เป็นส่วน | ✅ |
 | Z8 ISA (ไฟล์นิยาม + encode/decode) | ✅ assembler เต็มมาใน M3 |
 | Level CI (เฉลยทุกด่านต้องผ่าน) | ✅ ด่าน NOT, AND |
-| Web: engine ใน Web Worker + หน้าทดสอบ | ✅ editor จริงมาใน M1 |
+| Web: engine ใน Web Worker + หน้าทดสอบ | ✅ |
 | E2E ด้วย Playwright (dev + build) ใน CI | ✅ |
-| Windows (Tauri 2) | ⚠️ มี config แล้ว ยังไม่ได้ build บน Windows |
+| Windows (Tauri 2) | ✅ build และติดตั้งบน Windows แล้ว |
 
 ผลวัดล่าสุด: วงจร 26,000 NAND (ขนาดใกล้ RAM256) compile ~180 ms และรันใน Fast Mode ได้ ~570 tick/วินาที
 และ ROM256 ที่ต่อจาก NAND 16,320 ตัวอ่านถูกครบ 256 คำทั้ง Visual Mode และ Fast Mode
@@ -41,7 +53,7 @@ pnpm build        # build เว็บไปที่ apps/web/dist
 
 ### E2E (Playwright)
 
-เปิดเว็บจริงใน Chromium แล้วกดสวิตช์และตัวนับ ทดสอบทั้งตอน dev (React StrictMode) และตัว build ใช้ port 5174 กับ 4174 จึงรันพร้อม `pnpm dev` ได้
+เปิดเว็บจริงใน Chromium แล้วต่อวงจรด้วยเมาส์ กดสวิตช์ และสั่งตัวนับ ทดสอบทั้งตอน dev (React StrictMode) และตัว build ใช้ port 5174 กับ 4174 จึงรันพร้อม `pnpm dev` ได้
 
 ```bash
 pnpm e2e:install  # ครั้งแรกครั้งเดียว: ดาวน์โหลด Chromium สำหรับทดสอบ
@@ -69,7 +81,7 @@ packages/
   shared/     types กลาง + protocol Worker ↔ UI
   engine/     circuit model, flatten, simulator, validator (TS ล้วน ไม่มี UI)
   isa/        ไฟล์นิยาม ISA + encode/decode
-  canvas/     interface ของ renderer และสไตล์สาย (M1)
+  canvas/     editor (undo/redo), หน้าจอวงจร (Canvas 2D) และการโต้ตอบด้วยเมาส์/คีย์บอร์ด
   content/    ด่าน บทเรียน คำใบ้ glossary และเฉลยสำหรับ CI
 ```
 
