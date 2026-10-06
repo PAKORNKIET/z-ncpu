@@ -1,8 +1,8 @@
 // M0: หน้าทดสอบ engine ผ่าน Worker — editor จริงมาใน M1 (โครงก่อน ตกแต่งทีหลัง)
 import { referenceLibrary } from '@z-ncpu/engine/fixtures';
 import type { CompileStats, Diagnostic, SignalValue, SimMode, WorkerToUi } from '@z-ncpu/shared';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { EngineClient } from './engine-client';
+import { useEffect, useRef, useState } from 'react';
+import { EngineClient, EngineClosedError } from './engine-client';
 
 export function App() {
   return (
@@ -27,16 +27,21 @@ export function App() {
   );
 }
 
-/** ใช้ EngineClient หนึ่งตัวต่อ panel และรับค่า pin ล่าสุด */
+/**
+ * ใช้ EngineClient หนึ่งตัวต่อ panel และรับค่า pin ล่าสุด
+ * สร้าง Worker ใน effect (ไม่ใช่ useMemo) เพราะ React StrictMode ตอน dev จะ mount → unmount → mount
+ * ถ้าสร้างครั้งเดียวด้วย useMemo รอบ unmount จะปิด Worker ไปแล้ว และรอบที่สองจะได้ Worker ที่ตายแล้ว
+ */
 function useEngine() {
-  const client = useMemo(() => new EngineClient(), []);
+  const [client, setClient] = useState<EngineClient | null>(null);
   const [pins, setPins] = useState<Record<string, SignalValue>>({});
   const [cycle, setCycle] = useState(0);
   const [running, setRunning] = useState(false);
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
 
   useEffect(() => {
-    const off = client.subscribe((msg: WorkerToUi) => {
+    const engine = new EngineClient();
+    engine.subscribe((msg: WorkerToUi) => {
       if (msg.type === 'signals') {
         setPins(msg.pins);
         setCycle(msg.cycle);
@@ -48,30 +53,49 @@ function useEngine() {
         setRunning(false);
       }
     });
-    return () => {
-      off();
-      client.terminate();
-    };
-  }, [client]);
+    setClient(engine);
+    return () => engine.terminate();
+  }, []);
 
   return { client, pins, cycle, running, diagnostics, setDiagnostics };
+}
+
+/** รันขั้นตอนเริ่มต้นแบบ async และไม่ทำต่อถ้า panel ถูก unmount หรือ client ถูกปิดระหว่างทาง */
+function useEngineSetup(
+  client: EngineClient | null,
+  setup: (client: EngineClient, isActive: () => boolean) => Promise<void>,
+  deps: unknown[],
+): void {
+  useEffect(() => {
+    if (!client) return;
+    let active = true;
+    setup(client, () => active).catch((e: unknown) => {
+      if (!(e instanceof EngineClosedError)) console.error(e);
+    });
+    return () => {
+      active = false;
+    };
+  }, [client, ...deps]);
 }
 
 function NandPanel() {
   const { client, pins } = useEngine();
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    void (async () => {
-      await client.send({ type: 'load', components: [] });
-      await client.send({ type: 'compile', defId: 'prim.nand', mode: 'visual' });
-      client.post({ type: 'setInput', pin: 'a', value: 0 });
-      client.post({ type: 'setInput', pin: 'b', value: 0 });
-      setReady(true);
-    })();
-  }, [client]);
+  useEngineSetup(
+    client,
+    async (engine, isActive) => {
+      setReady(false);
+      await engine.send({ type: 'load', components: [] });
+      await engine.send({ type: 'compile', defId: 'prim.nand', mode: 'visual' });
+      engine.post({ type: 'setInput', pin: 'a', value: 0 });
+      engine.post({ type: 'setInput', pin: 'b', value: 0 });
+      if (isActive()) setReady(true);
+    },
+    [],
+  );
 
-  const toggle = (pin: 'a' | 'b') => client.post({ type: 'setInput', pin, value: pins[pin] === 1 ? 0 : 1 });
+  const toggle = (pin: 'a' | 'b') => client?.post({ type: 'setInput', pin, value: pins[pin] === 1 ? 0 : 1 });
 
   return (
     <section className="panel" aria-labelledby="nand-title">
@@ -96,20 +120,23 @@ function CounterPanel() {
   const [hz, setHz] = useState(4);
   const components = useRef(referenceLibrary().all());
 
-  useEffect(() => {
-    void (async () => {
+  useEngineSetup(
+    client,
+    async (engine, isActive) => {
       setDiagnostics([]);
-      await client.send({ type: 'load', components: components.current });
-      const res = await client.send({ type: 'compile', defId: 'user.counter4', mode });
+      await engine.send({ type: 'load', components: components.current });
+      const res = await engine.send({ type: 'compile', defId: 'user.counter4', mode });
+      if (!isActive()) return;
       if (res.type === 'compiled') {
         setStats(res.stats);
         setDiagnostics(res.diagnostics);
       }
-      client.post({ type: 'setInput', pin: 'reset', value: 1 });
-      client.post({ type: 'step', count: 1 });
-      client.post({ type: 'setInput', pin: 'reset', value: 0 });
-    })();
-  }, [client, mode, setDiagnostics]);
+      engine.post({ type: 'setInput', pin: 'reset', value: 1 });
+      engine.post({ type: 'step', count: 1 });
+      engine.post({ type: 'setInput', pin: 'reset', value: 0 });
+    },
+    [mode],
+  );
 
   const q = pins.q;
   const bits: SignalValue[] = typeof q === 'number' ? [3, 2, 1, 0].map((i) => (q >> i) & 1) : ['X', 'X', 'X', 'X'];
@@ -132,18 +159,18 @@ function CounterPanel() {
 
       <div className="controls">
         {running ? (
-          <button onClick={() => client.post({ type: 'pause' })}>⏸ หยุด</button>
+          <button onClick={() => client?.post({ type: 'pause' })}>⏸ หยุด</button>
         ) : (
-          <button onClick={() => client.post({ type: 'run', hz })}>▶ รัน</button>
+          <button onClick={() => client?.post({ type: 'run', hz })}>▶ รัน</button>
         )}
-        <button onClick={() => client.post({ type: 'step', count: 1 })} disabled={running}>
+        <button onClick={() => client?.post({ type: 'step', count: 1 })} disabled={running}>
           ⏭ ทีละจังหวะ
         </button>
         <button
           onClick={() => {
-            client.post({ type: 'setInput', pin: 'reset', value: 1 });
-            client.post({ type: 'step', count: 1 });
-            client.post({ type: 'setInput', pin: 'reset', value: 0 });
+            client?.post({ type: 'setInput', pin: 'reset', value: 1 });
+            client?.post({ type: 'step', count: 1 });
+            client?.post({ type: 'setInput', pin: 'reset', value: 0 });
           }}
           disabled={running}
         >
