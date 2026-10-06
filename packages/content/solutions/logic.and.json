@@ -1,0 +1,22 @@
+{
+  "id": "user.and",
+  "name": { "th": "AND", "en": "AND" },
+  "kind": "circuit",
+  "pins": [
+    { "name": "a", "dir": "in", "width": 1 },
+    { "name": "b", "dir": "in", "width": 1 },
+    { "name": "y", "dir": "out", "width": 1 }
+  ],
+  "body": {
+    "instances": [
+      { "id": "n1", "defId": "prim.nand", "x": 160, "y": 80, "rotation": 0 },
+      { "id": "inv", "defId": "user.not", "x": 320, "y": 80, "rotation": 0 }
+    ],
+    "wires": [
+      { "id": "w1", "from": { "inst": "self", "pin": "a" }, "to": { "inst": "n1", "pin": "a" } },
+      { "id": "w2", "from": { "inst": "self", "pin": "b" }, "to": { "inst": "n1", "pin": "b" } },
+      { "id": "w3", "from": { "inst": "n1", "pin": "y" }, "to": { "inst": "inv", "pin": "a" } },
+      { "id": "w4", "from": { "inst": "inv", "pin": "y" }, "to": { "inst": "self", "pin": "y" } }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "logic.not",
+  "chapter": 1,
+  "title": { "th": "สร้าง NOT", "en": "Build NOT" },
+  "lesson": "logic/not",
+  "available": ["prim.nand"],
+  "target": {
+    "defId": "user.not",
+    "pins": [
+      { "name": "a", "dir": "in", "width": 1 },
+      { "name": "y", "dir": "out", "width": 1 }
+    ]
+  },
+  "tests": {
+    "type": "truth-table",
+    "rows": [
+      { "in": { "a": 0 }, "out": { "y": 1 } },
+      { "in": { "a": 1 }, "out": { "y": 0 } }
+    ]
+  },
+  "optimize": { "bestNand": 1 },
+  "unlocks": ["user.not"],
+  "hints": ["logic/not/h1", "logic/not/h2"],
+  "glossary": ["nand", "not", "truth-table"]
+}

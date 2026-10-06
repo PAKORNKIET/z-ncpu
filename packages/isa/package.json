@@ -1,0 +1,19 @@
+{
+  "name": "@z-ncpu/isa",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./z8.isa.json": "./src/z8.isa.json"
+  },
+  "scripts": {
+    "typecheck": "tsc -p . && tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@z-ncpu/shared": "workspace:*"
+  }
+}

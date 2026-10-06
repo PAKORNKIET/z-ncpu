@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Z-NCPU",
+  "version": "0.1.0",
+  "identifier": "io.github.pakornkiet.zncpu",
+  "build": {
+    "frontendDist": "../../web/dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "pnpm --filter @z-ncpu/web dev",
+    "beforeBuildCommand": "pnpm --filter @z-ncpu/web build"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Z-NCPU — สร้าง CPU จากเกต NAND",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis",
+      "msi"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "languages": [
+          "English"
+        ]
+      }
+    }
+  }
+}

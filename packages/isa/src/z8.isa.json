@@ -1,0 +1,49 @@
+{
+  "name": "Z8",
+  "description": {
+    "th": "CPU 8 บิต แบบ Harvard single-cycle คำสั่งยาว 16 บิต",
+    "en": "8-bit Harvard single-cycle CPU with 16-bit instructions"
+  },
+  "wordBits": 16,
+  "dataBits": 8,
+  "fields": {
+    "group": [15, 14],
+    "func": [13, 11],
+    "rd": [10, 9],
+    "m": [8, 8],
+    "operand": [7, 0]
+  },
+  "registers": { "A": 0, "B": 1, "C": 2, "D": 3 },
+  "instructions": [
+    { "mnemonic": "NOP", "group": 0, "func": 0, "operands": [] },
+    { "mnemonic": "MOV", "group": 0, "func": 1, "operands": ["rd", "src"] },
+    { "mnemonic": "LOAD", "group": 0, "func": 2, "operands": ["rd", "[src]"] },
+    { "mnemonic": "STORE", "group": 0, "func": 3, "operands": ["[src]", "rd"] },
+    { "mnemonic": "PUSH", "group": 0, "func": 4, "operands": ["rd"] },
+    { "mnemonic": "POP", "group": 0, "func": 5, "operands": ["rd"] },
+    { "mnemonic": "HALT", "group": 0, "func": 7, "operands": [] },
+    { "mnemonic": "ADD", "group": 1, "func": 0, "operands": ["rd", "src"], "flags": "ZCN" },
+    { "mnemonic": "SUB", "group": 1, "func": 1, "operands": ["rd", "src"], "flags": "ZCN" },
+    { "mnemonic": "AND", "group": 1, "func": 2, "operands": ["rd", "src"], "flags": "ZN" },
+    { "mnemonic": "OR", "group": 1, "func": 3, "operands": ["rd", "src"], "flags": "ZN" },
+    { "mnemonic": "XOR", "group": 1, "func": 4, "operands": ["rd", "src"], "flags": "ZN" },
+    { "mnemonic": "NOT", "group": 1, "func": 5, "operands": ["rd"], "flags": "ZN" },
+    { "mnemonic": "CMP", "group": 1, "func": 7, "operands": ["rd", "src"], "flags": "ZCN" },
+    { "mnemonic": "JMP", "group": 2, "func": 0, "operands": ["src"] },
+    { "mnemonic": "JZ", "group": 2, "func": 1, "operands": ["src"] },
+    { "mnemonic": "JNZ", "group": 2, "func": 2, "operands": ["src"] },
+    { "mnemonic": "JC", "group": 2, "func": 3, "operands": ["src"] },
+    { "mnemonic": "JN", "group": 2, "func": 4, "operands": ["src"] },
+    { "mnemonic": "CALL", "group": 2, "func": 5, "operands": ["src"] },
+    { "mnemonic": "RET", "group": 2, "func": 6, "operands": [] }
+  ],
+  "memoryMap": [
+    { "from": 0, "to": 239, "name": { "th": "RAM ข้อมูลและ stack", "en": "Data RAM and stack" } },
+    { "from": 240, "to": 240, "name": { "th": "จอแสดงตัวเลข", "en": "Number display" }, "access": "w" },
+    { "from": 241, "to": 241, "name": { "th": "LED 8 ดวง", "en": "8 LEDs" }, "access": "w" },
+    { "from": 242, "to": 242, "name": { "th": "7-segment", "en": "7-segment" }, "access": "w" },
+    { "from": 248, "to": 248, "name": { "th": "สวิตช์ 8 ตัว", "en": "8 switches" }, "access": "r" },
+    { "from": 249, "to": 249, "name": { "th": "ปุ่มกด", "en": "Buttons" }, "access": "r" },
+    { "from": 250, "to": 250, "name": { "th": "คีย์บอร์ด", "en": "Keyboard" }, "access": "r" }
+  ]
+}

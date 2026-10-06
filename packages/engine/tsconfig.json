@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // Rule 2: engine ไม่มี DOM และไม่ผูกกับ Node — ใช้ lib ES ล้วน ถ้าแตะ window/document/process จะ typecheck ไม่ผ่าน
+    "lib": ["ES2022"],
+    "types": []
+  },
+  "include": ["src"]
+}

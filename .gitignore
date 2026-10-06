@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+.vite/
+
+# Tauri
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/gen/
