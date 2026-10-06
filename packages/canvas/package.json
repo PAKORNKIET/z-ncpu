@@ -10,9 +10,12 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p . && tsc -p tsconfig.test.json"
   },
   "dependencies": {
     "@z-ncpu/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@z-ncpu/engine": "workspace:*"
   }
 }

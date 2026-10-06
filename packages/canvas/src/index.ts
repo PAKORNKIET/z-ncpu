@@ -38,3 +38,9 @@ export function wireStyle(value: Bit, busWidth = 1): WireStyle {
   if (value === 0) return { width: 1.5 + busBoost, dash: [], colorVar: '--signal-low', label: 'LOW' };
   return { width: 1.5 + busBoost, dash: [4, 4], colorVar: '--signal-unknown', label: 'X' };
 }
+
+export * from './editor/ops';
+export { History } from './editor/history';
+export type { HistoryEntry } from './editor/history';
+export { Editor } from './editor/editor';
+export type { Selection } from './editor/editor';

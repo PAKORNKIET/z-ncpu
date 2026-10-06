@@ -84,6 +84,10 @@ importers:
       '@z-ncpu/shared':
         specifier: workspace:*
         version: link:../shared
+    devDependencies:
+      '@z-ncpu/engine':
+        specifier: workspace:*
+        version: link:../engine
 
   packages/content:
     dependencies:
