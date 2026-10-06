@@ -1,7 +1,7 @@
 // พื้นที่วาดวงจร: ส่งเหตุการณ์เมาส์/คีย์บอร์ดให้ Interaction และวาดด้วย Canvas2DRenderer ทุกครั้งที่มีอะไรเปลี่ยน
 import { Canvas2DRenderer, ghostNode, type Frame } from '@z-ncpu/canvas';
 import type { SignalValue } from '@z-ncpu/shared';
-import { useEffect, useRef, type DragEvent, type KeyboardEvent, type PointerEvent } from 'react';
+import { useEffect, useRef, type DragEvent, type PointerEvent } from 'react';
 import type { EditorModel } from './model';
 
 /** ชนิดข้อมูลตอนลากชิ้นส่วนจากกล่องเครื่องมือ */
@@ -144,9 +144,6 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
         onPointerCancel={() => model.ui.cancel()}
         onPointerLeave={() => model.ui.pointerLeave()}
         onContextMenu={(e) => e.preventDefault()}
-        onKeyDown={(e: KeyboardEvent) => {
-          if (model.ui.key({ key: e.key, ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })) e.preventDefault();
-        }}
       />
     </div>
   );

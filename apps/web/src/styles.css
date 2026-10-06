@@ -373,3 +373,214 @@ select:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- หัวหน้าและไฟล์ ---------- */
+
+.header-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.file-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.notice {
+  margin: 4px 0;
+  padding: 6px 10px;
+  border: 1px solid var(--warning);
+  border-radius: 8px;
+  color: var(--warning);
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+/* ---------- ด่าน (M1-3) ---------- */
+
+.game {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.levels {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  align-self: start;
+}
+
+.levels h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.levels ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.level-item {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 6px;
+  text-align: left;
+}
+
+.level-item.current {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.level-item.passed .level-icon {
+  color: var(--signal-high);
+}
+
+.level-item.retest .level-icon {
+  color: var(--warning);
+}
+
+.level-main {
+  min-width: 0;
+}
+
+.level-main .editor {
+  margin-top: 12px;
+}
+
+.lesson {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 16px;
+}
+
+.lesson summary {
+  cursor: pointer;
+}
+
+/* บทเรียนยาวเลื่อนอ่านในกรอบ พื้นที่ต่อวงจรจะได้อยู่ในจอ */
+.lesson-body {
+  max-height: 28vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.markdown h2 {
+  font-size: 18px;
+  margin: 12px 0 4px;
+}
+
+.markdown h3 {
+  font-size: 15px;
+  margin: 12px 0 4px;
+}
+
+.markdown p {
+  margin: 4px 0 8px;
+}
+
+.markdown code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.md-table,
+.truth-table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+}
+
+.md-table th,
+.md-table td,
+.truth-table th,
+.truth-table td {
+  border: 1px solid var(--border);
+  padding: 2px 10px;
+  text-align: center;
+}
+
+.truth-table th {
+  font-family: 'Noto Sans Thai', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.truth-table tr.ok td:last-child {
+  color: var(--signal-high);
+}
+
+.truth-table tr.fail td {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.glossary {
+  margin: 8px 0 4px;
+  font-size: 13px;
+}
+
+.glossary dt {
+  font-weight: 600;
+}
+
+.glossary dd {
+  margin: 0 0 6px;
+  color: var(--muted);
+}
+
+.test-panel {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.test-panel h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.test-result .error {
+  color: var(--error);
+}
+
+.pass {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--signal-high);
+  border-radius: 8px;
+}
+
+.pass p {
+  margin: 0 0 6px;
+}
+
+.hints {
+  margin-top: 12px;
+}
+
+.hint-text {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+@media (max-width: 1100px) {
+  .game {
+    grid-template-columns: 1fr;
+  }
+}

@@ -91,8 +91,11 @@ export class EditorModel {
 }
 
 /** สร้าง model ครั้งเดียวต่อ component และ render ใหม่เมื่อสถานะที่แสดงผลเปลี่ยน */
-export function useEditorModel(initial: () => ComponentDef): EditorModel {
-  const [model] = useState(() => new EditorModel(initial()));
+export function useEditorModel(init: () => { def: ComponentDef; library?: ComponentLibrary }): EditorModel {
+  const [model] = useState(() => {
+    const { def, library } = init();
+    return new EditorModel(def, library);
+  });
   useSyncExternalStore(
     (cb) => model.listen(cb),
     model.snapshot,

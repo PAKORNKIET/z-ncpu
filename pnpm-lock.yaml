@@ -17,12 +17,18 @@ importers:
       '@types/node':
         specifier: ^22.20.5
         version: 22.20.5
+      '@z-ncpu/content':
+        specifier: workspace:*
+        version: link:packages/content
       '@z-ncpu/engine':
         specifier: workspace:*
         version: link:packages/engine
       '@z-ncpu/isa':
         specifier: workspace:*
         version: link:packages/isa
+      '@z-ncpu/shared':
+        specifier: workspace:*
+        version: link:packages/shared
       eslint:
         specifier: ^10.12.0
         version: 10.12.0

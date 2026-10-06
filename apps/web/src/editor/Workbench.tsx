@@ -1,51 +1,71 @@
-// หน้าต่อวงจร (M1-2): กล่องชิ้นส่วน + พื้นที่วาด + แผงขาเข้า/ขาออก จำลองสดใน Worker ทุกครั้งที่แก้วงจร
-// ด่านและการตรวจคำตอบมาใน M1-3 ตอนนี้เป็นสนามทดลองที่มีขาเข้า a, b และขาออก y
-import { countByDef } from '@z-ncpu/canvas';
+// พื้นที่ทำงาน: กล่องชิ้นส่วน + พื้นที่วาด + แผงขาเข้า/ขาออก จำลองสดใน Worker ทุกครั้งที่แก้วงจร
+// ใช้ทั้งในด่าน (GamePage) และสนามทดลอง (SandboxPage) — ส่วนเฉพาะของแต่ละหน้าส่งมาทาง side
+import { ComponentLibrary } from '@z-ncpu/engine';
 import type { ComponentDef, Diagnostic, SignalValue } from '@z-ncpu/shared';
-import { useEffect, useMemo, useState } from 'react';
-import { EngineClosedError } from '../engine-client';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { EngineClient, EngineClosedError } from '../engine-client';
 import { useEngine } from '../use-engine';
 import { Diagnostics, Led, Switch } from '../ui/widgets';
 import { CircuitCanvas, DND_TYPE } from './CircuitCanvas';
 import { useEditorModel } from './model';
 
-const sandbox = (): ComponentDef => ({
-  id: 'user.sandbox',
-  name: { th: 'สนามทดลอง', en: 'Sandbox' },
-  kind: 'circuit',
-  pins: [
-    { name: 'a', dir: 'in', width: 1 },
-    { name: 'b', dir: 'in', width: 1 },
-    { name: 'y', dir: 'out', width: 1 },
-  ],
-  body: { instances: [], wires: [] },
-});
-
-const PALETTE = [
-  { defId: 'prim.nand', title: 'NAND', desc: 'ได้ 0 เฉพาะตอนขาเข้าเป็น 1 ทั้งคู่' },
-  { defId: 'prim.const0', title: 'ค่าคงที่ 0', desc: 'ส่ง 0 ออกตลอดเวลา' },
-  { defId: 'prim.const1', title: 'ค่าคงที่ 1', desc: 'ส่ง 1 ออกตลอดเวลา' },
-];
-
-/** โครงของวงจร (ไม่รวมตำแหน่ง) ถ้าเหมือนเดิมไม่ต้อง compile ใหม่ เช่นตอนลากย้ายชิ้น */
-function structureKey(def: ComponentDef): string {
-  const b = def.body ?? { instances: [], wires: [] };
-  return JSON.stringify([
-    def.pins,
-    b.instances.map((i) => [i.id, i.defId, i.params ?? null]),
-    b.wires.map((w) => [w.from.inst, w.from.pin, w.to.inst, w.to.pin]),
-  ]);
+export interface PaletteItem {
+  defId: string;
+  title: string;
+  desc: string;
 }
 
-export function EditorPage() {
-  const model = useEditorModel(sandbox);
+export const PRIMITIVE_PALETTE: Record<string, PaletteItem> = {
+  'prim.nand': { defId: 'prim.nand', title: 'NAND', desc: 'ได้ 0 เฉพาะตอนขาเข้าเป็น 1 ทั้งคู่' },
+  'prim.const0': { defId: 'prim.const0', title: 'ค่าคงที่ 0', desc: 'ส่ง 0 ออกตลอดเวลา' },
+  'prim.const1': { defId: 'prim.const1', title: 'ค่าคงที่ 1', desc: 'ส่ง 1 ออกตลอดเวลา' },
+};
+
+/** สิ่งที่หน้าที่ใช้ Workbench อ่านได้ (เช่นเอาไปทดสอบ) */
+export interface WorkbenchContext {
+  def: ComponentDef;
+  client: EngineClient | null;
+  /** จำนวน NAND ทั้งหมดหลังคลี่ทุกชั้น (null = compile ไม่ผ่าน) */
+  gates: number | null;
+}
+
+/** โครงของวงจร (ไม่รวมตำแหน่ง) ถ้าเหมือนเดิมไม่ต้อง compile ใหม่ เช่นตอนลากย้ายชิ้น */
+function structureKey(defs: readonly ComponentDef[]): string {
+  return JSON.stringify(
+    defs.map((def) => {
+      const b = def.body ?? { instances: [], wires: [] };
+      return [
+        def.id,
+        def.pins,
+        b.instances.map((i) => [i.id, i.defId, i.params ?? null]),
+        b.wires.map((w) => [w.from.inst, w.from.pin, w.to.inst, w.to.pin]),
+      ];
+    }),
+  );
+}
+
+export function Workbench(props: {
+  initial: ComponentDef;
+  /** วงจรอื่นของผู้เล่นที่วงจรนี้อาจใช้ (ไม่รวมตัวมันเอง) */
+  deps?: ComponentDef[];
+  palette: PaletteItem[];
+  onChange?: (def: ComponentDef) => void;
+  side?: (ctx: WorkbenchContext) => ReactNode;
+}) {
+  const deps = props.deps ?? [];
+  const model = useEditorModel(() => ({ def: props.initial, library: new ComponentLibrary(deps) }));
   const { editor, ui } = model;
   const def = editor.def;
   const { client, scope } = useEngine();
   const [inputs, setInputs] = useState<Record<string, 0 | 1>>(() =>
     Object.fromEntries(def.pins.filter((p) => p.dir === 'in').map((p) => [p.name, 0])),
   );
-  const [compiled, setCompiled] = useState<{ ok: boolean; diagnostics: Diagnostic[] }>({ ok: false, diagnostics: [] });
+  const [compiled, setCompiled] = useState<{ gates: number | null; diagnostics: Diagnostic[] }>({ gates: null, diagnostics: [] });
+
+  // แจ้งหน้าแม่ทุกครั้งที่วงจรเปลี่ยน (ใช้บันทึกอัตโนมัติ)
+  const onChange = useRef(props.onChange);
+  onChange.current = props.onChange;
+  useEffect(() => editor.history.subscribe(() => onChange.current?.(editor.def)), [editor]);
 
   // ขอค่าของทุกขาในชั้นบนสุดไว้ระบายสีสาย
   useEffect(() => {
@@ -53,26 +73,43 @@ export function EditorPage() {
   }, [client]);
 
   // compile ใหม่เมื่อโครงวงจรเปลี่ยน แล้วใส่ค่าขาเข้าเดิมกลับ
-  const key = useMemo(() => structureKey(def), [def]);
+  const otherDeps = deps.filter((d) => d.id !== def.id);
+  const key = useMemo(() => structureKey([...otherDeps, def]), [def, otherDeps]);
+  const inputsRef = useRef(inputs);
+  inputsRef.current = inputs;
   useEffect(() => {
     if (!client) return;
     let active = true;
     const current = editor.def;
-    client.post({ type: 'load', components: [current] });
+    client.post({ type: 'load', components: [...otherDeps, current] });
     client
       .send({ type: 'compile', defId: current.id, mode: 'visual' })
       .then((res) => {
-        if (active && res.type === 'compiled') setCompiled({ ok: res.stats !== null, diagnostics: res.diagnostics });
+        if (active && res.type === 'compiled') setCompiled({ gates: res.stats?.gates ?? null, diagnostics: res.diagnostics });
       })
       .catch((e: unknown) => {
         if (!(e instanceof EngineClosedError)) console.error(e);
       });
-    for (const [pin, value] of Object.entries(inputs)) client.post({ type: 'setInput', pin, value });
+    for (const [pin, value] of Object.entries(inputsRef.current)) client.post({ type: 'setInput', pin, value });
     return () => {
       active = false;
     };
-    // ตั้งใจไม่ใส่ inputs: ค่าขาเข้าส่งแยกตอนกดสวิตช์ ไม่ต้อง compile ใหม่
+    // key รวมทุกอย่างที่ต้อง compile ใหม่แล้ว
   }, [client, key]);
+
+  // คีย์ลัดใช้ได้ทุกที่ในหน้า (เช่นหลังกดปุ่มทดสอบแล้วกด Ctrl+Z) ยกเว้นตอนพิมพ์ในช่องข้อความ
+  // Delete/R/Backspace ใช้ได้เฉพาะตอนโฟกัสอยู่ที่พื้นที่วาดหรือไม่ได้อยู่ที่ปุ่มใด กันการกดพลาดบนปุ่มอื่น
+  useEffect(() => {
+    const onKey = (e: globalThis.KeyboardEvent): void => {
+      const t = e.target instanceof HTMLElement ? e.target : null;
+      if (t?.closest('input, textarea, select, [contenteditable="true"]')) return;
+      const free = !t || t === document.body || t.tagName === 'CANVAS';
+      if (!free && !(e.ctrlKey || e.metaKey) && e.key !== 'Escape') return;
+      if (ui.key({ key: e.key, ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })) e.preventDefault();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [ui]);
 
   const toggle = (pin: string): void => {
     const value = inputs[pin] === 1 ? 0 : 1;
@@ -81,8 +118,7 @@ export function EditorPage() {
   };
   model.onToggleInput = toggle;
 
-  const values: Record<string, SignalValue> = compiled.ok ? scope : {};
-  const nand = countByDef(def).get('prim.nand') ?? 0;
+  const values: Record<string, SignalValue> = compiled.gates !== null ? scope : {};
   const wires = def.body?.wires.length ?? 0;
   const selected = editor.selection.instances.length + editor.selection.wires.length;
   const errors = compiled.diagnostics.filter((d) => d.severity === 'error');
@@ -94,7 +130,7 @@ export function EditorPage() {
       <aside className="palette" aria-labelledby="palette-title">
         <h2 id="palette-title">ชิ้นส่วน</h2>
         <p className="muted small">คลิกแล้วคลิกบนพื้นที่ หรือลากไปวาง</p>
-        {PALETTE.map((p) => (
+        {props.palette.map((p) => (
           <button
             key={p.defId}
             className={`palette-item ${ui.placing?.defId === p.defId ? 'active' : ''}`}
@@ -171,8 +207,8 @@ export function EditorPage() {
             ))}
         </div>
         <dl className="stats">
-          <dt>NAND</dt>
-          <dd data-testid="nand-count">{nand}</dd>
+          <dt>NAND รวม</dt>
+          <dd data-testid="nand-count">{compiled.gates ?? '–'}</dd>
           <dt>สาย</dt>
           <dd data-testid="wire-count">{wires}</dd>
         </dl>
@@ -180,6 +216,7 @@ export function EditorPage() {
           <p className="muted small">ยังมีขาที่ไม่ได้ต่อ {floating} จุด (ค่าเป็น X)</p>
         ) : null}
         <Diagnostics items={errors} />
+        {props.side?.({ def, client, gates: compiled.gates })}
       </aside>
     </div>
   );

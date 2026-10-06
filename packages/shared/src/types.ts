@@ -180,8 +180,11 @@ export interface ProgramSource {
 }
 
 export interface LevelProgress {
+  /** content hash ของวงจรตอนที่ผ่านด่าน ถ้าวงจรตอนนี้ hash ไม่ตรง = ต้องทดสอบใหม่ */
   passedHash?: string;
   attempts: number;
+  /** จำนวน NAND น้อยที่สุดที่เคยผ่าน */
+  bestNand?: number;
 }
 
 export interface ZncpuFile {

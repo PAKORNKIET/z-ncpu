@@ -1,4 +1,4 @@
-// หน้าต่อวงจร (M1-2): วาง NAND ต่อสายด้วยเมาส์ แล้วจำลองสดใน Worker — รันทั้ง dev และ build
+// แท็บสนามทดลอง (M1-2): วาง NAND ต่อสายด้วยเมาส์ แล้วจำลองสดใน Worker — รันทั้ง dev และ build
 import { expect, test, type Page } from '@playwright/test';
 
 const IGNORED = [/fonts\.(googleapis|gstatic)\.com/, /ERR_TUNNEL_CONNECTION_FAILED/, /ERR_INTERNET_DISCONNECTED/];
@@ -12,6 +12,7 @@ test.beforeEach(async ({ page }) => {
   });
   // ?test เปิดให้อ่านตำแหน่งขาบนจอ
   await page.goto('/?test');
+  await page.getByRole('tab', { name: 'สนามทดลอง' }).click();
   await expect(page.getByRole('application')).toBeVisible();
 });
 

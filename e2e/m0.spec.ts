@@ -65,6 +65,8 @@ test('ตัวนับ: ทีละจังหวะ รัน และห�
   await page.getByRole('button', { name: /รัน/ }).click();
   await expect(counter(page)).not.toHaveText('3');
   await page.getByRole('button', { name: /หยุด/ }).click();
+  // รอให้ Worker ยืนยันว่าหยุดแล้ว (ปุ่มกลับเป็น "รัน") ค่าที่ส่งมาก่อนหยุดจะมาถึงก่อนคำยืนยันเสมอ
+  await expect(page.getByRole('button', { name: /รัน/ })).toBeVisible();
 
   // หยุดแล้วค่าต้องไม่เปลี่ยนอีก
   const stopped = await counter(page).textContent();
