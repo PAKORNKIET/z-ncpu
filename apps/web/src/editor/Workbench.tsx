@@ -2,12 +2,12 @@
 // ใช้ทั้งในด่าน (GamePage) และสนามทดลอง (SandboxPage) — ส่วนเฉพาะของแต่ละหน้าส่งมาทาง side
 import { ComponentLibrary } from '@z-ncpu/engine';
 import type { ComponentDef, Diagnostic, SignalValue } from '@z-ncpu/shared';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { EngineClient, EngineClosedError } from '../engine-client';
 import { useEngine } from '../use-engine';
 import { Diagnostics, Led, Switch } from '../ui/widgets';
 import { CircuitCanvas, DND_TYPE } from './CircuitCanvas';
-import { useEditorModel } from './model';
+import { EditorModel, useEditorModel } from './model';
 
 export interface PaletteItem {
   defId: string;
@@ -27,6 +27,20 @@ export interface WorkbenchContext {
   client: EngineClient | null;
   /** จำนวน NAND ทั้งหมดหลังคลี่ทุกชั้น (null = compile ไม่ผ่าน) */
   gates: number | null;
+}
+
+/** ไล่จากวงจรบนสุดลงไปตาม path ของ X-Ray คืนเฉพาะชั้นที่ยังมีอยู่จริง (ชิ้นอาจถูกลบหรือ undo ไปแล้ว) */
+function resolveXRay(top: ComponentDef, path: readonly string[], lib: ComponentLibrary): { id: string; def: ComponentDef }[] {
+  const out: { id: string; def: ComponentDef }[] = [];
+  let cur = top;
+  for (const id of path) {
+    const inst = cur.body?.instances.find((i) => i.id === id);
+    const inner = inst ? lib.get(inst.defId) : undefined;
+    if (!inner?.body) break;
+    out.push({ id, def: inner });
+    cur = inner;
+  }
+  return out;
 }
 
 /** โครงของวงจร (ไม่รวมตำแหน่ง) ถ้าเหมือนเดิมไม่ต้อง compile ใหม่ เช่นตอนลากย้ายชิ้น */
@@ -56,7 +70,7 @@ export function Workbench(props: {
   const model = useEditorModel(() => ({ def: props.initial, library: new ComponentLibrary(deps) }));
   const { editor, ui } = model;
   const def = editor.def;
-  const { client, scope } = useEngine();
+  const { client, scope, pins } = useEngine();
   const [inputs, setInputs] = useState<Record<string, 0 | 1>>(() =>
     Object.fromEntries(def.pins.filter((p) => p.dir === 'in').map((p) => [p.name, 0])),
   );
@@ -67,10 +81,48 @@ export function Workbench(props: {
   onChange.current = props.onChange;
   useEffect(() => editor.history.subscribe(() => onChange.current?.(editor.def)), [editor]);
 
-  // ขอค่าของทุกขาในชั้นบนสุดไว้ระบายสีสาย
+  // ---------- X-Ray: ดูข้างในชิ้นที่สร้างเอง (อ่านอย่างเดียว ค่าในสายมาจากการจำลองวงจรบนสุดจริง) ----------
+  const [xray, setXray] = useState<string[]>([]);
+  const chain = resolveXRay(def, xray, model.library);
   useEffect(() => {
-    client?.post({ type: 'subscribe', scopePath: '' });
-  }, [client]);
+    if (chain.length < xray.length) setXray(chain.map((c) => c.id));
+  }, [chain.length, xray.length]);
+  const viewKey = chain.map((c) => c.id).join('/');
+  const cache = useRef(new Map<string, EditorModel>());
+  let view = model;
+  const inner = chain.at(-1);
+  if (inner) {
+    let m = cache.current.get(viewKey);
+    if (!m || m.editor.def !== inner.def) {
+      m = new EditorModel(inner.def, model.library, { readOnly: true });
+      cache.current.set(viewKey, m);
+    }
+    view = m;
+  }
+  useSyncExternalStore((cb) => view.listen(cb), view.snapshot);
+  const openInside = (id: string): void => {
+    const inst = view.editor.def.body?.instances.find((i) => i.id === id);
+    if (!inst) return;
+    if (model.library.get(inst.defId)?.body) {
+      setXray([...chain.map((c) => c.id), id]);
+    } else {
+      const name = view.sceneOptions.titleOf?.(inst.defId) ?? inst.defId;
+      view.editor.lastError = {
+        th: `${name} เป็นเกตพื้นฐาน ไม่มีวงจรข้างในให้ดู`,
+        en: `${name} is a basic gate with nothing inside`,
+      };
+      view.ui.setCamera(view.ui.camera);
+    }
+  };
+  view.onOpen = openInside;
+  model.onOpen = openInside;
+  const inXRay = chain.length > 0;
+  const exitXRay = (levels = 1): void => setXray(chain.slice(0, Math.max(0, chain.length - levels)).map((c) => c.id));
+
+  // ขอค่าของทุกขาในชั้นที่กำลังดูไว้ระบายสีสาย
+  useEffect(() => {
+    client?.post({ type: 'subscribe', scopePath: viewKey });
+  }, [client, viewKey]);
 
   // compile ใหม่เมื่อโครงวงจรเปลี่ยน แล้วใส่ค่าขาเข้าเดิมกลับ
   const otherDeps = deps.filter((d) => d.id !== def.id);
@@ -99,17 +151,25 @@ export function Workbench(props: {
 
   // คีย์ลัดใช้ได้ทุกที่ในหน้า (เช่นหลังกดปุ่มทดสอบแล้วกด Ctrl+Z) ยกเว้นตอนพิมพ์ในช่องข้อความ
   // Delete/R/Backspace ใช้ได้เฉพาะตอนโฟกัสอยู่ที่พื้นที่วาดหรือไม่ได้อยู่ที่ปุ่มใด กันการกดพลาดบนปุ่มอื่น
+  // ตอน X-Ray: Esc ถอยออกทีละชั้น
+  const keyTarget = useRef({ view, inXRay: chain.length > 0, exit: exitXRay });
+  keyTarget.current = { view, inXRay: chain.length > 0, exit: exitXRay };
   useEffect(() => {
     const onKey = (e: globalThis.KeyboardEvent): void => {
       const t = e.target instanceof HTMLElement ? e.target : null;
       if (t?.closest('input, textarea, select, [contenteditable="true"]')) return;
       const free = !t || t === document.body || t.tagName === 'CANVAS';
       if (!free && !(e.ctrlKey || e.metaKey) && e.key !== 'Escape') return;
-      if (ui.key({ key: e.key, ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })) e.preventDefault();
+      const k = keyTarget.current;
+      if (k.view.ui.key({ key: e.key, ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })) e.preventDefault();
+      else if (e.key === 'Escape' && k.inXRay) {
+        k.exit();
+        e.preventDefault();
+      }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [ui]);
+  }, []);
 
   const toggle = (pin: string): void => {
     const value = inputs[pin] === 1 ? 0 : 1;
@@ -118,7 +178,8 @@ export function Workbench(props: {
   };
   model.onToggleInput = toggle;
 
-  const values: Record<string, SignalValue> = compiled.gates !== null ? scope : {};
+  const values: Record<string, SignalValue> = compiled.gates !== null && scope.path === viewKey ? scope.values : {};
+  const top: Record<string, SignalValue> = compiled.gates !== null ? pins : {};
   const wires = def.body?.wires.length ?? 0;
   const selected = editor.selection.instances.length + editor.selection.wires.length;
   const errors = compiled.diagnostics.filter((d) => d.severity === 'error');
@@ -141,6 +202,7 @@ export function Workbench(props: {
             }}
             onClick={() => (ui.placing?.defId === p.defId ? ui.cancel() : ui.beginPlace({ defId: p.defId }))}
             aria-pressed={ui.placing?.defId === p.defId}
+            disabled={inXRay}
           >
             <span className="palette-title">{p.title}</span>
             <span className="palette-desc">{p.desc}</span>
@@ -149,7 +211,24 @@ export function Workbench(props: {
       </aside>
 
       <section className="workspace" aria-label="พื้นที่ทำงาน">
-        <div className="toolbar" role="toolbar" aria-label="เครื่องมือ">
+        {inXRay ? (
+          <div className="toolbar xray-bar" role="toolbar" aria-label="X-Ray">
+            <button onClick={() => exitXRay(chain.length)}>← ออกจาก X-Ray</button>
+            <nav className="crumbs" aria-label="ตำแหน่งที่กำลังดู">
+              <button onClick={() => exitXRay(chain.length)}>{def.name.th}</button>
+              {chain.map((c, i) => (
+                <span key={c.id}>
+                  {' › '}
+                  <button onClick={() => exitXRay(chain.length - 1 - i)} aria-current={i === chain.length - 1 ? 'location' : undefined}>
+                    {c.id} ({c.def.name.th})
+                  </button>
+                </span>
+              ))}
+            </nav>
+            <span className="muted mono zoom">{Math.round(view.ui.camera.zoom * 100)}%</span>
+          </div>
+        ) : (
+          <div className="toolbar" role="toolbar" aria-label="เครื่องมือ">
           <button onClick={() => ui.key({ key: 'z', ctrl: true })} disabled={!h.canUndo} title="Ctrl+Z">
             ↶ ย้อน{h.undoLabel ? `: ${h.undoLabel}` : ''}
           </button>
@@ -174,18 +253,26 @@ export function Workbench(props: {
           </button>
           <span className="muted mono zoom">{Math.round(ui.camera.zoom * 100)}%</span>
         </div>
+        )}
 
-        <CircuitCanvas model={model} values={values} />
+        <CircuitCanvas
+          key={viewKey}
+          model={view}
+          values={values}
+          {...(inXRay ? { label: `X-Ray ข้างใน ${viewKey}: ดูอย่างเดียว ดับเบิลคลิกชิ้นเพื่อดูลึกลงไป Esc เพื่อออก` } : {})}
+        />
 
         <div className="status-line" role="alert" aria-live="assertive">
-          {editor.lastError ? <span className="error">⚠ {editor.lastError.th}</span> : null}
+          {view.editor.lastError ? <span className="error">⚠ {view.editor.lastError.th}</span> : null}
         </div>
         <p className="muted small hint">
-          {ui.placing
+          {inXRay
+            ? '🔍 X-Ray: ดูข้างในอย่างเดียว ค่าในสายมาจากการจำลองจริง ลองกดสวิตช์ขาเข้าทางขวาแล้วดูไฟวิ่ง · ดับเบิลคลิกชิ้นข้างในเพื่อดูลึกลงไป · Esc ออกทีละชั้น'
+            : ui.placing
             ? 'คลิกเพื่อวาง (กด Shift ค้างไว้เพื่อวางหลายชิ้น) · Esc ยกเลิก'
             : ui.wiring
               ? 'คลิกขาปลายทางเพื่อต่อสาย · คลิกที่ว่างหรือ Esc เพื่อยกเลิก'
-              : 'ลากจากขาหนึ่งไปอีกขาเพื่อต่อสาย · ลากที่ว่างเพื่อเลื่อนจอ · Shift+ลาก เลือกหลายชิ้น · ล้อเมาส์ซูม · R หมุน · Delete ลบ'}
+              : 'ลากจากขาหนึ่งไปอีกขาเพื่อต่อสาย · ลากที่ว่างเพื่อเลื่อนจอ · Shift+ลาก เลือกหลายชิ้น · ล้อเมาส์ซูม · R หมุน · Delete ลบ · ดับเบิลคลิกชิ้นเพื่อดูข้างใน'}
         </p>
       </section>
 
@@ -196,16 +283,28 @@ export function Workbench(props: {
           {def.pins
             .filter((p) => p.dir === 'in')
             .map((p) => (
-              <Switch key={p.name} label={p.name} value={values[`self.${p.name}`] ?? inputs[p.name]} onClick={() => toggle(p.name)} />
+              <Switch key={p.name} label={p.name} value={top[p.name] ?? inputs[p.name]} onClick={() => toggle(p.name)} />
             ))}
         </div>
         <div className="row">
           {def.pins
             .filter((p) => p.dir === 'out')
             .map((p) => (
-              <Led key={p.name} label={p.name} value={values[`self.${p.name}`]} />
+              <Led key={p.name} label={p.name} value={top[p.name]} />
             ))}
         </div>
+        {inner ? (
+          <section className="xray-pins" aria-label={`ขาของ ${viewKey}`}>
+            <h3>
+              🔍 ขาของ {chain.at(-1)!.id} ({inner.def.name.th})
+            </h3>
+            <div className="row">
+              {inner.def.pins.map((p) => (
+                <Led key={p.name} label={`${chain.at(-1)!.id}.${p.name}`} value={values[`self.${p.name}`]} />
+              ))}
+            </div>
+          </section>
+        ) : null}
         <dl className="stats">
           <dt>NAND รวม</dt>
           <dd data-testid="nand-count">{compiled.gates ?? '–'}</dd>

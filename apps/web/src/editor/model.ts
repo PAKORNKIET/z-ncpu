@@ -29,11 +29,17 @@ export class EditorModel {
   readonly sceneOptions: SceneOptions;
   /** host ตั้งค่า: คลิกขาเข้าของวงจรบน canvas */
   onToggleInput: (pin: string) => void = () => {};
+  /** host ตั้งค่า: ดับเบิลคลิกชิ้นส่วนเพื่อดูข้างใน */
+  onOpen: (instanceId: string) => void = () => {};
   private cache: { def: ComponentDef; scene: Scene } | null = null;
   private readonly listeners = new Set<() => void>();
   private version = 0;
 
-  constructor(initial: ComponentDef, library = new ComponentLibrary()) {
+  constructor(
+    initial: ComponentDef,
+    readonly library = new ComponentLibrary(),
+    options: { readOnly?: boolean } = {},
+  ) {
     const pinsOf = library.pinsOf.bind(library);
     this.sceneOptions = {
       pinsOf,
@@ -43,7 +49,9 @@ export class EditorModel {
     this.ui = new Interaction(this.editor, {
       scene: () => this.scene(),
       onToggleInput: (pin) => this.onToggleInput(pin),
+      onOpen: (id) => this.onOpen(id),
       onChange: () => this.emit(),
+      readOnly: !!options.readOnly,
     });
     this.editor.history.subscribe(() => {
       this.version++;

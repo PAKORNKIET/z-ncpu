@@ -136,3 +136,45 @@ test('บันทึกเป็นไฟล์ เริ่มใหม่ แ
   await expect(page.locator('.notice')).toContainText('เปิดไฟล์แล้ว');
   await expect(level(page, 2)).toBeEnabled();
 });
+
+test('X-Ray: ดับเบิลคลิก NOT ที่อยู่ใน AND แล้วเห็นค่าข้างในเปลี่ยนตามสวิตช์', async ({ page }) => {
+  await buildNot(page);
+  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ด่านถัดไป →' }).click();
+  await place(page, /^NAND/, 0.4, 0.5);
+  await place(page, /^NOT/, 0.6, 0.5);
+  await wire(page, ['self', 'a'], ['nand1', 'a']);
+  await wire(page, ['self', 'b'], ['nand1', 'b']);
+  await wire(page, ['nand1', 'y'], ['not1', 'a']);
+  await wire(page, ['not1', 'y'], ['self', 'y']);
+
+  // ดับเบิลคลิกกลางชิ้น NOT
+  const a = await pinAt(page, 'not1', 'a');
+  const y = await pinAt(page, 'not1', 'y');
+  await page.mouse.dblclick((a.x + y.x) / 2, (a.y + y.y) / 2);
+  await expect(page.getByRole('button', { name: '← ออกจาก X-Ray' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'ตำแหน่งที่กำลังดู' })).toContainText('not1 (NOT)');
+  await expect(page.locator('.palette-item').first()).toBeDisabled();
+
+  // ข้างใน NOT: ขาเข้า = NAND ของ a,b (1,1 → 0) แล้วขาออกเป็น 1
+  const ledA = page.getByRole('status', { name: /^not1\.a = / });
+  const ledY = page.getByRole('status', { name: /^not1\.y = / });
+  await expect(ledA).toHaveAttribute('aria-label', 'not1.a = 1 HIGH');
+  await page.getByRole('button', { name: /^สวิตช์ a / }).click();
+  await page.getByRole('button', { name: /^สวิตช์ b / }).click();
+  await expect(ledA).toHaveAttribute('aria-label', 'not1.a = 0 LOW');
+  await expect(ledY).toHaveAttribute('aria-label', 'not1.y = 1 HIGH');
+
+  // ข้างในแก้ไม่ได้: กด Delete ไม่เกิดอะไร แล้ว Esc ออก
+  await page.keyboard.press('Delete');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name: '← ออกจาก X-Ray' })).toHaveCount(0);
+  await expect(page.getByTestId('nand-count')).toHaveText('2');
+  await expect(page.locator('.palette-item').first()).toBeEnabled();
+
+  // NAND เป็นเกตพื้นฐาน ดูข้างในไม่ได้
+  const na = await pinAt(page, 'nand1', 'a');
+  const ny = await pinAt(page, 'nand1', 'y');
+  await page.mouse.dblclick((na.x + ny.x) / 2, (na.y + ny.y) / 2 - 10);
+  await expect(page.getByRole('alert')).toContainText('เป็นเกตพื้นฐาน');
+});

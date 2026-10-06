@@ -90,16 +90,30 @@ export abstract class Simulator {
   }
 
   /**
-   * ค่าของขาทุกขาในชั้นบนสุด สำหรับระบายสีสายบนหน้าจอ
-   * key = "ชื่อชิ้น.ชื่อขา" และ "self.ชื่อขา" สำหรับขาของวงจรเอง
+   * ค่าของขาทุกขาในชั้นหนึ่ง สำหรับระบายสีสายบนหน้าจอและ X-Ray
+   * scope '' = ชั้นบนสุด, 'not1' = ข้างในชิ้น not1, 'fa2/xor1' = ข้างใน xor1 ที่อยู่ใน fa2
+   * key = "ชื่อชิ้น.ชื่อขา" และ "self.ชื่อขา" สำหรับขาของวงจรในชั้นนั้นเอง
    * ขาที่กว้างเกิน 32 บิต (มัดสาย) ได้ค่าสรุป: 'X' ถ้ามีบิตที่ไม่รู้ค่า, 1 ถ้ามีบิตใดเป็น 1, ไม่งั้น 0
+   * ชั้นที่ไม่มีอยู่ (หรือเป็น primitive) ได้ object ว่าง
    */
-  readScope(): Record<string, SignalValue> {
+  readScope(scope = ''): Record<string, SignalValue> {
     const out: Record<string, SignalValue> = {};
-    const { inputs, outputs, scopePins } = this.netlist;
-    for (const [name, nets] of inputs) out[`self.${name}`] = this.summary(nets);
-    for (const [name, nets] of outputs) out[`self.${name}`] = this.summary(nets);
-    for (const [key, nets] of scopePins) out[key] = this.summary(nets);
+    const { inputs, outputs, scopes, nodeNet } = this.netlist;
+    const nets = (nodes: number[]): Int32Array => Int32Array.from(nodes, (n) => nodeNet[n] as number);
+    if (scope === '') {
+      for (const [name, n] of inputs) out[`self.${name}`] = this.summary(n);
+      for (const [name, n] of outputs) out[`self.${name}`] = this.summary(n);
+    } else {
+      // ขาของชิ้นนี้อยู่ในชั้นแม่ เช่น scope "fa2/xor1" → ชั้น "fa2" ชิ้น "xor1"
+      const cut = scope.lastIndexOf('/');
+      const id = scope.slice(cut + 1);
+      const me = scopes.get(cut === -1 ? '' : scope.slice(0, cut))?.find((i) => i.id === id);
+      if (!me) return out;
+      for (const [pin, nodes] of me.pins) out[`self.${pin}`] = this.summary(nets(nodes));
+    }
+    for (const inst of scopes.get(scope) ?? []) {
+      for (const [pin, nodes] of inst.pins) out[`${inst.id}.${pin}`] = this.summary(nets(nodes));
+    }
     return out;
   }
 

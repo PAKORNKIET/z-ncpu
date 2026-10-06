@@ -17,7 +17,7 @@ export type UiToWorker =
   | { rid: number; type: 'test'; defId: string; tests: TestSuite; mode: SimMode }
   | { rid: number; type: 'probe'; net: number }
   | { rid: number; type: 'why'; net: number; cycle: number }
-  /** scopePath '' = ชั้นบนสุด (M1) ชั้นที่ลึกกว่าสำหรับ X-Ray มาทีหลัง */
+  /** ขอค่าของทุกขาในชั้นหนึ่งไปกับทุก signals: '' = ชั้นบนสุด, 'g/inv' = X-Ray ข้างใน inv ที่อยู่ใน g */
   | { rid: number; type: 'subscribe'; scopePath: string };
 
 export interface CompileStats {
@@ -35,8 +35,10 @@ export type WorkerToUi =
       type: 'signals';
       cycle: number;
       pins: Record<string, SignalValue>;
-      /** ค่าของทุกขาในชั้นบนสุด (key = "ชื่อชิ้น.ชื่อขา") ส่งมาเมื่อ subscribe scopePath '' แล้ว ใช้ระบายสีสาย */
+      /** ค่าของทุกขาในชั้นที่ subscribe ไว้ (key = "ชื่อชิ้น.ชื่อขา" และ "self.ชื่อขา") ใช้ระบายสีสาย */
       scope?: Record<string, SignalValue>;
+      /** ชั้นของค่าใน scope เช่น '' = บนสุด, 'g/inv' = ข้างใน inv ที่อยู่ใน g */
+      scopePath?: string;
     }
   | { rid: number; type: 'status'; cycle: number; running: boolean }
   | { rid: number; type: 'testResult'; defId: string; mode: SimMode; report: TestReport | null; diagnostics: Diagnostic[] }

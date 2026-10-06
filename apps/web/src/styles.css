@@ -318,8 +318,8 @@ select:focus-visible {
 
 .canvas-wrap {
   position: relative;
-  height: min(68vh, 640px);
-  min-height: 360px;
+  height: min(62vh, 640px);
+  min-height: 340px;
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
@@ -475,7 +475,7 @@ button.primary {
 
 /* บทเรียนยาวเลื่อนอ่านในกรอบ พื้นที่ต่อวงจรจะได้อยู่ในจอ */
 .lesson-body {
-  max-height: 28vh;
+  max-height: 22vh;
   overflow-y: auto;
   padding-right: 8px;
 }
@@ -583,4 +583,33 @@ button.primary {
   .game {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---------- X-Ray (M1-4) ---------- */
+
+.xray-bar {
+  border: 1px dashed var(--accent);
+  border-radius: 8px;
+  padding: 4px 6px;
+}
+
+.crumbs button {
+  border: none;
+  background: none;
+  padding: 2px 4px;
+  color: var(--accent);
+}
+
+.crumbs button[aria-current] {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.palette-item:disabled {
+  cursor: default;
+}
+
+.xray-pins h3 {
+  margin: 12px 0 0;
+  font-size: 14px;
 }

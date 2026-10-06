@@ -300,4 +300,48 @@ describe('Interaction', () => {
     const id = ui.dropAt(toScreen(ui.camera, { x: 207, y: 33 }), { defId: 'prim.const1' });
     expect(editor.def.body!.instances.find((i) => i.id === id)).toMatchObject({ defId: 'prim.const1', x: 200, y: 40 });
   });
+
+  it('ดับเบิลคลิกชิ้นส่วนเพื่อดูข้างใน (X-Ray)', () => {
+    const opened: string[] = [];
+    const editor = new Editor(sandbox(), pinsOf);
+    const ui = new Interaction(editor, { scene: () => buildScene(editor.def, { pinsOf }), onOpen: (id) => opened.push(id) });
+    const n = editor.add({ defId: 'prim.nand', x: 300, y: 0 });
+    expect(ui.doubleClick(toScreen(ui.camera, { x: 300, y: 0 }))).toBe(true);
+    expect(ui.doubleClick(toScreen(ui.camera, { x: 300, y: 300 }))).toBe(false);
+    expect(opened).toEqual([n]);
+  });
+
+  it('โหมดอ่านอย่างเดียว: เลือกและเลื่อนจอได้ แต่ต่อสาย ย้าย วาง ลบ สลับค่า ไม่ได้', () => {
+    const def = sandbox();
+    def.body!.instances.push({ id: 'n', defId: 'prim.nand', x: 300, y: 0, rotation: 0 });
+    const editor = new Editor(def, pinsOf);
+    const toggled: string[] = [];
+    const ui = new Interaction(editor, {
+      scene: () => buildScene(editor.def, { pinsOf }),
+      readOnly: true,
+      onToggleInput: (p) => toggled.push(p),
+    });
+    const before = editor.def;
+    const at = (x: number, y: number) => toScreen(ui.camera, { x, y });
+    const drag = (a: Point, b: Point) => {
+      ui.pointerDown({ ...a, button: 0 });
+      ui.pointerMove({ ...b, button: 0 });
+      ui.pointerUp({ ...b, button: 0 });
+    };
+    drag(at(40, -40), at(260, -20)); // จากขาเข้า a ไปขา n.a
+    const cam = ui.camera;
+    drag(at(300, 0), at(400, 0)); // ลากชิ้น = เลื่อนจอ
+    expect(ui.camera.x).toBeLessThan(cam.x);
+    expect(editor.selection.instances).toEqual(['n']);
+    ui.pointerDown({ ...toScreen(ui.camera, { x: -10, y: -40 }), button: 0 });
+    ui.pointerUp({ ...toScreen(ui.camera, { x: -10, y: -40 }), button: 0 });
+    ui.beginPlace({ defId: 'prim.nand' });
+    expect(ui.placing).toBeNull();
+    expect(ui.dropAt({ x: 10, y: 10 }, { defId: 'prim.nand' })).toBeUndefined();
+    expect(ui.key({ key: 'Delete' })).toBe(false);
+    expect(ui.key({ key: 'r' })).toBe(false);
+    expect(ui.key({ key: 'z', ctrl: true })).toBe(false);
+    expect(editor.def).toBe(before);
+    expect(toggled).toEqual([]);
+  });
 });

@@ -1,17 +1,18 @@
-// แสดงบทเรียน Markdown แบบย่อ: หัวข้อ, ย่อหน้า, รายการ, ตาราง, **ตัวหนา** และ `โค้ด`
+// แสดงบทเรียน Markdown แบบย่อ: หัวข้อ, ย่อหน้า, รายการ, ตาราง, **ตัวหนา**, *ตัวเอียง* และ `โค้ด`
 // สร้าง React element เอง ไม่ใช้ innerHTML จึงไม่มีทางที่ข้อความในไฟล์จะกลายเป็น HTML/สคริปต์
 import type { ReactNode } from 'react';
 
 function inline(text: string, keyBase: string): ReactNode[] {
   const out: ReactNode[] = [];
-  const re = /\*\*(.+?)\*\*|`([^`]+)`/g;
+  const re = /\*\*(.+?)\*\*|`([^`]+)`|\*([^*\s][^*]*)\*/g;
   let last = 0;
   let m: RegExpExecArray | null;
   let k = 0;
   while ((m = re.exec(text))) {
     if (m.index > last) out.push(text.slice(last, m.index));
     if (m[1] !== undefined) out.push(<strong key={`${keyBase}-${k++}`}>{m[1]}</strong>);
-    else out.push(<code key={`${keyBase}-${k++}`}>{m[2]}</code>);
+    else if (m[2] !== undefined) out.push(<code key={`${keyBase}-${k++}`}>{m[2]}</code>);
+    else out.push(<em key={`${keyBase}-${k++}`}>{m[3]}</em>);
     last = m.index + m[0].length;
   }
   if (last < text.length) out.push(text.slice(last));

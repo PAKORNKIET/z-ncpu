@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-export function CircuitCanvas(props: { model: EditorModel; values: Record<string, SignalValue> }) {
+export function CircuitCanvas(props: { model: EditorModel; values: Record<string, SignalValue>; label?: string }) {
   const { model, values } = props;
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -123,16 +123,16 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
         e.preventDefault();
         const r = canvasRef.current!.getBoundingClientRect();
         model.ui.dropAt({ x: e.clientX - r.left, y: e.clientY - r.top }, { defId });
-        canvasRef.current!.focus();
+        canvasRef.current!.focus({ preventScroll: true });
       }}
     >
       <canvas
         ref={canvasRef}
         tabIndex={0}
         role="application"
-        aria-label="พื้นที่ต่อวงจร: ลากขาไปหาอีกขาเพื่อต่อสาย ลากชิ้นส่วนเพื่อย้าย ล้อเมาส์เพื่อซูม"
+        aria-label={props.label ?? "พื้นที่ต่อวงจร: ลากขาไปหาอีกขาเพื่อต่อสาย ลากชิ้นส่วนเพื่อย้าย ดับเบิลคลิกชิ้นเพื่อดูข้างใน ล้อเมาส์เพื่อซูม"}
         onPointerDown={(e) => {
-          e.currentTarget.focus();
+          e.currentTarget.focus({ preventScroll: true });
           e.currentTarget.setPointerCapture(e.pointerId);
           model.ui.pointerDown(pos(e));
         }}
@@ -143,6 +143,10 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
         }}
         onPointerCancel={() => model.ui.cancel()}
         onPointerLeave={() => model.ui.pointerLeave()}
+        onDoubleClick={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          model.ui.doubleClick({ x: e.clientX - r.left, y: e.clientY - r.top });
+        }}
         onContextMenu={(e) => e.preventDefault()}
       />
     </div>

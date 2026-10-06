@@ -75,7 +75,7 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
       </nav>
 
       <div className="level-main">
-        <Lesson level={level} />
+        <Lesson key={level.id} level={level} startOpen={statuses[index] !== 'passed'} />
         <Workbench
           key={`${level.id}#${props.generation}`}
           initial={draftFor(level, save)}
@@ -103,12 +103,14 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
   );
 }
 
-function Lesson({ level }: { level: LevelDef }) {
+function Lesson({ level, startOpen }: { level: LevelDef; startOpen: boolean }) {
+  // ด่านที่ผ่านแล้วเริ่มแบบพับบทเรียนไว้ พื้นที่ต่อวงจรจะได้อยู่ในจอ
+  const [open] = useState(startOpen);
   // หัวข้อแรกของบทเรียนซ้ำกับชื่อด่านที่แสดงอยู่แล้ว
   const text = lessonText('th', level.lesson)?.replace(/^#\s+.*\n/, '');
   const terms = GLOSSARY.filter((g) => level.glossary.includes(g.id));
   return (
-    <details className="lesson" open>
+    <details className="lesson" open={open}>
       <summary>
         บทเรียน: <strong>{level.title.th}</strong>
       </summary>

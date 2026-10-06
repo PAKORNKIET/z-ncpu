@@ -23,8 +23,14 @@ export interface Netlist {
   panels: PanelInfo[];
   inputs: Map<string, Int32Array>;
   outputs: Map<string, Int32Array>;
-  /** net ของขาทุกขาของชิ้นส่วนชั้นบนสุด key = "ชื่อชิ้น.ชื่อขา" ใช้ให้หน้าจอระบายสีสายตามค่า (Spec ส่วน 14) */
-  scopePins: Map<string, Int32Array>;
+  /**
+   * ชิ้นส่วนแยกตามชั้น (Spec ส่วน 14) ใช้ระบายสีสายบนหน้าจอและ X-Ray ผ่าน scopePins()
+   * key ชั้น: '' = ชั้นบนสุด, 'fa2' = ข้างใน fa2, 'fa2/xor1' = ข้างใน xor1 ที่อยู่ใน fa2
+   * เก็บเป็น node ดิบ (แปลงเป็น net ผ่าน nodeNet ตอนอ่าน) compile จะได้ไม่ช้าลงเพราะต้องสร้างตารางของทุกขา
+   */
+  scopes: Map<string, ScopeInstance[]>;
+  /** node ภายใน → net */
+  nodeNet: Int32Array;
   inputPins: PinDef[];
   outputPins: PinDef[];
   /** ชื่อของ pin ที่อยู่บน net นั้น (ไม่เกิน maxNamesPerNet ชื่อ) ใช้กับ Probe และ Why? */
@@ -34,6 +40,21 @@ export interface Netlist {
   fanoutGates: Int32Array;
   /** เกตที่ขับ net นั้น หรือ -1 */
   driverGate: Int32Array;
+}
+
+export interface ScopeInstance {
+  id: string;
+  /** ชื่อขา → node ดิบ */
+  pins: Map<string, number[]>;
+}
+
+/** net ของขาทุกขาในชั้นหนึ่ง key = "ชื่อชิ้น.ชื่อขา" */
+export function scopePins(netlist: Netlist, scope: string): Map<string, Int32Array> {
+  const out = new Map<string, Int32Array>();
+  for (const inst of netlist.scopes.get(scope) ?? []) {
+    for (const [pin, nodes] of inst.pins) out.set(`${inst.id}.${pin}`, Int32Array.from(nodes, (n) => netlist.nodeNet[n] as number));
+  }
+  return out;
 }
 
 export interface PanelInfo {
@@ -117,8 +138,8 @@ export function compile(lib: ComponentLibrary, topId: string, options: CompileOp
   const clockNodes: number[] = [];
   const panelNodes: { path: string; words: number; width: number; nodes: number[] }[] = [];
   let aborted = false;
-  /** ขาของชิ้นส่วนชั้นบนสุด (path = '') */
-  const scopeNodes = new Map<string, number[]>();
+  /** ชิ้นส่วนแยกตามชั้น */
+  const scopeNodes = new Map<string, ScopeInstance[]>();
 
   const alloc = (width: number, label: string): number[] => {
     const nodes: number[] = [];
@@ -254,7 +275,10 @@ export function compile(lib: ComponentLibrary, topId: string, options: CompileOp
       }
       const map = new Map<string, number[]>();
       for (const p of pinDefs) map.set(p.name, alloc(p.width, `${ipath}.${p.name}`));
-      if (path === '') for (const [name, nodes] of map) scopeNodes.set(`${inst.id}.${name}`, nodes);
+      const scope = path.slice(0, -1);
+      let list = scopeNodes.get(scope);
+      if (!list) scopeNodes.set(scope, (list = []));
+      list.push({ id: inst.id, pins: map });
       const entry: InstEntry = { path: ipath, pins: map };
       if (inst.params) entry.params = inst.params;
       if (spec) entry.spec = spec;
@@ -449,9 +473,8 @@ export function compile(lib: ComponentLibrary, topId: string, options: CompileOp
       })),
       inputs: new Map(inputPins.map((p) => [p.name, toNets(p)])),
       outputs: new Map(outputPins.map((p) => [p.name, toNets(p)])),
-      scopePins: new Map(
-        [...scopeNodes].map(([key, nodes]) => [key, Int32Array.from(nodes, (n) => netOf[n] as number)]),
-      ),
+      scopes: scopeNodes,
+      nodeNet: netOf,
       inputPins,
       outputPins,
       netNames,

@@ -14,14 +14,15 @@ export function useEngine() {
   const [cycle, setCycle] = useState(0);
   const [running, setRunning] = useState(false);
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
-  const [scope, setScope] = useState<Record<string, SignalValue>>({});
+  /** ค่าของทุกขาในชั้นที่ subscribe ไว้ พร้อมบอกว่าเป็นชั้นไหน */
+  const [scope, setScope] = useState<{ path: string; values: Record<string, SignalValue> }>({ path: '', values: {} });
 
   useEffect(() => {
     const engine = new EngineClient();
     engine.subscribe((msg: WorkerToUi) => {
       if (msg.type === 'signals') {
         setPins(msg.pins);
-        setScope(msg.scope ?? {});
+        setScope({ path: msg.scopePath ?? '', values: msg.scope ?? {} });
         setCycle(msg.cycle);
       } else if (msg.type === 'status') {
         setRunning(msg.running);

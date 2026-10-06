@@ -7,6 +7,8 @@
 // เมาส์ซ้ายที่ว่าง    → ลากเพื่อเลื่อนจอ (Shift = ลากกรอบเลือก)
 // ปุ่มกลาง/ขวา       → ลากเพื่อเลื่อนจอ
 // ล้อเมาส์           → ซูมตรงตำแหน่งเมาส์
+// ดับเบิลคลิกชิ้น     → ดูข้างใน (X-Ray)
+// โหมดอ่านอย่างเดียว (X-Ray): เลือก เลื่อนจอ ซูม และดับเบิลคลิกเข้าไปลึกขึ้นได้ แต่แก้วงจรไม่ได้
 
 import type { PinRef } from '@z-ncpu/shared';
 import type { Editor } from './editor/editor';
@@ -64,6 +66,10 @@ export interface InteractionOptions {
   onToggleInput?: (pin: string) => void;
   /** มีอะไรเปลี่ยนที่ต้องวาดใหม่ */
   onChange?: () => void;
+  /** ดับเบิลคลิกชิ้นส่วนเพื่อดูข้างใน */
+  onOpen?: (instanceId: string) => void;
+  /** ดูอย่างเดียว แก้ไม่ได้ (X-Ray) */
+  readOnly?: boolean;
 }
 
 export class Interaction {
@@ -99,7 +105,8 @@ export class Interaction {
       case 'marquee':
         return 'crosshair';
       default:
-        if (this.hover?.kind === 'pin') return 'crosshair';
+        if (this.hover?.kind === 'pin' && !this.options.readOnly) return 'crosshair';
+        if (this.hover?.kind === 'node' && this.options.readOnly) return 'pointer';
         if (this.hover?.kind === 'node') return this.hover.node.kind === 'input' ? 'pointer' : 'move';
         if (this.hover?.kind === 'wire') return 'pointer';
         return 'grab';
@@ -109,7 +116,7 @@ export class Interaction {
   overlay(): Overlay {
     const o: Overlay = {};
     const m = this.mode;
-    if (this.hover?.kind === 'pin') o.hoverPin = this.hover.pin.ref;
+    if (this.hover?.kind === 'pin' && !this.options.readOnly) o.hoverPin = this.hover.pin.ref;
     if (m.k === 'wire' && this.cursorWorld) {
       // ขาเข้าที่มีสายอยู่แล้วรับเพิ่มไม่ได้
       const driven = new Set((this.editor.def.body?.wires ?? []).map((w) => pinKey(w.to)));
@@ -127,12 +134,14 @@ export class Interaction {
 
   /** เริ่มวางชิ้นส่วน: ชิ้นเงาตามเมาส์ คลิกเพื่อวาง (Shift ค้างไว้ = วางต่อได้หลายชิ้น) */
   beginPlace(spec: PlaceSpec): void {
+    if (this.options.readOnly) return;
     this.mode = { k: 'place', spec };
     this.changed();
   }
 
   /** วางชิ้นส่วนที่จุดบนจอ (ใช้กับลากจากกล่องเครื่องมือมาปล่อย) */
-  dropAt(screen: Point, spec: PlaceSpec): string {
+  dropAt(screen: Point, spec: PlaceSpec): string | undefined {
+    if (this.options.readOnly) return undefined;
     const at = snapPoint(toWorld(this.camera, screen));
     const id = this.editor.add({ defId: spec.defId, x: at.x, y: at.y, ...(spec.params ? { params: spec.params } : {}) });
     this.mode = { k: 'idle' };
@@ -173,6 +182,12 @@ export class Interaction {
     if (m.k === 'place') return; // วางตอนปล่อยเมาส์
 
     const hit = this.hitAt(world);
+    if (this.options.readOnly) {
+      // ดูอย่างเดียว: คลิกชิ้นเพื่อเลือก ลากที่ไหนก็เลื่อนจอ
+      if (hit?.kind === 'node' && hit.node.kind === 'instance') this.editor.select({ instances: [hit.node.id] });
+      this.mode = { k: 'pan', start: p, camera: this.camera, moved: hit?.kind === 'node' };
+      return this.changed();
+    }
     if (m.k === 'wire' && m.sticky) {
       // โหมดคลิกทีละขา: คลิกขาที่สองเพื่อต่อ คลิกที่อื่นเพื่อยกเลิก
       if (hit?.kind === 'pin' && pinKey(hit.pin.ref) !== pinKey(m.from.ref)) this.editor.connect(m.from.ref, hit.pin.ref);
@@ -314,6 +329,16 @@ export class Interaction {
     this.changed();
   }
 
+  /** ดับเบิลคลิก: ชิ้นส่วน → onOpen (ดูข้างใน) คืน true ถ้าโดนชิ้นส่วน */
+  doubleClick(p: Point): boolean {
+    const hit = this.hitAt(toWorld(this.camera, p));
+    if (hit?.kind !== 'node' || hit.node.kind !== 'instance') return false;
+    this.mode = { k: 'idle' };
+    this.options.onOpen?.(hit.node.id);
+    this.changed();
+    return true;
+  }
+
   /** deltaY > 0 = ซูมออก */
   wheel(p: Point, deltaY: number): void {
     const factor = Math.pow(1.0015, -Math.max(-300, Math.min(300, deltaY)));
@@ -326,6 +351,12 @@ export class Interaction {
   /** คืน true ถ้าใช้ปุ่มนี้แล้ว (host ควร preventDefault) */
   key(k: KeyInput): boolean {
     const key = k.key.length === 1 ? k.key.toLowerCase() : k.key;
+    if (this.options.readOnly) {
+      if (key !== 'Escape' || this.editor.selection.instances.length === 0) return false;
+      this.editor.clearSelection();
+      this.changed();
+      return true;
+    }
     if (k.ctrl && key === 'z') {
       this.cancelGesture();
       if (k.shift) this.editor.redo();

@@ -19,8 +19,8 @@ let sim: Simulator | null = null;
 let clockPin: string | undefined;
 let simMode: SimMode = 'fast';
 let timer: ReturnType<typeof setInterval> | null = null;
-/** ส่งค่าของทุกขาในชั้นบนสุดไปด้วยไหม (เปิดด้วย subscribe scopePath '') */
-let scopeOn = false;
+/** ชั้นที่ส่งค่าของทุกขาไปด้วย (null = ไม่ส่ง) ตั้งด้วย subscribe */
+let scopePath: string | null = null;
 
 const post = (msg: WorkerToUi): void => self.postMessage(msg);
 
@@ -33,7 +33,10 @@ function pins(): Record<string, SignalValue> {
 
 function signals(rid: number): WorkerToUi {
   const msg: Extract<WorkerToUi, { type: 'signals' }> = { rid, type: 'signals', cycle: sim?.cycle ?? 0, pins: pins() };
-  if (scopeOn && sim) msg.scope = sim.readScope();
+  if (scopePath !== null && sim) {
+    msg.scope = sim.readScope(scopePath);
+    msg.scopePath = scopePath;
+  }
   return msg;
 }
 
@@ -155,23 +158,9 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
       }
 
       case 'subscribe':
-        if (msg.scopePath === '') {
-          scopeOn = true;
-          post({ rid: msg.rid, type: 'status', cycle: sim?.cycle ?? 0, running: timer !== null });
-          if (sim) post(signals(msg.rid));
-          return;
-        }
-        post({
-          rid: msg.rid,
-          type: 'diagnostics',
-          diagnostics: [
-            {
-              code: 'unsupported',
-              severity: 'warning',
-              message: { th: 'ดูค่าข้างในชิ้นส่วน (X-Ray) ยังไม่รองรับ', en: 'Inspecting inside components (X-Ray) is not supported yet' },
-            },
-          ],
-        });
+        scopePath = msg.scopePath;
+        post({ rid: msg.rid, type: 'status', cycle: sim?.cycle ?? 0, running: timer !== null });
+        if (sim) post(signals(msg.rid));
         return;
 
       case 'seek':
