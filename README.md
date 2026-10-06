@@ -21,6 +21,7 @@
 | Z8 ISA (ไฟล์นิยาม + encode/decode) | ✅ assembler เต็มมาใน M3 |
 | Level CI (เฉลยทุกด่านต้องผ่าน) | ✅ ด่าน NOT, AND |
 | Web: engine ใน Web Worker + หน้าทดสอบ | ✅ editor จริงมาใน M1 |
+| E2E ด้วย Playwright (dev + build) ใน CI | ✅ |
 | Windows (Tauri 2) | ⚠️ มี config แล้ว ยังไม่ได้ build บน Windows |
 
 ผลวัดล่าสุด: วงจร 26,000 NAND (ขนาดใกล้ RAM256) compile ~180 ms และรันใน Fast Mode ได้ ~570 tick/วินาที
@@ -36,6 +37,15 @@ pnpm dev          # เปิดเว็บที่ http://localhost:5173
 pnpm test         # เทสต์ทั้งหมด
 pnpm check        # typecheck + lint + test (ชุดเดียวกับ CI)
 pnpm build        # build เว็บไปที่ apps/web/dist
+```
+
+### E2E (Playwright)
+
+เปิดเว็บจริงใน Chromium แล้วกดสวิตช์และตัวนับ ทดสอบทั้งตอน dev (React StrictMode) และตัว build ใช้ port 5174 กับ 4174 จึงรันพร้อม `pnpm dev` ได้
+
+```bash
+pnpm e2e:install  # ครั้งแรกครั้งเดียว: ดาวน์โหลด Chromium สำหรับทดสอบ
+pnpm e2e          # build แล้วรัน E2E
 ```
 
 ### แอป Windows

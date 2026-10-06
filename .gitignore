@@ -8,3 +8,8 @@ coverage/
 # Tauri
 apps/desktop/src-tauri/target/
 apps/desktop/src-tauri/gen/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
