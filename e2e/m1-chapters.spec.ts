@@ -95,8 +95,8 @@ const BEFORE_ADD4 = [
 ];
 
 test('มีด่านครบทุกบท และล็อกตามลำดับ', async ({ page }) => {
-  for (const ch of ['ตรรกะพื้นฐาน', 'การบวกเลข', 'ALU', 'วงจรจำค่า', 'หน่วยความจำ']) await expect(page.getByRole('heading', { name: new RegExp(ch) })).toBeVisible();
-  await expect(page.locator('.level-item')).toHaveCount(36);
+  for (const ch of ['ตรรกะพื้นฐาน', 'การบวกเลข', 'ALU', 'วงจรจำค่า', 'หน่วยความจำ', 'ควบคุมและอุปกรณ์']) await expect(page.getByRole('heading', { name: new RegExp(ch) })).toBeVisible();
+  await expect(page.locator('.level-item')).toHaveCount(42);
   await expect(level(page, 3)).toBeDisabled();
   await seed(page, ['logic.not', 'logic.and']);
   await expect(level(page, 3)).toBeEnabled();

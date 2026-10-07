@@ -27,5 +27,6 @@ export {
   MAX_EXHAUSTIVE_BITS,
 } from './validate';
 export type { ComponentTestResult } from './validate';
-export { REFERENCES, referenceRows } from './references';
+export { romHarness, romSampleWords, ROM_DUT, ROM_HARNESS_ID, ROM_PANEL } from './validate';
+export { REFERENCES, referenceRows, SEG7 } from './references';
 export type { ReferenceFn } from './references';

@@ -1,0 +1,347 @@
+{
+  "id": "user.pc",
+  "name": {
+    "th": "Program Counter",
+    "en": "Program Counter"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "in",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "load",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "inc",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "reset",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "clk",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "out",
+      "dir": "out",
+      "width": 8
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "const01",
+        "defId": "prim.const0",
+        "x": 100,
+        "y": 400,
+        "rotation": 0
+      },
+      {
+        "id": "const11",
+        "defId": "prim.const1",
+        "x": 100,
+        "y": 480,
+        "rotation": 0
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 220,
+        "y": 400,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "inc81",
+        "defId": "user.inc8",
+        "x": 220,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "mux81",
+        "defId": "user.mux8",
+        "x": 360,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "mux82",
+        "defId": "user.mux8",
+        "x": 500,
+        "y": -40,
+        "rotation": 0
+      },
+      {
+        "id": "mux83",
+        "defId": "user.mux8",
+        "x": 640,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "reg81",
+        "defId": "user.reg8",
+        "x": 780,
+        "y": 0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b6"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b7"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "inc81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "inc81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux81",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "self",
+          "pin": "inc"
+        },
+        "to": {
+          "inst": "mux81",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "mux81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux82",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "mux82",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "mux82",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "mux82",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux83",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux83",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "self",
+          "pin": "reset"
+        },
+        "to": {
+          "inst": "mux83",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "mux83",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg81",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg81",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "reg81",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "out"
+        }
+      }
+    ]
+  }
+}

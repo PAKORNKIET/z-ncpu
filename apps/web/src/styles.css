@@ -702,3 +702,83 @@ button.tick {
   margin-top: 4px;
   color: var(--muted);
 }
+
+.part-settings input[type='number'] {
+  width: 90px;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+/* ---------- M2-5: แผงค่าคงที่และอุปกรณ์ ---------- */
+
+.panel-view h3 {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+
+.panel-view tr.current td {
+  color: var(--signal-high);
+  font-weight: 600;
+}
+
+.device {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.device-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.seg7 .seg {
+  fill: var(--signal-low);
+  opacity: 0.35;
+}
+
+.seg7 .seg.on {
+  fill: var(--signal-high);
+  opacity: 1;
+}
+
+.seg7 .seg.unknown {
+  fill: var(--signal-unknown);
+  opacity: 0.25;
+}
+
+.device-big {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--signal-high);
+  min-width: 3ch;
+  text-align: center;
+}
+
+.led-row {
+  display: flex;
+  gap: 4px;
+}
+
+.led-row .led-dot {
+  width: 14px;
+  height: 14px;
+}
+
+.led-row .led-dot.on {
+  background: var(--signal-high);
+  border-color: var(--signal-high);
+}
+
+.led-row .led-dot.x {
+  border-style: dashed;
+}

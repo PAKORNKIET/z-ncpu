@@ -1,0 +1,190 @@
+{
+  "id": "control.pc",
+  "chapter": 6,
+  "title": {
+    "th": "ตัวนับโปรแกรม (Program Counter)",
+    "en": "Program Counter"
+  },
+  "lesson": "control/pc",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.zero8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.dff",
+    "user.bit",
+    "user.reg8",
+    "user.counter8"
+  ],
+  "target": {
+    "defId": "user.pc",
+    "pins": [
+      {
+        "name": "in",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "load",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "inc",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "reset",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "clock": "clk",
+    "steps": [
+      {
+        "set": {
+          "in": 0,
+          "load": 0,
+          "inc": 0,
+          "reset": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 0
+        }
+      },
+      {
+        "set": {
+          "reset": 0,
+          "inc": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 1
+        }
+      },
+      {
+        "tick": 2,
+        "expect": {
+          "out": 3
+        }
+      },
+      {
+        "set": {
+          "in": 100,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 100
+        }
+      },
+      {
+        "set": {
+          "load": 0,
+          "inc": 0
+        },
+        "tick": 3,
+        "expect": {
+          "out": 100
+        }
+      },
+      {
+        "set": {
+          "inc": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 101
+        }
+      },
+      {
+        "set": {
+          "in": 255,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 255
+        }
+      },
+      {
+        "set": {
+          "load": 0
+        },
+        "tick": 1,
+        "expect": {
+          "out": 0
+        }
+      },
+      {
+        "set": {
+          "in": 50,
+          "load": 1,
+          "reset": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 0
+        }
+      },
+      {
+        "set": {
+          "reset": 0
+        },
+        "tick": 1,
+        "expect": {
+          "out": 50
+        }
+      }
+    ]
+  },
+  "unlocks": [
+    "user.pc"
+  ],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "control/pc/h1",
+    "control/pc/h2",
+    "control/pc/h3"
+  ],
+  "glossary": [
+    "program-counter",
+    "register"
+  ]
+}

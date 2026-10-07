@@ -1,0 +1,72 @@
+{
+  "id": "mem.rom256",
+  "chapter": 5,
+  "title": {
+    "th": "ROM256",
+    "en": "ROM256"
+  },
+  "lesson": "memory/rom256",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.zero8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.mux16",
+    "user.rom8",
+    "user.rom64"
+  ],
+  "target": {
+    "defId": "user.rom256",
+    "pins": [
+      {
+        "name": "addr",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "data",
+        "dir": "in",
+        "width": 4096
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 16
+      }
+    ]
+  },
+  "tests": {
+    "type": "rom",
+    "words": 256,
+    "width": 16
+  },
+  "unlocks": [
+    "user.rom256"
+  ],
+  "hints": [
+    "memory/rom256/h1",
+    "memory/rom256/h2"
+  ],
+  "glossary": [
+    "rom"
+  ]
+}

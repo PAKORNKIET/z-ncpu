@@ -125,6 +125,15 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         return;
       }
 
+      case 'loadPanel': {
+        if (!sim) return;
+        sim.loadPanel(msg.words, msg.panel);
+        const r = sim.settle();
+        if (!r.ok) reportOscillation(msg.rid, r.nets);
+        post(signals(msg.rid));
+        return;
+      }
+
       case 'step':
         step(msg.rid, msg.count);
         return;

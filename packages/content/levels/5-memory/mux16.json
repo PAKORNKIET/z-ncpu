@@ -1,0 +1,72 @@
+{
+  "id": "mem.mux16",
+  "chapter": 5,
+  "title": {
+    "th": "MUX 16 บิต",
+    "en": "16-bit MUX"
+  },
+  "lesson": "memory/mux16",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.zero8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8"
+  ],
+  "target": {
+    "defId": "user.mux16",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 16
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 16
+      },
+      {
+        "name": "sel",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 16
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "mux16"
+  },
+  "unlocks": [
+    "user.mux16"
+  ],
+  "hints": [
+    "memory/mux16/h1"
+  ],
+  "glossary": [
+    "mux"
+  ]
+}

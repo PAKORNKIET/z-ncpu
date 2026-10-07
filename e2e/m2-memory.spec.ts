@@ -19,7 +19,7 @@ async function setBus(page: Page, name: string, width: number, value: number) {
 
 test('ตัวนับ 8 บิต: กดเดินนาฬิกาแล้วนับขึ้น และ reset กลับ 0', async ({ page }) => {
   await openWithSave(page, before('state.counter8'), ['state.counter8']);
-  await levelNamed(page, /Counter/).click();
+  await levelNamed(page, /ตัวนับ 8 บิต/).click();
   const q = page.getByRole('status', { name: /^q = / });
   const tick = page.getByRole('button', { name: /เดินนาฬิกา/ });
   await page.getByRole('button', { name: /^สวิตช์ reset / }).click();

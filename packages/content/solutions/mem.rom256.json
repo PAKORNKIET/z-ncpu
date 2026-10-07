@@ -1,0 +1,387 @@
+{
+  "id": "user.rom256",
+  "name": {
+    "th": "ROM256",
+    "en": "ROM256"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "addr",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "data",
+      "dir": "in",
+      "width": 4096
+    },
+    {
+      "name": "out",
+      "dir": "out",
+      "width": 16
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 4096,
+          "parts": 4
+        }
+      },
+      {
+        "id": "split2",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 500,
+        "rotation": 0,
+        "params": {
+          "width": 8,
+          "parts": 4
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 260,
+        "y": 500,
+        "rotation": 0,
+        "params": {
+          "width": 6,
+          "parts": 3
+        }
+      },
+      {
+        "id": "split3",
+        "defId": "prim.split",
+        "x": 260,
+        "y": 600,
+        "rotation": 0,
+        "params": {
+          "width": 2
+        }
+      },
+      {
+        "id": "rom641",
+        "defId": "user.rom64",
+        "x": 320,
+        "y": -700,
+        "rotation": 0
+      },
+      {
+        "id": "rom642",
+        "defId": "user.rom64",
+        "x": 320,
+        "y": -500,
+        "rotation": 0
+      },
+      {
+        "id": "rom643",
+        "defId": "user.rom64",
+        "x": 320,
+        "y": -300,
+        "rotation": 0
+      },
+      {
+        "id": "rom644",
+        "defId": "user.rom64",
+        "x": 320,
+        "y": -100,
+        "rotation": 0
+      },
+      {
+        "id": "mux161",
+        "defId": "user.mux16",
+        "x": 520,
+        "y": -400,
+        "rotation": 0
+      },
+      {
+        "id": "mux162",
+        "defId": "user.mux16",
+        "x": 520,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "mux163",
+        "defId": "user.mux16",
+        "x": 700,
+        "y": -400,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "data"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "split2",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "split2",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "split2",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "split3",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "self",
+          "pin": "addr"
+        },
+        "to": {
+          "inst": "split2",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "rom641",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "rom641",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "rom642",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "rom642",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "rom643",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "rom643",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "rom644",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "rom644",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "rom641",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux161",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "rom642",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux161",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "split3",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux161",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "rom643",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux162",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "rom644",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux162",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "split3",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux162",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "mux161",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux163",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "mux162",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux163",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "split3",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "mux163",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "mux163",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "out"
+        }
+      }
+    ]
+  }
+}

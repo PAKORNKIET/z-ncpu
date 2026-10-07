@@ -37,7 +37,12 @@ export function paletteFor(ids: readonly string[], busWidth = 4): PaletteItem[] 
     const prim = PRIMITIVE_PALETTE[id];
     if (prim) {
       if (!prim.params?.width || busWidth === prim.params.width) return prim;
-      // ตัวแยก/รวมบัสเริ่มที่ความกว้างของบัสในด่านนั้น
+      // ตัวแยก/รวมบัสเริ่มที่ความกว้างของบัสในด่านนั้น มัดสายที่กว้างเกิน 16 บิตเริ่มแบบแบ่งเป็นคำละ 16 บิต
+      if (busWidth > 16) {
+        const parts = busWidth / 16;
+        const desc = id === 'prim.split' ? `มัดสาย ${busWidth} บิต → ${parts} คำ คำละ 16 บิต` : `${parts} คำ → มัดสาย ${busWidth} บิต`;
+        return { ...prim, params: { width: busWidth, parts }, desc };
+      }
       const desc = id === 'prim.split' ? `บัส ${busWidth} บิต → บิตเดี่ยว (b0 = บิตขวาสุด)` : `บิตเดี่ยว → บัส ${busWidth} บิต`;
       return { ...prim, params: { width: busWidth }, desc };
     }
@@ -98,6 +103,8 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
           deps={save.components.filter((c) => c.id !== level.target.defId)}
           palette={paletteFor(availableParts(level, LEVELS, save), busWidthOf(level))}
           onChange={(def) => setSave((s) => putComponent(s, def))}
+          {...(level.devices ? { devices: level.devices } : {})}
+          {...(level.tests.type === 'rom' ? { romPanel: { words: level.tests.words, width: level.tests.width } } : {})}
           side={(ctx) => (
             <TestPanel
               level={level}
@@ -384,10 +391,19 @@ function SequenceTable({ level, report }: { level: LevelDef; report: TestReport 
  * หลังทดสอบแสดงแถวที่ผิด (ไม่เกิน 30 แถว) หรือตัวอย่างแถวที่ถูกถ้าผ่านทั้งหมด
  */
 function ReferenceTable({ level, report }: { level: LevelDef; report: TestReport | null }) {
-  if (level.tests.type !== 'reference') return null;
-  const ins = level.target.pins.filter((p) => p.dir === 'in').map((p) => p.name);
-  const outs = level.target.pins.filter((p) => p.dir === 'out').map((p) => p.name);
-  if (!report) {
+  if (level.tests.type !== 'reference' && level.tests.type !== 'rom') return null;
+  const rom = level.tests.type === 'rom' ? level.tests : null;
+  // ROM: ขา data มาจากแผง ตารางจึงแสดงแค่ addr กับ out
+  const ins = rom ? ['addr'] : level.target.pins.filter((p) => p.dir === 'in').map((p) => p.name);
+  const outs = rom ? ['out'] : level.target.pins.filter((p) => p.dir === 'out').map((p) => p.name);
+  if (!report && rom) {
+    return (
+      <p className="muted small" data-testid="reference-info">
+        ทดสอบโดยใส่ข้อมูลสุ่ม 2 ชุดลงแผงค่าคงที่ แล้วอ่านทุก address รวม {(rom.words * 2).toLocaleString()} ครั้ง
+      </p>
+    );
+  }
+  if (!report && level.tests.type === 'reference') {
     const bits = level.target.pins.filter((p) => p.dir === 'in').reduce((n, p) => n + p.width, 0);
     return (
       <p className="muted small" data-testid="reference-info">
@@ -397,6 +413,7 @@ function ReferenceTable({ level, report }: { level: LevelDef; report: TestReport
       </p>
     );
   }
+  if (!report) return null;
   const failed = report.results.filter((r) => !r.ok);
   const shown = (failed.length > 0 ? failed : report.results).slice(0, 30);
   return (

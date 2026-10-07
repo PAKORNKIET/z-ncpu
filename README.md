@@ -5,7 +5,7 @@
 
 เอกสารออกแบบ: **Z-NCPU — Architecture Spec v3** (ส่วนที่อ้างในโค้ด เช่น "Spec ส่วน 6" หมายถึงเอกสารนี้)
 
-## สถานะ: M2 · ส่วนประกอบ CPU (กำลังทำ)
+## สถานะ: M2 · ส่วนประกอบ CPU ✅
 
 ### M2
 
@@ -16,7 +16,7 @@
 | เลขคณิต 8 บิต: Adder, NOT 8 บิต, Incrementer, Negator (two's complement), Subtractor, Zero, Equal | ✅ |
 | บท ALU: AND/OR/XOR 8 บิต, MUX 8 บิต, เลือก 1 ใน 4 / 1 ใน 8, ALU 8 บิตพร้อม flags Z C N ตามคำสั่งของ Z8 | ✅ |
 | Register 1/8 บิต, ตัวนับ, ตัวกระจาย 1→4 / 1→8, RAM8 → RAM64 → RAM256 | ✅ |
-| ROM, Program Counter, อุปกรณ์ I/O | ⏳ |
+| MUX 16 บิต, ROM8 → ROM64 → ROM256 กับแผงค่าคงที่, Program Counter, จอ 7 ส่วน + อุปกรณ์แสดงผล (จอตัวเลข, LED) | ✅ |
 
 **เกณฑ์ผ่าน M2 (RAM256 รันใน Fast Mode ได้ลื่น):** RAM256 ที่ต่อจาก NAND 35,804 ตัว เปิดด่าน ~0.4 วินาที, กดปุ่มเปลี่ยน address แล้วเห็นค่าใหม่ใน 50–120 ms, ทดสอบเขียน/อ่านทั้งชุด ~0.45 วินาที (วัดใน Chromium บนเครื่อง CI)
 

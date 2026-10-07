@@ -9,6 +9,8 @@ export type UiToWorker =
   | { rid: number; type: 'load'; components: ComponentDef[] }
   | { rid: number; type: 'compile'; defId: string; mode: SimMode }
   | { rid: number; type: 'setInput'; pin: string; value: SignalValue }
+  /** ใส่ข้อมูลลงแผงค่าคงที่ (path ของแผงในวงจร) แล้ว settle */
+  | { rid: number; type: 'loadPanel'; panel: string; words: number[] }
   | { rid: number; type: 'step'; count: number }
   | { rid: number; type: 'run'; hz: number }
   | { rid: number; type: 'pause' }

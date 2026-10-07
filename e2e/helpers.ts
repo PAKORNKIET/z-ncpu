@@ -101,5 +101,11 @@ export const ORDER = [
   'mem.ram8',
   'mem.ram64',
   'mem.ram256',
+  'mem.mux16',
+  'mem.rom8',
+  'mem.rom64',
+  'mem.rom256',
+  'control.pc',
+  'io.seg7',
 ];
 export const before = (id: string): string[] => ORDER.slice(0, ORDER.indexOf(id));

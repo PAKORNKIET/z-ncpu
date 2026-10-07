@@ -1,0 +1,619 @@
+{
+  "id": "user.rom64",
+  "name": {
+    "th": "ROM64",
+    "en": "ROM64"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "addr",
+      "dir": "in",
+      "width": 6
+    },
+    {
+      "name": "data",
+      "dir": "in",
+      "width": 1024
+    },
+    {
+      "name": "out",
+      "dir": "out",
+      "width": 16
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 1024,
+          "parts": 8
+        }
+      },
+      {
+        "id": "split2",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 500,
+        "rotation": 0,
+        "params": {
+          "width": 6,
+          "parts": 2
+        }
+      },
+      {
+        "id": "split3",
+        "defId": "prim.split",
+        "x": 260,
+        "y": 560,
+        "rotation": 0,
+        "params": {
+          "width": 3
+        }
+      },
+      {
+        "id": "rom81",
+        "defId": "user.rom8",
+        "x": 320,
+        "y": -700,
+        "rotation": 0
+      },
+      {
+        "id": "rom82",
+        "defId": "user.rom8",
+        "x": 320,
+        "y": -500,
+        "rotation": 0
+      },
+      {
+        "id": "rom83",
+        "defId": "user.rom8",
+        "x": 320,
+        "y": -300,
+        "rotation": 0
+      },
+      {
+        "id": "rom84",
+        "defId": "user.rom8",
+        "x": 320,
+        "y": -100,
+        "rotation": 0
+      },
+      {
+        "id": "rom85",
+        "defId": "user.rom8",
+        "x": 320,
+        "y": 100,
+        "rotation": 0
+      },
+      {
+        "id": "rom86",
+        "defId": "user.rom8",
+        "x": 320,
+        "y": 300,
+        "rotation": 0
+      },
+      {
+        "id": "rom87",
+        "defId": "user.rom8",
+        "x": 320,
+        "y": 500,
+        "rotation": 0
+      },
+      {
+        "id": "rom88",
+        "defId": "user.rom8",
+        "x": 320,
+        "y": 700,
+        "rotation": 0
+      },
+      {
+        "id": "mux161",
+        "defId": "user.mux16",
+        "x": 520,
+        "y": -400,
+        "rotation": 0
+      },
+      {
+        "id": "mux162",
+        "defId": "user.mux16",
+        "x": 520,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "mux163",
+        "defId": "user.mux16",
+        "x": 520,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "mux164",
+        "defId": "user.mux16",
+        "x": 520,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "mux165",
+        "defId": "user.mux16",
+        "x": 700,
+        "y": -400,
+        "rotation": 0
+      },
+      {
+        "id": "mux166",
+        "defId": "user.mux16",
+        "x": 700,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "mux167",
+        "defId": "user.mux16",
+        "x": 880,
+        "y": -400,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "data"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "split2",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "split3",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "self",
+          "pin": "addr"
+        },
+        "to": {
+          "inst": "split2",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "rom81",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "rom81",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "rom82",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "rom82",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "rom83",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "rom83",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "rom84",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "rom84",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "split1",
+          "pin": "b4"
+        },
+        "to": {
+          "inst": "rom85",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "rom85",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "split1",
+          "pin": "b5"
+        },
+        "to": {
+          "inst": "rom86",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "rom86",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "split1",
+          "pin": "b6"
+        },
+        "to": {
+          "inst": "rom87",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "rom87",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "split1",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "rom88",
+          "pin": "data"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "rom88",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "rom81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux161",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "rom82",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux161",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "split3",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux161",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "rom83",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux162",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "rom84",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux162",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "split3",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux162",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "rom85",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux163",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "rom86",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux163",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w28",
+        "from": {
+          "inst": "split3",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux163",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w29",
+        "from": {
+          "inst": "rom87",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux164",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w30",
+        "from": {
+          "inst": "rom88",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux164",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w31",
+        "from": {
+          "inst": "split3",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux164",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w32",
+        "from": {
+          "inst": "mux161",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux165",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w33",
+        "from": {
+          "inst": "mux162",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux165",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w34",
+        "from": {
+          "inst": "split3",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "mux165",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w35",
+        "from": {
+          "inst": "mux163",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux166",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w36",
+        "from": {
+          "inst": "mux164",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux166",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w37",
+        "from": {
+          "inst": "split3",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "mux166",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w38",
+        "from": {
+          "inst": "mux165",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux167",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w39",
+        "from": {
+          "inst": "mux166",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux167",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w40",
+        "from": {
+          "inst": "split3",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "mux167",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w41",
+        "from": {
+          "inst": "mux167",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "out"
+        }
+      }
+    ]
+  }
+}

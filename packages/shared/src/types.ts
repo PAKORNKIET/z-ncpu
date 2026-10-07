@@ -135,7 +135,19 @@ export interface ReferenceSuite {
   seed?: number;
 }
 
-export type TestSuite = TruthTableSuite | SequenceSuite | ReferenceSuite;
+/**
+ * ทดสอบ ROM (Spec ส่วน 11): ROM รับโปรแกรมทางมัดสาย data ที่กว้างเกินจะตั้งค่าด้วยมือ
+ * engine จึงสร้างวงจรห่อที่มีแผงค่าคงที่ words คำ × width บิตต่อเข้า data ใส่ข้อมูลสุ่ม แล้วอ่านทุก addr
+ * (ทำสองชุดข้อมูล กันวงจรที่จำค่าตายตัวไว้)
+ */
+export interface RomSuite {
+  type: 'rom';
+  words: number;
+  width: number;
+  seed?: number;
+}
+
+export type TestSuite = TruthTableSuite | SequenceSuite | ReferenceSuite | RomSuite;
 
 export interface TestCaseResult {
   index: number;
@@ -158,6 +170,9 @@ export interface TestReport {
 
 // ---------- Content (Spec ส่วน 13, 16) ----------
 
+/** อุปกรณ์แสดงผลบนหน้าจอ: จอตัวเลข, LED 8 ดวง, จอ 7 ส่วน */
+export type DeviceKind = 'number' | 'leds' | 'seg7';
+
 export interface LevelDef {
   id: string;
   chapter: number;
@@ -174,6 +189,8 @@ export interface LevelDef {
   optimize?: { bestNand?: number };
   limits?: { maxNand?: number };
   unlocks: string[];
+  /** แสดงขาออกเป็นอุปกรณ์บนหน้าจอ เช่น { seg: 'seg7' } (Spec ส่วน 10: จอ, LED, 7-segment) */
+  devices?: Record<string, DeviceKind>;
   hints: string[];
   glossary: string[];
 }

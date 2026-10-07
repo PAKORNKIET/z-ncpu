@@ -1,7 +1,7 @@
 // ROM ที่ผู้เล่นต่อเองจาก MUX + แผงค่าคงที่ (Spec ส่วน 11)
 import type { SimMode } from '@z-ncpu/shared';
 import { describe, expect, it } from 'vitest';
-import { circuit, compile, ComponentLibrary, contentHash, createSimulator, inp, out } from '../src';
+import { circuit, compile, ComponentLibrary, contentHash, createSimulator, inp, out, romSampleWords, testComponent } from '../src';
 import { referenceLibrary } from '../fixtures/reference';
 
 /** สุ่มแบบกำหนด seed ได้ ผลเทสต์จึงเหมือนเดิมทุกครั้ง */
@@ -92,5 +92,34 @@ describe('ROM จากแผงค่าคงที่', () => {
     const sim = createSimulator(compile(new ComponentLibrary([b.build()]), 't.wide').netlist!, 'fast');
     expect(() => sim.read('q')).toThrow(RangeError);
     expect(sim.readBits('q')).toHaveLength(64);
+  });
+});
+
+describe('ชุดทดสอบแบบ rom (ห่อด้วยแผงค่าคงที่)', () => {
+  const lib = referenceLibrary();
+  it.each<SimMode>(['fast', 'visual'])('ROM8 และ ROM64 ของจริงผ่าน (%s)', (mode) => {
+    expect(testComponent(lib, 'user.rom8', { type: 'rom', words: 8, width: 16 }, mode).report).toMatchObject({ passed: true, total: 16 });
+    expect(testComponent(lib, 'user.rom64', { type: 'rom', words: 64, width: 16 }, mode).report?.passed).toBe(true);
+  });
+
+  it('ROM ที่สลับ address สองบิต หรือขาไม่ครบ ไม่ผ่าน', () => {
+    const b = circuit('user.bad', 'bad', [inp('addr', 3), inp('data', 128), out('out', 16)]);
+    const r = b.add('user.rom8');
+    const s = b.add('prim.split', { params: { width: 3 } });
+    const m = b.add('prim.merge', { params: { width: 3 } });
+    b.wire('self.addr', `${s}.in`).wire(`${s}.b0`, `${m}.b1`).wire(`${s}.b1`, `${m}.b0`).wire(`${s}.b2`, `${m}.b2`);
+    b.wire(`${m}.out`, `${r}.addr`).wire('self.data', `${r}.data`).wire(`${r}.out`, 'self.out');
+    const bad = new ComponentLibrary([...lib.all(), b.build()]);
+    expect(testComponent(bad, 'user.bad', { type: 'rom', words: 8, width: 16 }, 'fast').report?.passed).toBe(false);
+    const r2 = testComponent(lib, 'user.mux16', { type: 'rom', words: 8, width: 16 }, 'fast');
+    expect(r2.report).toBeNull();
+    expect(r2.diagnostics[0]?.message.th).toMatch(/ROM ต้องมีขา addr/);
+  });
+
+  it('ข้อมูลตัวอย่างไม่ซ้ำกันทุกคำ และ seed เดิมได้ข้อมูลเดิม', () => {
+    const w = romSampleWords(256, 16, 3);
+    expect(new Set(w).size).toBe(256);
+    expect(romSampleWords(256, 16, 3)).toEqual(w);
+    expect(romSampleWords(8, 16, 4)).not.toEqual(romSampleWords(8, 16, 3));
   });
 });

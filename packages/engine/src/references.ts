@@ -9,6 +9,9 @@ export type ReferenceFn = (ins: Ins) => Record<string, number>;
 
 const bit = (v: number | undefined): number => (v ?? 0) & 1;
 
+/** รูปแบบไฟจอ 7 ส่วนของ 0–F (บิต 0 = ส่วน a, บิต 6 = ส่วน g) */
+export const SEG7 = [0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71] as const;
+
 export const REFERENCES: Readonly<Record<string, ReferenceFn>> = {
   /** sum = a + b + cin (8 บิต) */
   add8: ({ a = 0, b = 0, cin }) => {
@@ -36,6 +39,9 @@ export const REFERENCES: Readonly<Record<string, ReferenceFn>> = {
   sel4: (ins) => ({ y: ins[`d${(ins.sel ?? 0) & 3}`] ?? 0 }),
   /** เลือก d0..d7 ตาม sel (3 บิต) */
   sel8: (ins) => ({ y: ins[`d${(ins.sel ?? 0) & 7}`] ?? 0 }),
+  mux16: ({ a = 0, b = 0, sel }) => ({ out: bit(sel) ? b : a }),
+  /** ตัวถอดรหัสจอ 7 ส่วน: บิต 0–6 = ส่วน a–g ของเลขฐานสิบหก 0–F */
+  seg7: ({ in: v = 0 }) => ({ seg: SEG7[v & 15] ?? 0 }),
   /** ส่ง in ไปที่ o{sel} ขาอื่นเป็น 0 */
   demux4: (ins) => Object.fromEntries([0, 1, 2, 3].map((i) => [`o${i}`, i === ((ins.sel ?? 0) & 3) ? bit(ins.in) : 0])),
   demux8: (ins) => Object.fromEntries([0, 1, 2, 3, 4, 5, 6, 7].map((i) => [`o${i}`, i === ((ins.sel ?? 0) & 7) ? bit(ins.in) : 0])),

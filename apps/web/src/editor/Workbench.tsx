@@ -1,10 +1,11 @@
 // พื้นที่ทำงาน: กล่องชิ้นส่วน + พื้นที่วาด + แผงขาเข้า/ขาออก จำลองสดใน Worker ทุกครั้งที่แก้วงจร
 // ใช้ทั้งในด่าน (GamePage) และสนามทดลอง (SandboxPage) — ส่วนเฉพาะของแต่ละหน้าส่งมาทาง side
-import { ComponentLibrary } from '@z-ncpu/engine';
-import type { ComponentDef, Diagnostic, SignalValue } from '@z-ncpu/shared';
+import { ComponentLibrary, romHarness, romSampleWords, ROM_DUT, ROM_PANEL } from '@z-ncpu/engine';
+import type { ComponentDef, DeviceKind, Diagnostic, SignalValue } from '@z-ncpu/shared';
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { EngineClient, EngineClosedError } from '../engine-client';
 import { useEngine } from '../use-engine';
+import { Device } from '../ui/devices';
 import { BusInput, Diagnostics, Led, Switch } from '../ui/widgets';
 import { CircuitCanvas, DND_TYPE } from './CircuitCanvas';
 import { EditorModel, useEditorModel } from './model';
@@ -69,15 +70,23 @@ export function Workbench(props: {
   palette: PaletteItem[];
   onChange?: (def: ComponentDef) => void;
   side?: (ctx: WorkbenchContext) => ReactNode;
+  /** แสดงขาออกเป็นอุปกรณ์ เช่น { seg: 'seg7' } */
+  devices?: Record<string, DeviceKind>;
+  /** ด่าน ROM: ต่อแผงค่าคงที่ที่มีข้อมูลตัวอย่างเข้าขา data ให้ลองเล่นได้ */
+  romPanel?: { words: number; width: number };
 }) {
   const deps = props.deps ?? [];
   const model = useEditorModel(() => ({ def: props.initial, library: new ComponentLibrary(deps) }));
   const { editor, ui } = model;
   const def = editor.def;
   const { client, scope, pins } = useEngine();
+  const rom = props.romPanel;
+  /** ขาเข้าแบบมัดสาย (เกิน 16 บิต) ตั้งค่าด้วยมือไม่ได้ ด่าน ROM ต่อแผงค่าคงที่เข้าแทน */
+  const isBundle = (p: { width: number }): boolean => p.width > 16;
   const [inputs, setInputs] = useState<Record<string, number>>(() =>
-    Object.fromEntries(def.pins.filter((p) => p.dir === 'in').map((p) => [p.name, 0])),
+    Object.fromEntries(def.pins.filter((p) => p.dir === 'in' && !isBundle(p)).map((p) => [p.name, 0])),
   );
+  const sample = useMemo(() => (rom ? romSampleWords(rom.words, rom.width, 1) : []), [rom?.words, rom?.width]);
   const [compiled, setCompiled] = useState<{ gates: number | null; diagnostics: Diagnostic[] }>({ gates: null, diagnostics: [] });
 
   // แจ้งหน้าแม่ทุกครั้งที่วงจรเปลี่ยน (ใช้บันทึกอัตโนมัติ)
@@ -124,9 +133,11 @@ export function Workbench(props: {
   const exitXRay = (levels = 1): void => setXray(chain.slice(0, Math.max(0, chain.length - levels)).map((c) => c.id));
 
   // ขอค่าของทุกขาในชั้นที่กำลังดูไว้ระบายสีสาย
+  // ด่าน ROM จำลองวงจรห่อ (แผง → ROM ของผู้เล่น) ชั้นของผู้เล่นจึงอยู่ใต้ชิ้นชื่อ dut
+  const scopePath = rom ? [ROM_DUT, ...chain.map((c) => c.id)].join('/') : viewKey;
   useEffect(() => {
-    client?.post({ type: 'subscribe', scopePath: viewKey });
-  }, [client, viewKey]);
+    client?.post({ type: 'subscribe', scopePath });
+  }, [client, scopePath]);
 
   // compile ใหม่เมื่อโครงวงจรเปลี่ยน แล้วใส่ค่าขาเข้าเดิมกลับ
   const otherDeps = deps.filter((d) => d.id !== def.id);
@@ -137,9 +148,13 @@ export function Workbench(props: {
     if (!client) return;
     let active = true;
     const current = editor.def;
-    client.post({ type: 'load', components: [...otherDeps, current] });
-    client
-      .send({ type: 'compile', defId: current.id, mode: 'visual' })
+    const lib = [...otherDeps, current];
+    const harness = rom ? romHarness(new ComponentLibrary(lib), current.id, rom.words, rom.width) : null;
+    const top = harness && !('code' in harness) ? harness : null;
+    client.post({ type: 'load', components: top ? [...lib, top] : lib });
+    const compiling = client.send({ type: 'compile', defId: top ? top.id : current.id, mode: 'visual' });
+    if (top) client.post({ type: 'loadPanel', panel: ROM_PANEL, words: sample });
+    compiling
       .then((res) => {
         if (active && res.type === 'compiled') setCompiled({ gates: res.stats?.gates ?? null, diagnostics: res.diagnostics });
       })
@@ -196,7 +211,7 @@ export function Workbench(props: {
   };
   model.onToggleInput = toggle;
 
-  const values: Record<string, SignalValue> = compiled.gates !== null && scope.path === viewKey ? scope.values : {};
+  const values: Record<string, SignalValue> = compiled.gates !== null && scope.path === scopePath ? scope.values : {};
   const top: Record<string, SignalValue> = compiled.gates !== null ? pins : {};
   const wires = def.body?.wires.length ?? 0;
   const selected = editor.selection.instances.length + editor.selection.wires.length;
@@ -299,7 +314,7 @@ export function Workbench(props: {
         <p className="muted small">กดสวิตช์ (หรือคลิกขาเข้าบนพื้นที่) แล้วดูค่าที่ขาออก</p>
         <div className="row">
           {def.pins
-            .filter((p) => p.dir === 'in')
+            .filter((p) => p.dir === 'in' && !isBundle(p))
             .map((p) => (
               p.width > 1 ? (
                 <BusInput key={p.name} label={p.name} width={p.width} value={inputs[p.name] ?? 0} onChange={(v) => setInput(p.name, v)} />
@@ -308,6 +323,7 @@ export function Workbench(props: {
               )
             ))}
         </div>
+        {rom ? <PanelView words={sample} width={rom.width} addr={typeof top.addr === 'number' ? top.addr : undefined} /> : null}
         {hasClock ? (
           <button className="tick" onClick={tick} disabled={!client}>
             ⏱ เดินนาฬิกา 1 จังหวะ
@@ -317,7 +333,11 @@ export function Workbench(props: {
           {def.pins
             .filter((p) => p.dir === 'out')
             .map((p) => (
-              <Led key={p.name} label={p.name} value={top[p.name]} width={p.width} />
+              props.devices?.[p.name] ? (
+                <Device key={p.name} kind={props.devices[p.name]!} label={p.name} value={top[p.name]} width={p.width} />
+              ) : (
+                <Led key={p.name} label={p.name} value={top[p.name]} width={p.width} />
+              )
             ))}
         </div>
         {inner ? (
@@ -349,17 +369,22 @@ export function Workbench(props: {
   );
 }
 
-const BUS_WIDTHS = [2, 3, 4, 8, 16];
+/** ความกว้างที่เลือกได้เร็ว (พิมพ์เลขอื่นเองได้ 1–4096) */
+const QUICK_WIDTHS = [2, 3, 4, 6, 8, 16, 128, 1024, 4096];
 
 /** ตั้งค่าชิ้นที่เลือก: ตอนนี้มีแค่ความกว้างและจำนวนส่วนของตัวแยก/รวมบัส */
 function PartSettings({ model }: { model: EditorModel }) {
   const { editor } = model;
   const ids = editor.selection.instances;
   const inst = ids.length === 1 ? editor.def.body?.instances.find((i) => i.id === ids[0]) : undefined;
+  const [draft, setDraft] = useState<string | null>(null);
   if (!inst || (inst.defId !== 'prim.split' && inst.defId !== 'prim.merge')) return null;
   const width = inst.params?.width ?? 4;
   const parts = inst.params?.parts ?? width;
-  const divisors = Array.from({ length: width }, (_, i) => i + 1).filter((d) => width % d === 0 && d > 1);
+  // แบ่งได้เฉพาะจำนวนที่หารลงตัว (แสดงไม่เกิน 32 แบบ ตัวแยกที่ขาเยอะเกินจะวาดไม่ไหว)
+  const divisors = Array.from({ length: width }, (_, i) => i + 1)
+    .filter((d) => width % d === 0 && d > 1)
+    .slice(0, 32);
   const apply = (next: Record<string, number>): void => {
     const removed = editor.setParams(inst.id, next);
     if (removed && removed > 0) {
@@ -367,8 +392,14 @@ function PartSettings({ model }: { model: EditorModel }) {
         th: `ถอดสาย ${removed} เส้นที่ขากว้างไม่ตรงแล้ว`,
         en: `Removed ${removed} wire(s) whose pin width no longer matches`,
       };
-      model.ui.setCamera(model.ui.camera);
     }
+    model.ui.setCamera(model.ui.camera);
+  };
+  /** ความกว้างใหม่: ถ้าจำนวนส่วนเดิมหารไม่ลงตัว ใช้แบบที่ส่วนละ 16 บิต (มัดสาย) หรือส่วนละบิต */
+  const applyWidth = (w: number): void => {
+    if (!Number.isInteger(w) || w < 1 || w > 4096) return;
+    const p = w > 16 && w % 16 === 0 ? w / 16 : w;
+    apply(w > 16 ? { width: w, parts: p } : { width: w });
   };
   const label = inst.defId === 'prim.split' ? 'แยก bus' : 'รวม bus';
   return (
@@ -377,14 +408,27 @@ function PartSettings({ model }: { model: EditorModel }) {
         ⚙ {label} <span className="muted mono">{inst.id}</span>
       </h3>
       <label>
-        ความกว้าง
-        <select value={width} onChange={(e) => apply({ width: Number(e.target.value) })}>
-          {BUS_WIDTHS.map((w) => (
-            <option key={w} value={w}>
-              {w} บิต
-            </option>
+        ความกว้าง (บิต)
+        <input
+          type="number"
+          min={1}
+          max={4096}
+          list="bus-widths"
+          value={draft ?? width}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={() => {
+            if (draft !== null) applyWidth(Number(draft));
+            setDraft(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+          }}
+        />
+        <datalist id="bus-widths">
+          {QUICK_WIDTHS.map((w) => (
+            <option key={w} value={w} />
           ))}
-        </select>
+        </datalist>
       </label>
       <label>
         แบ่งเป็น
@@ -396,6 +440,43 @@ function PartSettings({ model }: { model: EditorModel }) {
           ))}
         </select>
       </label>
+    </section>
+  );
+}
+
+/** แผงค่าคงที่ของด่าน ROM: แสดงข้อมูลตัวอย่าง และไฮไลต์ช่องที่ addr ชี้ */
+function PanelView({ words, width, addr }: { words: number[]; width: number; addr: number | undefined }) {
+  const shown = words.length <= 16 ? words.map((w, i) => [i, w] as const) : [];
+  const digits = Math.ceil(width / 4);
+  const hex = (n: number): string => n.toString(16).toUpperCase().padStart(digits, '0');
+  return (
+    <section className="panel-view" aria-label="แผงค่าคงที่">
+      <h3>🎛 แผงค่าคงที่ → data</h3>
+      <p className="muted small">
+        ข้อมูลตัวอย่าง {words.length} คำ คำละ {width} บิต (ตอนทดสอบใช้ข้อมูลสุ่มชุดอื่น)
+      </p>
+      {shown.length > 0 ? (
+        <table className="truth-table">
+          <thead>
+            <tr>
+              <th scope="col">ช่อง</th>
+              <th scope="col">ค่า</th>
+            </tr>
+          </thead>
+          <tbody>
+            {shown.map(([i, w]) => (
+              <tr key={i} className={i === addr ? 'current' : undefined} aria-current={i === addr ? 'true' : undefined}>
+                <td>{i}</td>
+                <td>0x{hex(w)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : addr !== undefined && addr < words.length ? (
+        <p className="mono">
+          ช่อง {addr} = 0x{hex(words[addr]!)} ({words[addr]})
+        </p>
+      ) : null}
     </section>
   );
 }

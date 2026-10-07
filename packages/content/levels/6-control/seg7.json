@@ -1,0 +1,62 @@
+{
+  "id": "io.seg7",
+  "chapter": 6,
+  "title": {
+    "th": "จอ 7 ส่วน (7-segment)",
+    "en": "7-segment decoder"
+  },
+  "lesson": "control/seg7",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.demux4",
+    "user.demux8",
+    "user.and8",
+    "user.or8"
+  ],
+  "target": {
+    "defId": "user.seg7",
+    "pins": [
+      {
+        "name": "in",
+        "dir": "in",
+        "width": 4
+      },
+      {
+        "name": "seg",
+        "dir": "out",
+        "width": 7
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "seg7"
+  },
+  "unlocks": [
+    "user.seg7"
+  ],
+  "devices": {
+    "seg": "seg7"
+  },
+  "hints": [
+    "control/seg7/h1",
+    "control/seg7/h2",
+    "control/seg7/h3"
+  ],
+  "glossary": [
+    "seg7",
+    "decoder"
+  ]
+}

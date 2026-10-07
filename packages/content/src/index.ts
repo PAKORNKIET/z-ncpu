@@ -28,6 +28,12 @@ import mem_demux8Level from '../levels/5-memory/demux8.json';
 import mem_ram8Level from '../levels/5-memory/ram8.json';
 import mem_ram64Level from '../levels/5-memory/ram64.json';
 import mem_ram256Level from '../levels/5-memory/ram256.json';
+import mem_mux16Level from '../levels/5-memory/mux16.json';
+import mem_rom8Level from '../levels/5-memory/rom8.json';
+import mem_rom64Level from '../levels/5-memory/rom64.json';
+import mem_rom256Level from '../levels/5-memory/rom256.json';
+import control_pcLevel from '../levels/6-control/pc.json';
+import io_seg7Level from '../levels/6-control/seg7.json';
 import add4Level from '../levels/2-arith/add4.json';
 import add8Level from '../levels/2-arith/add8.json';
 import eq8Level from '../levels/2-arith/eq8.json';
@@ -80,6 +86,12 @@ export const LEVELS: LevelDef[] = [
   mem_ram8Level,
   mem_ram64Level,
   mem_ram256Level,
+  mem_mux16Level,
+  mem_rom8Level,
+  mem_rom64Level,
+  mem_rom256Level,
+  control_pcLevel,
+  io_seg7Level,
 ] as LevelDef[];
 
 /** ชื่อบท (เลขบทตามหลักสูตรใน Spec ส่วน 12 บทที่ยังไม่มีด่านจะไม่แสดง) */
@@ -89,6 +101,7 @@ export const CHAPTERS: Record<number, { th: string; en: string }> = {
   3: { th: 'ALU', en: 'ALU' },
   4: { th: 'วงจรจำค่า', en: 'State' },
   5: { th: 'หน่วยความจำ', en: 'Memory' },
+  6: { th: 'ควบคุมและอุปกรณ์', en: 'Control & I/O' },
 };
 
 export const GLOSSARY: GlossaryEntry[] = glossaryJson;

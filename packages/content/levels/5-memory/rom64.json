@@ -1,0 +1,71 @@
+{
+  "id": "mem.rom64",
+  "chapter": 5,
+  "title": {
+    "th": "ROM64",
+    "en": "ROM64"
+  },
+  "lesson": "memory/rom64",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.zero8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.mux16",
+    "user.rom8"
+  ],
+  "target": {
+    "defId": "user.rom64",
+    "pins": [
+      {
+        "name": "addr",
+        "dir": "in",
+        "width": 6
+      },
+      {
+        "name": "data",
+        "dir": "in",
+        "width": 1024
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 16
+      }
+    ]
+  },
+  "tests": {
+    "type": "rom",
+    "words": 64,
+    "width": 16
+  },
+  "unlocks": [
+    "user.rom64"
+  ],
+  "hints": [
+    "memory/rom64/h1",
+    "memory/rom64/h2"
+  ],
+  "glossary": [
+    "rom"
+  ]
+}

@@ -24,7 +24,11 @@ export function Led(props: { label: string; value: SignalValue | undefined; widt
     // บัส: แสดงเป็นตัวเลขฐานสิบและฐานสอง
     // บัส 8 บิตขึ้นไปที่บิตบนสุดเป็น 1 แสดงค่าแบบมีเครื่องหมาย (two's complement) ด้วย
     const signed = typeof v === 'number' && width >= 8 && v >= 2 ** (width - 1) ? ` · มีเครื่องหมาย −${2 ** width - v}` : '';
-    const text = typeof v === 'number' ? `${v} (${v.toString(2).padStart(width, '0')})${signed}` : 'X';
+    // บัสกว้าง (เช่นคำสั่ง 16 บิต) แสดงเป็นฐานสิบหก อ่านเทียบกับแผงค่าคงที่ง่ายกว่าเลขฐานสองยาวๆ
+    const digits =
+      typeof v === 'number' && width >= 12 ? `0x${v.toString(16).toUpperCase().padStart(Math.ceil(width / 4), '0')}` : '';
+    const text =
+      typeof v === 'number' ? `${v} (${digits || v.toString(2).padStart(width, '0')})${width >= 12 ? '' : signed}` : 'X';
     return (
       <div className={`led bus ${typeof v === 'number' ? 'known' : 'unknown'}`} role="status" aria-label={`${props.label} = ${text}`}>
         <span className="led-label">{props.label}</span>

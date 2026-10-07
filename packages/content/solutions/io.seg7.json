@@ -1,0 +1,3668 @@
+{
+  "id": "user.seg7",
+  "name": {
+    "th": "7-segment",
+    "en": "7-segment"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "in",
+      "dir": "in",
+      "width": 4
+    },
+    {
+      "name": "seg",
+      "dir": "out",
+      "width": 7
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 100,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 4
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 1200,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 7
+        }
+      },
+      {
+        "id": "not1",
+        "defId": "user.not",
+        "x": 220,
+        "y": -300,
+        "rotation": 0
+      },
+      {
+        "id": "not2",
+        "defId": "user.not",
+        "x": 220,
+        "y": -220,
+        "rotation": 0
+      },
+      {
+        "id": "not3",
+        "defId": "user.not",
+        "x": 220,
+        "y": -140,
+        "rotation": 0
+      },
+      {
+        "id": "not4",
+        "defId": "user.not",
+        "x": 220,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "and1",
+        "defId": "user.and",
+        "x": 360,
+        "y": -1200,
+        "rotation": 0
+      },
+      {
+        "id": "and2",
+        "defId": "user.and",
+        "x": 460,
+        "y": -1200,
+        "rotation": 0
+      },
+      {
+        "id": "and3",
+        "defId": "user.and",
+        "x": 560,
+        "y": -1200,
+        "rotation": 0
+      },
+      {
+        "id": "and4",
+        "defId": "user.and",
+        "x": 360,
+        "y": -1050,
+        "rotation": 0
+      },
+      {
+        "id": "and5",
+        "defId": "user.and",
+        "x": 460,
+        "y": -1050,
+        "rotation": 0
+      },
+      {
+        "id": "and6",
+        "defId": "user.and",
+        "x": 560,
+        "y": -1050,
+        "rotation": 0
+      },
+      {
+        "id": "and7",
+        "defId": "user.and",
+        "x": 360,
+        "y": -900,
+        "rotation": 0
+      },
+      {
+        "id": "and8",
+        "defId": "user.and",
+        "x": 460,
+        "y": -900,
+        "rotation": 0
+      },
+      {
+        "id": "and9",
+        "defId": "user.and",
+        "x": 560,
+        "y": -900,
+        "rotation": 0
+      },
+      {
+        "id": "and10",
+        "defId": "user.and",
+        "x": 360,
+        "y": -750,
+        "rotation": 0
+      },
+      {
+        "id": "and11",
+        "defId": "user.and",
+        "x": 460,
+        "y": -750,
+        "rotation": 0
+      },
+      {
+        "id": "and12",
+        "defId": "user.and",
+        "x": 560,
+        "y": -750,
+        "rotation": 0
+      },
+      {
+        "id": "and13",
+        "defId": "user.and",
+        "x": 360,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "and14",
+        "defId": "user.and",
+        "x": 460,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "and15",
+        "defId": "user.and",
+        "x": 560,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "and16",
+        "defId": "user.and",
+        "x": 360,
+        "y": -450,
+        "rotation": 0
+      },
+      {
+        "id": "and17",
+        "defId": "user.and",
+        "x": 460,
+        "y": -450,
+        "rotation": 0
+      },
+      {
+        "id": "and18",
+        "defId": "user.and",
+        "x": 560,
+        "y": -450,
+        "rotation": 0
+      },
+      {
+        "id": "and19",
+        "defId": "user.and",
+        "x": 360,
+        "y": -300,
+        "rotation": 0
+      },
+      {
+        "id": "and20",
+        "defId": "user.and",
+        "x": 460,
+        "y": -300,
+        "rotation": 0
+      },
+      {
+        "id": "and21",
+        "defId": "user.and",
+        "x": 560,
+        "y": -300,
+        "rotation": 0
+      },
+      {
+        "id": "and22",
+        "defId": "user.and",
+        "x": 360,
+        "y": -150,
+        "rotation": 0
+      },
+      {
+        "id": "and23",
+        "defId": "user.and",
+        "x": 460,
+        "y": -150,
+        "rotation": 0
+      },
+      {
+        "id": "and24",
+        "defId": "user.and",
+        "x": 560,
+        "y": -150,
+        "rotation": 0
+      },
+      {
+        "id": "and25",
+        "defId": "user.and",
+        "x": 360,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "and26",
+        "defId": "user.and",
+        "x": 460,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "and27",
+        "defId": "user.and",
+        "x": 560,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "and28",
+        "defId": "user.and",
+        "x": 360,
+        "y": 150,
+        "rotation": 0
+      },
+      {
+        "id": "and29",
+        "defId": "user.and",
+        "x": 460,
+        "y": 150,
+        "rotation": 0
+      },
+      {
+        "id": "and30",
+        "defId": "user.and",
+        "x": 560,
+        "y": 150,
+        "rotation": 0
+      },
+      {
+        "id": "and31",
+        "defId": "user.and",
+        "x": 360,
+        "y": 300,
+        "rotation": 0
+      },
+      {
+        "id": "and32",
+        "defId": "user.and",
+        "x": 460,
+        "y": 300,
+        "rotation": 0
+      },
+      {
+        "id": "and33",
+        "defId": "user.and",
+        "x": 560,
+        "y": 300,
+        "rotation": 0
+      },
+      {
+        "id": "and34",
+        "defId": "user.and",
+        "x": 360,
+        "y": 450,
+        "rotation": 0
+      },
+      {
+        "id": "and35",
+        "defId": "user.and",
+        "x": 460,
+        "y": 450,
+        "rotation": 0
+      },
+      {
+        "id": "and36",
+        "defId": "user.and",
+        "x": 560,
+        "y": 450,
+        "rotation": 0
+      },
+      {
+        "id": "and37",
+        "defId": "user.and",
+        "x": 360,
+        "y": 600,
+        "rotation": 0
+      },
+      {
+        "id": "and38",
+        "defId": "user.and",
+        "x": 460,
+        "y": 600,
+        "rotation": 0
+      },
+      {
+        "id": "and39",
+        "defId": "user.and",
+        "x": 560,
+        "y": 600,
+        "rotation": 0
+      },
+      {
+        "id": "and40",
+        "defId": "user.and",
+        "x": 360,
+        "y": 750,
+        "rotation": 0
+      },
+      {
+        "id": "and41",
+        "defId": "user.and",
+        "x": 460,
+        "y": 750,
+        "rotation": 0
+      },
+      {
+        "id": "and42",
+        "defId": "user.and",
+        "x": 560,
+        "y": 750,
+        "rotation": 0
+      },
+      {
+        "id": "and43",
+        "defId": "user.and",
+        "x": 360,
+        "y": 900,
+        "rotation": 0
+      },
+      {
+        "id": "and44",
+        "defId": "user.and",
+        "x": 460,
+        "y": 900,
+        "rotation": 0
+      },
+      {
+        "id": "and45",
+        "defId": "user.and",
+        "x": 560,
+        "y": 900,
+        "rotation": 0
+      },
+      {
+        "id": "and46",
+        "defId": "user.and",
+        "x": 360,
+        "y": 1050,
+        "rotation": 0
+      },
+      {
+        "id": "and47",
+        "defId": "user.and",
+        "x": 460,
+        "y": 1050,
+        "rotation": 0
+      },
+      {
+        "id": "and48",
+        "defId": "user.and",
+        "x": 560,
+        "y": 1050,
+        "rotation": 0
+      },
+      {
+        "id": "or1",
+        "defId": "user.or",
+        "x": 700,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or2",
+        "defId": "user.or",
+        "x": 760,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or3",
+        "defId": "user.or",
+        "x": 820,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or4",
+        "defId": "user.or",
+        "x": 880,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or5",
+        "defId": "user.or",
+        "x": 940,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or6",
+        "defId": "user.or",
+        "x": 1000,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or7",
+        "defId": "user.or",
+        "x": 1060,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or8",
+        "defId": "user.or",
+        "x": 1120,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or9",
+        "defId": "user.or",
+        "x": 1180,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or10",
+        "defId": "user.or",
+        "x": 1240,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or11",
+        "defId": "user.or",
+        "x": 1300,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "or12",
+        "defId": "user.or",
+        "x": 700,
+        "y": -440,
+        "rotation": 0
+      },
+      {
+        "id": "or13",
+        "defId": "user.or",
+        "x": 760,
+        "y": -440,
+        "rotation": 0
+      },
+      {
+        "id": "or14",
+        "defId": "user.or",
+        "x": 820,
+        "y": -440,
+        "rotation": 0
+      },
+      {
+        "id": "or15",
+        "defId": "user.or",
+        "x": 880,
+        "y": -440,
+        "rotation": 0
+      },
+      {
+        "id": "or16",
+        "defId": "user.or",
+        "x": 940,
+        "y": -440,
+        "rotation": 0
+      },
+      {
+        "id": "or17",
+        "defId": "user.or",
+        "x": 1000,
+        "y": -440,
+        "rotation": 0
+      },
+      {
+        "id": "or18",
+        "defId": "user.or",
+        "x": 1060,
+        "y": -440,
+        "rotation": 0
+      },
+      {
+        "id": "or19",
+        "defId": "user.or",
+        "x": 1120,
+        "y": -440,
+        "rotation": 0
+      },
+      {
+        "id": "or20",
+        "defId": "user.or",
+        "x": 1180,
+        "y": -440,
+        "rotation": 0
+      },
+      {
+        "id": "or21",
+        "defId": "user.or",
+        "x": 700,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or22",
+        "defId": "user.or",
+        "x": 760,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or23",
+        "defId": "user.or",
+        "x": 820,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or24",
+        "defId": "user.or",
+        "x": 880,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or25",
+        "defId": "user.or",
+        "x": 940,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or26",
+        "defId": "user.or",
+        "x": 1000,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or27",
+        "defId": "user.or",
+        "x": 1060,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or28",
+        "defId": "user.or",
+        "x": 1120,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or29",
+        "defId": "user.or",
+        "x": 1180,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or30",
+        "defId": "user.or",
+        "x": 1240,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or31",
+        "defId": "user.or",
+        "x": 1300,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or32",
+        "defId": "user.or",
+        "x": 700,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or33",
+        "defId": "user.or",
+        "x": 760,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or34",
+        "defId": "user.or",
+        "x": 820,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or35",
+        "defId": "user.or",
+        "x": 880,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or36",
+        "defId": "user.or",
+        "x": 940,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or37",
+        "defId": "user.or",
+        "x": 1000,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or38",
+        "defId": "user.or",
+        "x": 1060,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or39",
+        "defId": "user.or",
+        "x": 1120,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or40",
+        "defId": "user.or",
+        "x": 1180,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or41",
+        "defId": "user.or",
+        "x": 1240,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or42",
+        "defId": "user.or",
+        "x": 700,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or43",
+        "defId": "user.or",
+        "x": 760,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or44",
+        "defId": "user.or",
+        "x": 820,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or45",
+        "defId": "user.or",
+        "x": 880,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or46",
+        "defId": "user.or",
+        "x": 940,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or47",
+        "defId": "user.or",
+        "x": 1000,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or48",
+        "defId": "user.or",
+        "x": 1060,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or49",
+        "defId": "user.or",
+        "x": 1120,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or50",
+        "defId": "user.or",
+        "x": 1180,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or51",
+        "defId": "user.or",
+        "x": 700,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or52",
+        "defId": "user.or",
+        "x": 760,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or53",
+        "defId": "user.or",
+        "x": 820,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or54",
+        "defId": "user.or",
+        "x": 880,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or55",
+        "defId": "user.or",
+        "x": 940,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or56",
+        "defId": "user.or",
+        "x": 1000,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or57",
+        "defId": "user.or",
+        "x": 1060,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or58",
+        "defId": "user.or",
+        "x": 1120,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or59",
+        "defId": "user.or",
+        "x": 1180,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or60",
+        "defId": "user.or",
+        "x": 1240,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or61",
+        "defId": "user.or",
+        "x": 700,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "or62",
+        "defId": "user.or",
+        "x": 760,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "or63",
+        "defId": "user.or",
+        "x": 820,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "or64",
+        "defId": "user.or",
+        "x": 880,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "or65",
+        "defId": "user.or",
+        "x": 940,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "or66",
+        "defId": "user.or",
+        "x": 1000,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "or67",
+        "defId": "user.or",
+        "x": 1060,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "or68",
+        "defId": "user.or",
+        "x": 1120,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "or69",
+        "defId": "user.or",
+        "x": 1180,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "or70",
+        "defId": "user.or",
+        "x": 1240,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "or71",
+        "defId": "user.or",
+        "x": 1300,
+        "y": 360,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "seg"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "not1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "not2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "not3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "not4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "not2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "not3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "not4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "and1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "and2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "and4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "not2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "not3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and5",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "not4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and5",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "and4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and6",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "and5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and6",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and7",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "and7",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "not3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and8",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "not4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and8",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "and7",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and9",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "and8",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and9",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "and10",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "and10",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "not3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and11",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w28",
+        "from": {
+          "inst": "not4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and11",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w29",
+        "from": {
+          "inst": "and10",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and12",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w30",
+        "from": {
+          "inst": "and11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and12",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w31",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and13",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w32",
+        "from": {
+          "inst": "not2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and13",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w33",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "and14",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w34",
+        "from": {
+          "inst": "not4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and14",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w35",
+        "from": {
+          "inst": "and13",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and15",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w36",
+        "from": {
+          "inst": "and14",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and15",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w37",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "and16",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w38",
+        "from": {
+          "inst": "not2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and16",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w39",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "and17",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w40",
+        "from": {
+          "inst": "not4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and17",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w41",
+        "from": {
+          "inst": "and16",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and18",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w42",
+        "from": {
+          "inst": "and17",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and18",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w43",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and19",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w44",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "and19",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w45",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "and20",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w46",
+        "from": {
+          "inst": "not4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and20",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w47",
+        "from": {
+          "inst": "and19",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and21",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w48",
+        "from": {
+          "inst": "and20",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and21",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w49",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "and22",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w50",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "and22",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w51",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "and23",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w52",
+        "from": {
+          "inst": "not4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and23",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w53",
+        "from": {
+          "inst": "and22",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and24",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w54",
+        "from": {
+          "inst": "and23",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and24",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w55",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and25",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w56",
+        "from": {
+          "inst": "not2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and25",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w57",
+        "from": {
+          "inst": "not3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and26",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w58",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "and26",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w59",
+        "from": {
+          "inst": "and25",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and27",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w60",
+        "from": {
+          "inst": "and26",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and27",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w61",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "and28",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w62",
+        "from": {
+          "inst": "not2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and28",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w63",
+        "from": {
+          "inst": "not3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and29",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w64",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "and29",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w65",
+        "from": {
+          "inst": "and28",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and30",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w66",
+        "from": {
+          "inst": "and29",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and30",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w67",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and31",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w68",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "and31",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w69",
+        "from": {
+          "inst": "not3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and32",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w70",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "and32",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w71",
+        "from": {
+          "inst": "and31",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and33",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w72",
+        "from": {
+          "inst": "and32",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and33",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w73",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "and34",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w74",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "and34",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w75",
+        "from": {
+          "inst": "not3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and35",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w76",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "and35",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w77",
+        "from": {
+          "inst": "and34",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and36",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w78",
+        "from": {
+          "inst": "and35",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and36",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w79",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and37",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w80",
+        "from": {
+          "inst": "not2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and37",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w81",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "and38",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w82",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "and38",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w83",
+        "from": {
+          "inst": "and37",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and39",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w84",
+        "from": {
+          "inst": "and38",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and39",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w85",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "and40",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w86",
+        "from": {
+          "inst": "not2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and40",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w87",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "and41",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w88",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "and41",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w89",
+        "from": {
+          "inst": "and40",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and42",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w90",
+        "from": {
+          "inst": "and41",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and42",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w91",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and43",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w92",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "and43",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w93",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "and44",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w94",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "and44",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w95",
+        "from": {
+          "inst": "and43",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and45",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w96",
+        "from": {
+          "inst": "and44",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and45",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w97",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "and46",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w98",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "and46",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w99",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "and47",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w100",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "and47",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w101",
+        "from": {
+          "inst": "and46",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and48",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w102",
+        "from": {
+          "inst": "and47",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and48",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w103",
+        "from": {
+          "inst": "and3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w104",
+        "from": {
+          "inst": "and9",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w105",
+        "from": {
+          "inst": "or1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w106",
+        "from": {
+          "inst": "and12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w107",
+        "from": {
+          "inst": "or2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w108",
+        "from": {
+          "inst": "and18",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w109",
+        "from": {
+          "inst": "or3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w110",
+        "from": {
+          "inst": "and21",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w111",
+        "from": {
+          "inst": "or4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or5",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w112",
+        "from": {
+          "inst": "and24",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or5",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w113",
+        "from": {
+          "inst": "or5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or6",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w114",
+        "from": {
+          "inst": "and27",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or6",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w115",
+        "from": {
+          "inst": "or6",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or7",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w116",
+        "from": {
+          "inst": "and30",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or7",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w117",
+        "from": {
+          "inst": "or7",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or8",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w118",
+        "from": {
+          "inst": "and33",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or8",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w119",
+        "from": {
+          "inst": "or8",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or9",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w120",
+        "from": {
+          "inst": "and39",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or9",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w121",
+        "from": {
+          "inst": "or9",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or10",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w122",
+        "from": {
+          "inst": "and45",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or10",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w123",
+        "from": {
+          "inst": "or10",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or11",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w124",
+        "from": {
+          "inst": "and48",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or11",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w125",
+        "from": {
+          "inst": "or11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w126",
+        "from": {
+          "inst": "and3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or12",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w127",
+        "from": {
+          "inst": "and6",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or12",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w128",
+        "from": {
+          "inst": "or12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or13",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w129",
+        "from": {
+          "inst": "and9",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or13",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w130",
+        "from": {
+          "inst": "or13",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or14",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w131",
+        "from": {
+          "inst": "and12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or14",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w132",
+        "from": {
+          "inst": "or14",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or15",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w133",
+        "from": {
+          "inst": "and15",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or15",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w134",
+        "from": {
+          "inst": "or15",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or16",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w135",
+        "from": {
+          "inst": "and24",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or16",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w136",
+        "from": {
+          "inst": "or16",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or17",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w137",
+        "from": {
+          "inst": "and27",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or17",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w138",
+        "from": {
+          "inst": "or17",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or18",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w139",
+        "from": {
+          "inst": "and30",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or18",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w140",
+        "from": {
+          "inst": "or18",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or19",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w141",
+        "from": {
+          "inst": "and33",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or19",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w142",
+        "from": {
+          "inst": "or19",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or20",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w143",
+        "from": {
+          "inst": "and42",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or20",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w144",
+        "from": {
+          "inst": "or20",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w145",
+        "from": {
+          "inst": "and3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or21",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w146",
+        "from": {
+          "inst": "and6",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or21",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w147",
+        "from": {
+          "inst": "or21",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or22",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w148",
+        "from": {
+          "inst": "and12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or22",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w149",
+        "from": {
+          "inst": "or22",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or23",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w150",
+        "from": {
+          "inst": "and15",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or23",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w151",
+        "from": {
+          "inst": "or23",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or24",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w152",
+        "from": {
+          "inst": "and18",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or24",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w153",
+        "from": {
+          "inst": "or24",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or25",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w154",
+        "from": {
+          "inst": "and21",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or25",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w155",
+        "from": {
+          "inst": "or25",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or26",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w156",
+        "from": {
+          "inst": "and24",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or26",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w157",
+        "from": {
+          "inst": "or26",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or27",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w158",
+        "from": {
+          "inst": "and27",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or27",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w159",
+        "from": {
+          "inst": "or27",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or28",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w160",
+        "from": {
+          "inst": "and30",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or28",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w161",
+        "from": {
+          "inst": "or28",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or29",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w162",
+        "from": {
+          "inst": "and33",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or29",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w163",
+        "from": {
+          "inst": "or29",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or30",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w164",
+        "from": {
+          "inst": "and36",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or30",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w165",
+        "from": {
+          "inst": "or30",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or31",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w166",
+        "from": {
+          "inst": "and42",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or31",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w167",
+        "from": {
+          "inst": "or31",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w168",
+        "from": {
+          "inst": "and3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or32",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w169",
+        "from": {
+          "inst": "and9",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or32",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w170",
+        "from": {
+          "inst": "or32",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or33",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w171",
+        "from": {
+          "inst": "and12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or33",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w172",
+        "from": {
+          "inst": "or33",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or34",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w173",
+        "from": {
+          "inst": "and18",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or34",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w174",
+        "from": {
+          "inst": "or34",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or35",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w175",
+        "from": {
+          "inst": "and21",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or35",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w176",
+        "from": {
+          "inst": "or35",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or36",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w177",
+        "from": {
+          "inst": "and27",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or36",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w178",
+        "from": {
+          "inst": "or36",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or37",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w179",
+        "from": {
+          "inst": "and30",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or37",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w180",
+        "from": {
+          "inst": "or37",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or38",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w181",
+        "from": {
+          "inst": "and36",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or38",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w182",
+        "from": {
+          "inst": "or38",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or39",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w183",
+        "from": {
+          "inst": "and39",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or39",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w184",
+        "from": {
+          "inst": "or39",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or40",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w185",
+        "from": {
+          "inst": "and42",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or40",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w186",
+        "from": {
+          "inst": "or40",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or41",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w187",
+        "from": {
+          "inst": "and45",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or41",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w188",
+        "from": {
+          "inst": "or41",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w189",
+        "from": {
+          "inst": "and3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or42",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w190",
+        "from": {
+          "inst": "and9",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or42",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w191",
+        "from": {
+          "inst": "or42",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or43",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w192",
+        "from": {
+          "inst": "and21",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or43",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w193",
+        "from": {
+          "inst": "or43",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or44",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w194",
+        "from": {
+          "inst": "and27",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or44",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w195",
+        "from": {
+          "inst": "or44",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or45",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w196",
+        "from": {
+          "inst": "and33",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or45",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w197",
+        "from": {
+          "inst": "or45",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or46",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w198",
+        "from": {
+          "inst": "and36",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or46",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w199",
+        "from": {
+          "inst": "or46",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or47",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w200",
+        "from": {
+          "inst": "and39",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or47",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w201",
+        "from": {
+          "inst": "or47",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or48",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w202",
+        "from": {
+          "inst": "and42",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or48",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w203",
+        "from": {
+          "inst": "or48",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or49",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w204",
+        "from": {
+          "inst": "and45",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or49",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w205",
+        "from": {
+          "inst": "or49",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or50",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w206",
+        "from": {
+          "inst": "and48",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or50",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w207",
+        "from": {
+          "inst": "or50",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w208",
+        "from": {
+          "inst": "and3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or51",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w209",
+        "from": {
+          "inst": "and15",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or51",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w210",
+        "from": {
+          "inst": "or51",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or52",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w211",
+        "from": {
+          "inst": "and18",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or52",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w212",
+        "from": {
+          "inst": "or52",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or53",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w213",
+        "from": {
+          "inst": "and21",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or53",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w214",
+        "from": {
+          "inst": "or53",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or54",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w215",
+        "from": {
+          "inst": "and27",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or54",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w216",
+        "from": {
+          "inst": "or54",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or55",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w217",
+        "from": {
+          "inst": "and30",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or55",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w218",
+        "from": {
+          "inst": "or55",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or56",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w219",
+        "from": {
+          "inst": "and33",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or56",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w220",
+        "from": {
+          "inst": "or56",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or57",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w221",
+        "from": {
+          "inst": "and36",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or57",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w222",
+        "from": {
+          "inst": "or57",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or58",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w223",
+        "from": {
+          "inst": "and39",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or58",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w224",
+        "from": {
+          "inst": "or58",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or59",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w225",
+        "from": {
+          "inst": "and45",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or59",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w226",
+        "from": {
+          "inst": "or59",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or60",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w227",
+        "from": {
+          "inst": "and48",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or60",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w228",
+        "from": {
+          "inst": "or60",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w229",
+        "from": {
+          "inst": "and9",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or61",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w230",
+        "from": {
+          "inst": "and12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or61",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w231",
+        "from": {
+          "inst": "or61",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or62",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w232",
+        "from": {
+          "inst": "and15",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or62",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w233",
+        "from": {
+          "inst": "or62",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or63",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w234",
+        "from": {
+          "inst": "and18",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or63",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w235",
+        "from": {
+          "inst": "or63",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or64",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w236",
+        "from": {
+          "inst": "and21",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or64",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w237",
+        "from": {
+          "inst": "or64",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or65",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w238",
+        "from": {
+          "inst": "and27",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or65",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w239",
+        "from": {
+          "inst": "or65",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or66",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w240",
+        "from": {
+          "inst": "and30",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or66",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w241",
+        "from": {
+          "inst": "or66",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or67",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w242",
+        "from": {
+          "inst": "and33",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or67",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w243",
+        "from": {
+          "inst": "or67",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or68",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w244",
+        "from": {
+          "inst": "and36",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or68",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w245",
+        "from": {
+          "inst": "or68",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or69",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w246",
+        "from": {
+          "inst": "and42",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or69",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w247",
+        "from": {
+          "inst": "or69",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or70",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w248",
+        "from": {
+          "inst": "and45",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or70",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w249",
+        "from": {
+          "inst": "or70",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or71",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w250",
+        "from": {
+          "inst": "and48",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or71",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w251",
+        "from": {
+          "inst": "or71",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b6"
+        }
+      }
+    ]
+  }
+}
