@@ -65,6 +65,7 @@ async function place(page: Page, part: RegExp, fx: number, fy: number) {
   await canvas(page).click({ position: { x: box.width * fx, y: box.height * fy } });
 }
 
+const ARITH8 = ['arith.add8', 'arith.not8', 'arith.inc8', 'arith.negate', 'arith.sub8', 'arith.zero8', 'arith.eq8'];
 const BEFORE_ADD4 = [
   'logic.not',
   'logic.and',
@@ -78,9 +79,9 @@ const BEFORE_ADD4 = [
   'arith.full-adder',
 ];
 
-test('มีด่านครบ 3 บท 14 ด่าน และล็อกตามลำดับ', async ({ page }) => {
+test('มีด่านครบทุกบท และล็อกตามลำดับ', async ({ page }) => {
   for (const ch of ['ตรรกะพื้นฐาน', 'การบวกเลข', 'วงจรจำค่า']) await expect(page.getByRole('heading', { name: new RegExp(ch) })).toBeVisible();
-  await expect(page.locator('.level-item')).toHaveCount(14);
+  await expect(page.locator('.level-item')).toHaveCount(21);
   await expect(level(page, 3)).toBeDisabled();
   await seed(page, ['logic.not', 'logic.and']);
   await expect(level(page, 3)).toBeEnabled();
@@ -89,7 +90,7 @@ test('มีด่านครบ 3 บท 14 ด่าน และล็อก
 
 test('บวกเลข 4 บิต: บัส ตัวแยก/รวมบัส และทดสอบครบ 512 แบบ', async ({ page }) => {
   await seed(page, BEFORE_ADD4, ['arith.add4']);
-  await level(page, 11).click();
+  await page.locator('.level-item').filter({ hasText: /บวกเลข 4 บิต/ }).click();
   await expect(page.locator('.lesson')).toContainText('บัส');
   for (const part of [/^แยก bus/, /^รวม bus/, /^Full Adder/]) await expect(page.locator('.palette').getByRole('button', { name: part })).toBeVisible();
   await expect(page.getByTestId('nand-count')).toHaveText('36');
@@ -128,8 +129,8 @@ test('บวกเลข 4 บิต: บัส ตัวแยก/รวมบ�
 });
 
 test('D Flip-Flop: ต่อจาก D Latch สองตัว ใช้ปุ่มเดินนาฬิกา แล้วผ่านการทดสอบตามลำดับเวลา', async ({ page }) => {
-  await seed(page, [...BEFORE_ADD4, 'arith.add4', 'memory.sr-latch', 'memory.d-latch']);
-  await level(page, 14).click();
+  await seed(page, [...BEFORE_ADD4, 'arith.add4', ...ARITH8, 'memory.sr-latch', 'memory.d-latch']);
+  await page.locator('.level-item').filter({ hasText: /D Flip-Flop/ }).click();
   await expect(page.locator('.lesson')).toContainText('ขอบขาขึ้น');
   // ตารางลำดับเวลาแสดงก่อนทดสอบ
   await expect(page.getByRole('table', { name: 'ลำดับการทดสอบ' })).toBeVisible();
@@ -162,8 +163,8 @@ test('D Flip-Flop: ต่อจาก D Latch สองตัว ใช้ปุ
 });
 
 test('SR Latch ที่ต่อผิด: ตารางลำดับเวลาบอกขั้นที่ผิด', async ({ page }) => {
-  await seed(page, [...BEFORE_ADD4, 'arith.add4']);
-  await level(page, 12).click();
+  await seed(page, [...BEFORE_ADD4, 'arith.add4', ...ARITH8]);
+  await page.locator('.level-item').filter({ hasText: /SR Latch/ }).click();
   // NAND ตัวเดียวไม่ใช่วงจรจำค่า
   await place(page, /^NAND/, 0.5, 0.5);
   await wire(page, ['self', 's'], ['nand1', 'a']);

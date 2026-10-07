@@ -1,0 +1,58 @@
+{
+  "id": "arith.eq8",
+  "chapter": 2,
+  "title": {
+    "th": "ตรวจเท่ากัน (Equal)",
+    "en": "Equal"
+  },
+  "lesson": "arith/eq8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "prim.split",
+    "prim.merge",
+    "user.nor",
+    "user.xnor",
+    "user.zero8",
+    "user.sub8",
+    "user.not8"
+  ],
+  "target": {
+    "defId": "user.eq8",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "eq",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "eq8"
+  },
+  "unlocks": [
+    "user.eq8"
+  ],
+  "hints": [
+    "arith/eq8/h1",
+    "arith/eq8/h2"
+  ],
+  "glossary": [
+    "xnor",
+    "zero-flag"
+  ]
+}

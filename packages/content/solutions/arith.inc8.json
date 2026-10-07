@@ -1,0 +1,395 @@
+{
+  "id": "user.inc8",
+  "name": {
+    "th": "Incrementer",
+    "en": "Incrementer"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "y",
+      "dir": "out",
+      "width": 8
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 520,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "const11",
+        "defId": "prim.const1",
+        "x": 140,
+        "y": 280,
+        "rotation": 0
+      },
+      {
+        "id": "ha1",
+        "defId": "user.ha",
+        "x": 330,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "ha2",
+        "defId": "user.ha",
+        "x": 330,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "ha3",
+        "defId": "user.ha",
+        "x": 330,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "ha4",
+        "defId": "user.ha",
+        "x": 330,
+        "y": -40,
+        "rotation": 0
+      },
+      {
+        "id": "ha5",
+        "defId": "user.ha",
+        "x": 330,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "ha6",
+        "defId": "user.ha",
+        "x": 330,
+        "y": 120,
+        "rotation": 0
+      },
+      {
+        "id": "ha7",
+        "defId": "user.ha",
+        "x": 330,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "ha8",
+        "defId": "user.ha",
+        "x": 330,
+        "y": 280,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "y"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "ha1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "ha1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "ha1",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "ha2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "ha1",
+          "pin": "carry"
+        },
+        "to": {
+          "inst": "ha2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "ha2",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "ha3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "ha2",
+          "pin": "carry"
+        },
+        "to": {
+          "inst": "ha3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "ha3",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "ha4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "ha3",
+          "pin": "carry"
+        },
+        "to": {
+          "inst": "ha4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "ha4",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "split1",
+          "pin": "b4"
+        },
+        "to": {
+          "inst": "ha5",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "ha4",
+          "pin": "carry"
+        },
+        "to": {
+          "inst": "ha5",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "ha5",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "split1",
+          "pin": "b5"
+        },
+        "to": {
+          "inst": "ha6",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "ha5",
+          "pin": "carry"
+        },
+        "to": {
+          "inst": "ha6",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "ha6",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "split1",
+          "pin": "b6"
+        },
+        "to": {
+          "inst": "ha7",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "ha6",
+          "pin": "carry"
+        },
+        "to": {
+          "inst": "ha7",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "ha7",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b6"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "split1",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "ha8",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "ha7",
+          "pin": "carry"
+        },
+        "to": {
+          "inst": "ha8",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "ha8",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b7"
+        }
+      }
+    ]
+  }
+}

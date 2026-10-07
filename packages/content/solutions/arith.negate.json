@@ -1,0 +1,73 @@
+{
+  "id": "user.neg8",
+  "name": {
+    "th": "Negator",
+    "en": "Negator"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "y",
+      "dir": "out",
+      "width": 8
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "not81",
+        "defId": "user.not8",
+        "x": 200,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "inc81",
+        "defId": "user.inc8",
+        "x": 380,
+        "y": 0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "not81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "not81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "inc81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "inc81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "y"
+        }
+      }
+    ]
+  }
+}

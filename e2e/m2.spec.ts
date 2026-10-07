@@ -60,3 +60,41 @@ test('ตั้งความกว้างตัวแยกบัส: สา
   await expect(page.getByTestId('wire-count')).toHaveText('20');
   await expect(canvas(page)).toBeVisible();
 });
+
+test('ลบเลข 8 บิต: a + NOT b + 1 ด้วยเมาส์ แล้ว 3 − 5 แสดงเป็น −2 และผ่านการทดสอบแบบสุ่ม', async ({ page }) => {
+  await openWithSave(page, before('arith.sub8'));
+  await levelNamed(page, /Subtractor/).click();
+  await expect(page.getByTestId('reference-info')).toContainText('ทดสอบครบทุกกรณี 65,536 แบบ');
+
+  await place(page, /^8-bit NOT/, 0.35, 0.65);
+  await place(page, /^ค่าคงที่ 1/, 0.35, 0.85);
+  await place(page, /^8-bit Adder/, 0.65, 0.45);
+  await wire(page, ['self', 'a'], ['add81', 'a']);
+  await wire(page, ['self', 'b'], ['not81', 'a']);
+  await wire(page, ['not81', 'y'], ['add81', 'b']);
+  await wire(page, ['const11', 'y'], ['add81', 'cin']);
+  await wire(page, ['add81', 'sum'], ['self', 'diff']);
+  await expect(page.getByTestId('wire-count')).toHaveText('5');
+  await expect(page.getByTestId('nand-count')).toHaveText('80');
+
+  // a = 3, b = 5
+  await page.getByRole('button', { name: 'a บิต 0' }).click();
+  await page.getByRole('button', { name: 'a บิต 1' }).click();
+  await page.getByRole('button', { name: 'b บิต 0' }).click();
+  await page.getByRole('button', { name: 'b บิต 2' }).click();
+  await expect(page.getByRole('status', { name: /^diff = / })).toHaveAttribute('aria-label', 'diff = 254 (11111110) · มีเครื่องหมาย −2');
+
+  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
+  await expect(page.getByText(/ทดสอบ 65,536 แบบ/)).toBeVisible();
+});
+
+test('บวกเลข 8 บิต: ขาเข้า 17 บิตทดสอบแบบกรณีขอบ + สุ่ม และตัวต่อที่ผิดบอกแถวที่ผิด', async ({ page }) => {
+  await openWithSave(page, before('arith.add8'));
+  await levelNamed(page, /บวกเลข 8 บิต/).click();
+  await expect(page.getByTestId('reference-info')).toContainText('สุ่มอีก 2,000 แบบ');
+  // วงจรเปล่า → ผิดเกือบทุกแถว และแสดงแถวที่ผิดไม่เกิน 30 แถว
+  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await expect(page.locator('.test-result')).toContainText('ยังไม่ผ่าน');
+  await expect(page.getByRole('table', { name: 'ผลการทดสอบ' }).locator('tbody tr')).toHaveCount(30);
+});

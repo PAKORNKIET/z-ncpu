@@ -1,0 +1,107 @@
+{
+  "id": "user.sub8",
+  "name": {
+    "th": "Subtractor",
+    "en": "Subtractor"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "diff",
+      "dir": "out",
+      "width": 8
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "not81",
+        "defId": "user.not8",
+        "x": 200,
+        "y": 80,
+        "rotation": 0
+      },
+      {
+        "id": "const11",
+        "defId": "prim.const1",
+        "x": 200,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "add81",
+        "defId": "user.add8",
+        "x": 400,
+        "y": 0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "add81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "not81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "not81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "add81",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "add81",
+          "pin": "cin"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "add81",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "diff"
+        }
+      }
+    ]
+  }
+}

@@ -15,6 +15,18 @@ export const REFERENCES: Readonly<Record<string, ReferenceFn>> = {
     const s = a + b + bit(cin);
     return { sum: s & 0xff, cout: s >> 8 };
   },
+  /** กลับทุกบิต */
+  not8: ({ a = 0 }) => ({ y: ~a & 0xff }),
+  /** y = a + 1 (วนกลับที่ 0) */
+  inc8: ({ a = 0 }) => ({ y: (a + 1) & 0xff }),
+  /** y = -a แบบ two's complement */
+  neg8: ({ a = 0 }) => ({ y: -a & 0xff }),
+  /** diff = a - b (วนรอบ 8 บิต) */
+  sub8: ({ a = 0, b = 0 }) => ({ diff: (a - b) & 0xff }),
+  /** z = 1 เมื่อ a = 0 */
+  zero8: ({ a = 0 }) => ({ z: a === 0 ? 1 : 0 }),
+  /** eq = 1 เมื่อ a = b */
+  eq8: ({ a = 0, b = 0 }) => ({ eq: a === b ? 1 : 0 }),
 };
 
 /** PRNG แบบ mulberry32: เร็ว ได้ลำดับเดิมทุกครั้งจาก seed เดียวกัน */

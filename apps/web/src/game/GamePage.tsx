@@ -388,10 +388,12 @@ function ReferenceTable({ level, report }: { level: LevelDef; report: TestReport
   const ins = level.target.pins.filter((p) => p.dir === 'in').map((p) => p.name);
   const outs = level.target.pins.filter((p) => p.dir === 'out').map((p) => p.name);
   if (!report) {
+    const bits = level.target.pins.filter((p) => p.dir === 'in').reduce((n, p) => n + p.width, 0);
     return (
       <p className="muted small" data-testid="reference-info">
-        ด่านนี้ขาเข้ามีหลายแบบเกินจะลองครบ จึงทดสอบด้วยกรณีขอบ (0, ค่ามากสุด, บิตเครื่องหมาย ฯลฯ) + สุ่มอีก{' '}
-        {(level.tests.samples ?? 2000).toLocaleString()} แบบ
+        {bits <= 16
+          ? `ทดสอบครบทุกกรณี ${(2 ** bits).toLocaleString()} แบบ`
+          : `ขาเข้ามี ${(2 ** bits).toLocaleString()} แบบ ลองครบไม่ไหว จึงทดสอบกรณีขอบ (0, ค่ามากสุด, บิตเครื่องหมาย ฯลฯ) + สุ่มอีก ${(level.tests.samples ?? 2000).toLocaleString()} แบบ`}
       </p>
     );
   }

@@ -14,6 +14,13 @@ import notLevel from '../levels/1-logic/not.json';
 import orLevel from '../levels/1-logic/or.json';
 import xorLevel from '../levels/1-logic/xor.json';
 import add4Level from '../levels/2-arith/add4.json';
+import add8Level from '../levels/2-arith/add8.json';
+import eq8Level from '../levels/2-arith/eq8.json';
+import inc8Level from '../levels/2-arith/inc8.json';
+import negateLevel from '../levels/2-arith/negate.json';
+import not8Level from '../levels/2-arith/not8.json';
+import sub8Level from '../levels/2-arith/sub8.json';
+import zero8Level from '../levels/2-arith/zero8.json';
 import fullAdderLevel from '../levels/2-arith/full-adder.json';
 import halfAdderLevel from '../levels/2-arith/half-adder.json';
 import dLatchLevel from '../levels/4-state/d-latch.json';
@@ -33,6 +40,13 @@ export const LEVELS: LevelDef[] = [
   halfAdderLevel,
   fullAdderLevel,
   add4Level,
+  add8Level,
+  not8Level,
+  inc8Level,
+  negateLevel,
+  sub8Level,
+  zero8Level,
+  eq8Level,
   srLatchLevel,
   dLatchLevel,
   dffLevel,

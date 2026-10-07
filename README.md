@@ -13,7 +13,7 @@
 | --- | --- |
 | ฐานสำหรับ 8 บิต: ตั้งความกว้างตัวแยก/รวมบัส, ทดสอบด้วยกรณีขอบ + สุ่ม 2,000 แบบเทียบฟังก์ชันอ้างอิง, วงจรใหญ่ใช้ Fast Mode อัตโนมัติ | ✅ |
 | ด่าน NOR, XNOR, MUX, DEMUX | ✅ |
-| เลขคณิต 8 บิต: Adder, Two's complement, Subtractor, Incrementer, Zero/Equal | ⏳ |
+| เลขคณิต 8 บิต: Adder, NOT 8 บิต, Incrementer, Negator (two's complement), Subtractor, Zero, Equal | ✅ |
 | ALU 8 บิตพร้อม flags Z C N | ⏳ |
 | Register, Counter, RAM8 → RAM256 | ⏳ |
 | ROM, Program Counter, อุปกรณ์ I/O | ⏳ |

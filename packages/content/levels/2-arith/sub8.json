@@ -1,0 +1,60 @@
+{
+  "id": "arith.sub8",
+  "chapter": 2,
+  "title": {
+    "th": "ลบเลข 8 บิต (Subtractor)",
+    "en": "8-bit Subtractor"
+  },
+  "lesson": "arith/sub8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "prim.split",
+    "prim.merge",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.neg8",
+    "prim.const0",
+    "prim.const1"
+  ],
+  "target": {
+    "defId": "user.sub8",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "diff",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "sub8"
+  },
+  "unlocks": [
+    "user.sub8"
+  ],
+  "hints": [
+    "arith/sub8/h1",
+    "arith/sub8/h2",
+    "arith/sub8/h3"
+  ],
+  "glossary": [
+    "subtractor",
+    "twos-complement"
+  ]
+}

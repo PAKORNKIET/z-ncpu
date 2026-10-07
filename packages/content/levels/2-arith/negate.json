@@ -1,0 +1,54 @@
+{
+  "id": "arith.negate",
+  "chapter": 2,
+  "title": {
+    "th": "เลขติดลบ (Negator)",
+    "en": "Negator"
+  },
+  "lesson": "arith/negate",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "prim.split",
+    "prim.merge",
+    "user.not8",
+    "user.inc8",
+    "user.add8",
+    "prim.const0",
+    "prim.const1"
+  ],
+  "target": {
+    "defId": "user.neg8",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "neg8"
+  },
+  "unlocks": [
+    "user.neg8"
+  ],
+  "hints": [
+    "arith/negate/h1",
+    "arith/negate/h2",
+    "arith/negate/h3"
+  ],
+  "glossary": [
+    "twos-complement",
+    "signed"
+  ]
+}

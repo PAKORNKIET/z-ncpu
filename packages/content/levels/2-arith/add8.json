@@ -1,0 +1,70 @@
+{
+  "id": "arith.add8",
+  "chapter": 2,
+  "title": {
+    "th": "บวกเลข 8 บิต",
+    "en": "8-bit Adder"
+  },
+  "lesson": "arith/add8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "prim.split",
+    "prim.merge",
+    "user.ha",
+    "user.fa",
+    "user.add4"
+  ],
+  "target": {
+    "defId": "user.add8",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "cin",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "sum",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "cout",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "add8"
+  },
+  "optimize": {
+    "bestNand": 72
+  },
+  "unlocks": [
+    "user.add8"
+  ],
+  "hints": [
+    "arith/add8/h1",
+    "arith/add8/h2"
+  ],
+  "glossary": [
+    "bus",
+    "splitter",
+    "carry"
+  ]
+}

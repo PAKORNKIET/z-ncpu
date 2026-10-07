@@ -1,0 +1,279 @@
+{
+  "id": "user.zero8",
+  "name": {
+    "th": "Zero",
+    "en": "Zero"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "z",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "or1",
+        "defId": "user.or",
+        "x": 300,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "or2",
+        "defId": "user.or",
+        "x": 300,
+        "y": -80,
+        "rotation": 0
+      },
+      {
+        "id": "or3",
+        "defId": "user.or",
+        "x": 300,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or4",
+        "defId": "user.or",
+        "x": 300,
+        "y": 160,
+        "rotation": 0
+      },
+      {
+        "id": "or5",
+        "defId": "user.or",
+        "x": 440,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "or6",
+        "defId": "user.or",
+        "x": 440,
+        "y": -80,
+        "rotation": 0
+      },
+      {
+        "id": "or7",
+        "defId": "user.or",
+        "x": 580,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "not1",
+        "defId": "user.not",
+        "x": 720,
+        "y": 0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "or2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "or2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "split1",
+          "pin": "b4"
+        },
+        "to": {
+          "inst": "or3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "split1",
+          "pin": "b5"
+        },
+        "to": {
+          "inst": "or3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "split1",
+          "pin": "b6"
+        },
+        "to": {
+          "inst": "or4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "split1",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "or4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "or1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or5",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "or2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or5",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "or3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or6",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "or4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or6",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "or5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or7",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "or6",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or7",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "or7",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "not1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "z"
+        }
+      }
+    ]
+  }
+}

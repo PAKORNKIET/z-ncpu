@@ -1,0 +1,47 @@
+{
+  "id": "arith.not8",
+  "chapter": 2,
+  "title": {
+    "th": "NOT 8 บิต",
+    "en": "8-bit NOT"
+  },
+  "lesson": "arith/not8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "prim.split",
+    "prim.merge"
+  ],
+  "target": {
+    "defId": "user.not8",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "not8"
+  },
+  "optimize": {
+    "bestNand": 8
+  },
+  "unlocks": [
+    "user.not8"
+  ],
+  "hints": [
+    "arith/not8/h1",
+    "arith/not8/h2"
+  ],
+  "glossary": [
+    "bitwise"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "id": "arith.zero8",
+  "chapter": 2,
+  "title": {
+    "th": "ตรวจศูนย์ (Zero detector)",
+    "en": "Zero detector"
+  },
+  "lesson": "arith/zero8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "prim.split",
+    "prim.merge",
+    "user.nor"
+  ],
+  "target": {
+    "defId": "user.zero8",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "z",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "zero8"
+  },
+  "unlocks": [
+    "user.zero8"
+  ],
+  "hints": [
+    "arith/zero8/h1",
+    "arith/zero8/h2"
+  ],
+  "glossary": [
+    "zero-flag"
+  ]
+}

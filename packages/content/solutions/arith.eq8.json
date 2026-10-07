@@ -1,0 +1,432 @@
+{
+  "id": "user.eq8",
+  "name": {
+    "th": "Equal",
+    "en": "Equal"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "eq",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": -120,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "split2",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 120,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 460,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "zero81",
+        "defId": "user.zero8",
+        "x": 600,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "xor1",
+        "defId": "user.xor",
+        "x": 300,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "xor2",
+        "defId": "user.xor",
+        "x": 300,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "xor3",
+        "defId": "user.xor",
+        "x": 300,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "xor4",
+        "defId": "user.xor",
+        "x": 300,
+        "y": -40,
+        "rotation": 0
+      },
+      {
+        "id": "xor5",
+        "defId": "user.xor",
+        "x": 300,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "xor6",
+        "defId": "user.xor",
+        "x": 300,
+        "y": 120,
+        "rotation": 0
+      },
+      {
+        "id": "xor7",
+        "defId": "user.xor",
+        "x": 300,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "xor8",
+        "defId": "user.xor",
+        "x": 300,
+        "y": 280,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "split2",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "zero81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "zero81",
+          "pin": "z"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "eq"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "xor1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "xor1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "xor1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "xor2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "split2",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "xor2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "xor2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "xor3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "split2",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "xor3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "xor3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "xor4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "split2",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "xor4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "xor4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "split1",
+          "pin": "b4"
+        },
+        "to": {
+          "inst": "xor5",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "split2",
+          "pin": "b4"
+        },
+        "to": {
+          "inst": "xor5",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "xor5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "split1",
+          "pin": "b5"
+        },
+        "to": {
+          "inst": "xor6",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "split2",
+          "pin": "b5"
+        },
+        "to": {
+          "inst": "xor6",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "xor6",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "split1",
+          "pin": "b6"
+        },
+        "to": {
+          "inst": "xor7",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "split2",
+          "pin": "b6"
+        },
+        "to": {
+          "inst": "xor7",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "xor7",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b6"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "split1",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "xor8",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "split2",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "xor8",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w28",
+        "from": {
+          "inst": "xor8",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b7"
+        }
+      }
+    ]
+  }
+}

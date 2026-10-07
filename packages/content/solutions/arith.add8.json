@@ -1,0 +1,220 @@
+{
+  "id": "user.add8",
+  "name": {
+    "th": "8-bit Adder",
+    "en": "8-bit Adder"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "cin",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "sum",
+      "dir": "out",
+      "width": 8
+    },
+    {
+      "name": "cout",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": -120,
+        "rotation": 0,
+        "params": {
+          "width": 8,
+          "parts": 2
+        }
+      },
+      {
+        "id": "split2",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 120,
+        "rotation": 0,
+        "params": {
+          "width": 8,
+          "parts": 2
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 560,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 8,
+          "parts": 2
+        }
+      },
+      {
+        "id": "add41",
+        "defId": "user.add4",
+        "x": 340,
+        "y": -80,
+        "rotation": 0
+      },
+      {
+        "id": "add42",
+        "defId": "user.add4",
+        "x": 340,
+        "y": 80,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "split2",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "add41",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "add41",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "self",
+          "pin": "cin"
+        },
+        "to": {
+          "inst": "add41",
+          "pin": "cin"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "add42",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "split2",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "add42",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "add41",
+          "pin": "cout"
+        },
+        "to": {
+          "inst": "add42",
+          "pin": "cin"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "add41",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "add42",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "sum"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "add42",
+          "pin": "cout"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "cout"
+        }
+      }
+    ]
+  }
+}
