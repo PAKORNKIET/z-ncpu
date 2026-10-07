@@ -1,6 +1,6 @@
 // พื้นที่ทำงาน: กล่องชิ้นส่วน + พื้นที่วาด + แผงขาเข้า/ขาออก จำลองสดใน Worker ทุกครั้งที่แก้วงจร
 // ใช้ทั้งในด่าน (GamePage) และสนามทดลอง (SandboxPage) — ส่วนเฉพาะของแต่ละหน้าส่งมาทาง side
-import { ComponentLibrary, romHarness, romSampleWords, ROM_DUT, ROM_PANEL } from '@z-ncpu/engine';
+import { ComponentLibrary, cpuHarness, romHarness, romSampleWords, ROM_DUT, ROM_PANEL } from '@z-ncpu/engine';
 import type { ComponentDef, DeviceKind, Diagnostic, SignalValue } from '@z-ncpu/shared';
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { EngineClient, EngineClosedError } from '../engine-client';
@@ -74,6 +74,8 @@ export function Workbench(props: {
   devices?: Record<string, DeviceKind>;
   /** ด่าน ROM: ต่อแผงค่าคงที่ที่มีข้อมูลตัวอย่างเข้าขา data ให้ลองเล่นได้ */
   romPanel?: { words: number; width: number };
+  /** ด่าน CPU: แผงโปรแกรม (256 คำสั่ง) ต่อเข้าขา prog พร้อมรายการคำสั่งไว้แสดง */
+  cpuProgram?: { words: number[]; listing: string[] };
 }) {
   const deps = props.deps ?? [];
   const model = useEditorModel(() => ({ def: props.initial, library: new ComponentLibrary(deps) }));
@@ -81,6 +83,7 @@ export function Workbench(props: {
   const def = editor.def;
   const { client, scope, pins } = useEngine();
   const rom = props.romPanel;
+  const cpu = props.cpuProgram;
   /** ขาเข้าแบบมัดสาย (เกิน 16 บิต) ตั้งค่าด้วยมือไม่ได้ ด่าน ROM ต่อแผงค่าคงที่เข้าแทน */
   const isBundle = (p: { width: number }): boolean => p.width > 16;
   const [inputs, setInputs] = useState<Record<string, number>>(() =>
@@ -134,7 +137,7 @@ export function Workbench(props: {
 
   // ขอค่าของทุกขาในชั้นที่กำลังดูไว้ระบายสีสาย
   // ด่าน ROM จำลองวงจรห่อ (แผง → ROM ของผู้เล่น) ชั้นของผู้เล่นจึงอยู่ใต้ชิ้นชื่อ dut
-  const scopePath = rom ? [ROM_DUT, ...chain.map((c) => c.id)].join('/') : viewKey;
+  const scopePath = rom || cpu ? [ROM_DUT, ...chain.map((c) => c.id)].join('/') : viewKey;
   useEffect(() => {
     client?.post({ type: 'subscribe', scopePath });
   }, [client, scopePath]);
@@ -149,11 +152,15 @@ export function Workbench(props: {
     let active = true;
     const current = editor.def;
     const lib = [...otherDeps, current];
-    const harness = rom ? romHarness(new ComponentLibrary(lib), current.id, rom.words, rom.width) : null;
+    const harness = rom
+      ? romHarness(new ComponentLibrary(lib), current.id, rom.words, rom.width)
+      : cpu
+        ? cpuHarness(new ComponentLibrary(lib), current.id)
+        : null;
     const top = harness && !('code' in harness) ? harness : null;
     client.post({ type: 'load', components: top ? [...lib, top] : lib });
     const compiling = client.send({ type: 'compile', defId: top ? top.id : current.id, mode: 'visual' });
-    if (top) client.post({ type: 'loadPanel', panel: ROM_PANEL, words: sample });
+    if (top) client.post({ type: 'loadPanel', panel: ROM_PANEL, words: cpu ? cpu.words : sample });
     compiling
       .then((res) => {
         if (active && res.type === 'compiled') setCompiled({ gates: res.stats?.gates ?? null, diagnostics: res.diagnostics });
@@ -210,6 +217,14 @@ export function Workbench(props: {
     setInputs((s) => ({ ...s, clk: 0 }));
   };
   model.onToggleInput = toggle;
+  /** reset CPU: reset = 1 เดินนาฬิกาหนึ่งจังหวะ แล้วปล่อย reset */
+  const resetCpu = (): void => {
+    if (!client) return;
+    client.post({ type: 'setInput', pin: 'reset', value: 1 });
+    tick();
+    client.post({ type: 'setInput', pin: 'reset', value: 0 });
+    setInputs((s) => ({ ...s, reset: 0, clk: 0 }));
+  };
 
   const values: Record<string, SignalValue> = compiled.gates !== null && scope.path === scopePath ? scope.values : {};
   const top: Record<string, SignalValue> = compiled.gates !== null ? pins : {};
@@ -324,6 +339,12 @@ export function Workbench(props: {
             ))}
         </div>
         {rom ? <PanelView words={sample} width={rom.width} addr={typeof top.addr === 'number' ? top.addr : undefined} /> : null}
+        {cpu ? <ProgramView listing={cpu.listing} words={cpu.words} pc={typeof top.pc === 'number' ? top.pc : undefined} /> : null}
+        {cpu ? (
+          <button className="tick" onClick={resetCpu} disabled={!client}>
+            ⟲ reset CPU
+          </button>
+        ) : null}
         {hasClock ? (
           <button className="tick" onClick={tick} disabled={!client}>
             ⏱ เดินนาฬิกา 1 จังหวะ
@@ -477,6 +498,38 @@ function PanelView({ words, width, addr }: { words: number[]; width: number; add
           ช่อง {addr} = 0x{hex(words[addr]!)} ({words[addr]})
         </p>
       ) : null}
+    </section>
+  );
+}
+
+/** แผงโปรแกรมของด่าน CPU: รายการคำสั่ง และไฮไลต์คำสั่งที่ PC ชี้ (คำสั่งที่จะทำในจังหวะถัดไป) */
+function ProgramView({ listing, words, pc }: { listing: string[]; words: number[]; pc: number | undefined }) {
+  const hex = (n: number, d: number): string => n.toString(16).toUpperCase().padStart(d, '0');
+  return (
+    <section className="panel-view" aria-label="แผงโปรแกรม">
+      <h3>🎛 แผงโปรแกรม → prog</h3>
+      <p className="muted small">
+        โปรแกรมตัวอย่าง {words.length} คำสั่ง ที่เหลือเป็น 0 (NOP) · กด reset CPU แล้วเดินนาฬิกาทีละจังหวะ
+      </p>
+      <table className="truth-table program">
+        <thead>
+          <tr>
+            <th scope="col">address</th>
+            <th scope="col">รหัส</th>
+            <th scope="col">คำสั่ง</th>
+          </tr>
+        </thead>
+        <tbody>
+          {words.map((w, i) => (
+            <tr key={i} className={i === pc ? 'current' : undefined} aria-current={i === pc ? 'true' : undefined}>
+              <td>0x{hex(i, 2)}</td>
+              <td className="mono">{hex(w, 4)}</td>
+              <td className="left mono">{listing[i]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {pc !== undefined && pc >= words.length ? <p className="muted small mono">PC = 0x{hex(pc, 2)} (NOP)</p> : null}
     </section>
   );
 }

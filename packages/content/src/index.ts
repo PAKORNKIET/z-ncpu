@@ -37,6 +37,7 @@ import io_seg7Level from '../levels/6-control/seg7.json';
 import control_decoderLevel from '../levels/6-control/decoder.json';
 import control_regfileLevel from '../levels/6-control/regfile.json';
 import control_spLevel from '../levels/6-control/sp.json';
+import cpu_z8Level from '../levels/7-cpu/z8.json';
 import add4Level from '../levels/2-arith/add4.json';
 import add8Level from '../levels/2-arith/add8.json';
 import eq8Level from '../levels/2-arith/eq8.json';
@@ -98,6 +99,7 @@ export const LEVELS: LevelDef[] = [
   control_decoderLevel,
   control_regfileLevel,
   control_spLevel,
+  cpu_z8Level,
 ] as LevelDef[];
 
 /** ชื่อบท (เลขบทตามหลักสูตรใน Spec ส่วน 12 บทที่ยังไม่มีด่านจะไม่แสดง) */
@@ -108,6 +110,7 @@ export const CHAPTERS: Record<number, { th: string; en: string }> = {
   4: { th: 'วงจรจำค่า', en: 'State' },
   5: { th: 'หน่วยความจำ', en: 'Memory' },
   6: { th: 'ควบคุมและอุปกรณ์', en: 'Control & I/O' },
+  7: { th: 'CPU', en: 'CPU' },
 };
 
 export const GLOSSARY: GlossaryEntry[] = glossaryJson;

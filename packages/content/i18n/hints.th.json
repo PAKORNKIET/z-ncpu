@@ -104,5 +104,10 @@
   "control/regfile/h3": "a, b, c, d คือขาออกของ register แต่ละตัวต่อออกมาตรงๆ ใช้ดูค่าตอนดีบัก CPU",
   "control/sp/h1": "SP คือ Register 8 บิตที่โหลดทุกจังหวะ ค่าถัดไปเลือกจาก op: 0 = ค่าเดิม, 1 = ค่า − 1, 2 = ค่า + 1",
   "control/sp/h2": "ค่า − 1 ทำได้ด้วยตัวบวก: บวก 0xFF (= −1 แบบ two's complement) แล้วทิ้งตัวทด ผลนี้ต่อออกขา down ด้วย",
-  "control/sp/h3": "reset ต้องได้ 0xF0 ไม่ใช่ 0: ใช้ MUX 8 บิตตัวสุดท้ายเลือกระหว่างค่าถัดไปกับค่าคงที่ 1111 0000"
+  "control/sp/h3": "reset ต้องได้ 0xF0 ไม่ใช่ 0: ใช้ MUX 8 บิตตัวสุดท้ายเลือกระหว่างค่าถัดไปกับค่าคงที่ 1111 0000",
+  "cpu/z8/h1": "เริ่มจาก Fetch: PC → addr ของ ROM256 และ prog → data ของ ROM แล้วแยกคำสั่ง 16 บิตด้วยตัวแยกบัส: บิต 0–7 = ตัวถูกดำเนินการ, 8 = m, 9–10 = rd, 11–13 = func, 14–15 = group",
+  "cpu/z8/h2": "ต่อ group, func, m เข้า Decoder แล้วใช้สัญญาณของมันคุมทุกอย่าง: src = MUX ระหว่าง y ของ Register file (rs = บิต 0–1) กับตัวถูกดำเนินการ ตาม src_sel แล้ว ALU คำนวณ x (= rd) กับ src",
+  "cpu/z8/h3": "ค่าที่เขียนกลับลง rd เลือกด้วย wb_sel (ALU / ข้อมูลที่อ่าน / src) ส่วน flags ใช้ Register 1 บิต 3 ตัว load = flag_write และต่อ z c n กลับเข้า Decoder เพื่อตัดสินคำสั่งกระโดด",
+  "cpu/z8/h4": "address ของ RAM เลือกด้วย addr_sel (src / SP / SP−1) ถ้าบิต 4–7 ของ address เป็น 1 ทั้งหมด (≥ 0xF0) คือ I/O: ห้ามเขียน RAM แต่เขียน Register ของจอที่ 0xF0, LED ที่ 0xF1, 7-segment ที่ 0xF2 และอ่านสวิตช์ ปุ่ม คีย์บอร์ดที่ 0xF8–0xFA แทน",
+  "cpu/z8/h5": "PC: load = pc_sel ไม่เป็น 0, in = src (กระโดด) หรือข้อมูลที่อ่าน (RET), inc = NOT halt ข้อมูลที่เขียน RAM คือ x หรือ PC + 1 ตอน CALL (mem_src) ทุก register ใช้ clk เดียวกันและ reset เดียวกัน"
 }

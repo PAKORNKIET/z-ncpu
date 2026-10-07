@@ -1,7 +1,8 @@
 // หน้าด่าน (M1-3): รายการด่าน → บทเรียน → ต่อวงจร → ทดสอบ → ปลดล็อกชิ้นใหม่
 import { ComponentLibrary, contentHash } from '@z-ncpu/engine';
 import { CHAPTERS, GLOSSARY, HINTS_TH, LEVELS } from '@z-ncpu/content';
-import type { ComponentDef, Diagnostic, LevelDef, SignalValue, TestReport } from '@z-ncpu/shared';
+import { assemble, disassemble } from '@z-ncpu/isa';
+import type { ComponentDef, Diagnostic, LevelDef, SignalValue, TestCaseResult, TestReport } from '@z-ncpu/shared';
 import { useState } from 'react';
 import { EngineClosedError } from '../engine-client';
 import { PRIMITIVE_PALETTE, Workbench, type PaletteItem, type WorkbenchContext } from '../editor/Workbench';
@@ -52,7 +53,9 @@ export function paletteFor(ids: readonly string[], busWidth = 4): PaletteItem[] 
 }
 
 /** ความกว้างบัสที่กว้างที่สุดของด่าน (อย่างน้อย 4) */
-const busWidthOf = (level: LevelDef): number => Math.max(4, ...level.target.pins.map((p) => (p.width > 1 ? p.width : 0)));
+// ด่าน CPU: มัดสาย prog (4,096 บิต) ต่อกับแผงให้แล้ว ตัวแยกบัสจึงเริ่มที่ 16 บิต (กว้างเท่าคำสั่ง)
+const busWidthOf = (level: LevelDef): number =>
+  level.tests.type === 'cpu' ? 16 : Math.max(4, ...level.target.pins.map((p) => (p.width > 1 ? p.width : 0)));
 
 export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => SaveFile) => void; generation: number }) {
   const { save, setSave } = props;
@@ -92,7 +95,7 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
             </ol>
           </section>
         ))}
-        <p className="muted small">บทถัดไป (CPU และการเขียนโปรแกรม) กำลังมา</p>
+        <p className="muted small">บทถัดไป (การเขียนโปรแกรม) กำลังมา</p>
       </nav>
 
       <div className="level-main">
@@ -105,6 +108,7 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
           onChange={(def) => setSave((s) => putComponent(s, def))}
           {...(level.devices ? { devices: level.devices } : {})}
           {...(level.tests.type === 'rom' ? { romPanel: { words: level.tests.words, width: level.tests.width } } : {})}
+          {...(level.tests.type === 'cpu' ? { cpuProgram: samplePrograms(level) } : {})}
           side={(ctx) => (
             <TestPanel
               level={level}
@@ -212,6 +216,8 @@ function TestPanel(props: {
         <TruthTable level={level} report={stale ? null : (result?.report ?? null)} />
       ) : level.tests.type === 'sequence' ? (
         <SequenceTable level={level} report={stale ? null : (result?.report ?? null)} />
+      ) : level.tests.type === 'cpu' ? (
+        <CpuTable level={level} report={stale ? null : (result?.report ?? null)} />
       ) : (
         <ReferenceTable level={level} report={stale ? null : (result?.report ?? null)} />
       )}
@@ -220,8 +226,10 @@ function TestPanel(props: {
         {stale ? <p className="muted">วงจรเปลี่ยนแล้ว กดทดสอบอีกครั้ง</p> : null}
         {result && !stale && result.report && !result.report.passed ? (
           <p className="error">
-            ✗ ยังไม่ผ่าน: ถูก {result.report.total - result.report.failed} จาก {result.report.total} แถว
-            {result.report.firstFailure
+            {level.tests.type === 'cpu'
+              ? '✗ ยังไม่ผ่าน: CPU ทำงานไม่ตรงกับ emulator (ดูรายละเอียดด้านบน)'
+              : `✗ ยังไม่ผ่าน: ถูก ${result.report.total - result.report.failed} จาก ${result.report.total} แถว`}
+            {result.report.firstFailure && level.tests.type !== 'cpu'
               ? level.tests.type === 'reference'
                 ? ''
                 : ` · ดู${level.tests.type === 'sequence' ? 'ขั้น' : 'แถว'}ที่ ${result.report.firstFailure.index + 1}`
@@ -462,6 +470,99 @@ function ReferenceTable({ level, report }: { level: LevelDef; report: TestReport
           </tbody>
         </table>
       </div>
+    </>
+  );
+}
+
+/** โปรแกรมตัวอย่างที่ใส่แผงของด่าน CPU ตอนลองเล่น: โปรแกรมทดสอบตัวแรก */
+function samplePrograms(level: LevelDef): { words: number[]; listing: string[] } {
+  if (level.tests.type !== 'cpu' || !level.tests.programs[0]) return { words: [], listing: [] };
+  const words = assemble(level.tests.programs[0].source).words;
+  return { words, listing: disassemble(words) };
+}
+
+const CPU_PIN_TH: Record<string, string> = { pc: 'PC', a: 'A', b: 'B', c: 'C', d: 'D', sp: 'SP', flags: 'flags (ZCN)', halt: 'halt', out: 'จอ (out)', leds: 'LED', seg: '7-segment' };
+const hex2 = (v: SignalValue | undefined): string =>
+  typeof v === 'number' ? `${v} · 0x${v.toString(16).toUpperCase().padStart(2, '0')}` : show(v);
+
+function PinCompare({ rows, fail, label }: { rows: string[]; fail: TestCaseResult; label: string }) {
+  return (
+    <table className="truth-table cpu-pins" aria-label={label}>
+      <thead>
+        <tr>
+          <th scope="col">ขา</th>
+          <th scope="col">ที่ต้องได้</th>
+          <th scope="col">ที่ได้</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((pin) => {
+          const ok = fail.expected[pin] === fail.actual[pin];
+          return (
+            <tr key={pin} className={ok ? undefined : 'fail'}>
+              <td>{CPU_PIN_TH[pin] ?? pin}</td>
+              <td className="mono">{hex2(fail.expected[pin])}</td>
+              <td className="mono">
+                {hex2(fail.actual[pin])} {ok ? '' : '✗'}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
+/**
+ * ด่าน CPU: ก่อนทดสอบแสดงรายชื่อโปรแกรม หลังทดสอบบอกผลทีละโปรแกรม
+ * ถ้าผิดบอก cycle และคำสั่งที่เพิ่งทำ แล้วเทียบทุกขาดีบักกับ emulator
+ */
+function CpuTable({ level, report }: { level: LevelDef; report: TestReport | null }) {
+  if (level.tests.type !== 'cpu') return null;
+  const programs = level.tests.programs;
+  const fail = report?.results.find((r) => !r.ok);
+  return (
+    <>
+      <p className="muted small" data-testid="reference-info">
+        ใส่โปรแกรมลงแผง กด reset แล้วเดินนาฬิกา เทียบ PC, register, flags และ I/O กับ emulator ทุก cycle
+      </p>
+      <ol className="cpu-programs" aria-label="โปรแกรมทดสอบ">
+        {programs.map((p, i) => {
+          const r = report?.results.find((x) => x.cpu?.program === i);
+          const mark = !report ? '' : r ? (r.ok ? '✓' : '✗') : '–';
+          return (
+            <li key={i} className={r ? (r.ok ? 'ok' : 'fail') : undefined}>
+              {mark ? <span aria-label={r ? (r.ok ? 'ผ่าน' : 'ไม่ผ่าน') : 'ไม่ได้รัน'}>{mark} </span> : null}
+              {p.name.th}
+              {r?.ok && r.cpu ? <span className="muted small"> · {r.cpu.cycle} cycle</span> : null}
+            </li>
+          );
+        })}
+      </ol>
+      {fail?.cpu ? (
+        <div className="cpu-fail" data-testid="cpu-failure">
+          <p>
+            <strong>{programs[fail.cpu.program]?.name.th}</strong> ผิดที่ cycle {fail.cpu.cycle}
+            {fail.cpu.instruction !== undefined ? (
+              <>
+                {' '}หลังทำคำสั่ง <code>{fail.cpu.instruction}</code> ที่ address 0x
+                {(fail.cpu.pc ?? 0).toString(16).toUpperCase().padStart(2, '0')}
+              </>
+            ) : (
+              ' (หลัง reset)'
+            )}
+          </p>
+          <PinCompare rows={Object.keys(fail.expected).filter((p) => fail.expected[p] !== fail.actual[p])} fail={fail} label="ขาที่ได้ค่าผิด" />
+          <details>
+            <summary>ดูทุกขาใน cycle นี้</summary>
+            <PinCompare rows={Object.keys(fail.expected)} fail={fail} label="ค่าทุกขาของ CPU" />
+          </details>
+          <details>
+            <summary>ดูซอร์สของโปรแกรมนี้</summary>
+            <pre className="asm mono">{programs[fail.cpu.program]?.source}</pre>
+          </details>
+        </div>
+      ) : null}
     </>
   );
 }

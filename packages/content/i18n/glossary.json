@@ -45,5 +45,8 @@
   {"id": "control-signal", "th": "สัญญาณควบคุม", "en": "Control signal", "explain_th": "สายที่บอกส่วนต่างๆ ของ CPU ว่าจังหวะนี้ต้องทำอะไร เช่น เขียน register หรือไม่ เลือกข้อมูลจากไหน"},
   {"id": "register-file", "th": "ชุดรีจิสเตอร์", "en": "Register file", "explain_th": "กลุ่ม register ที่เลือกเขียนได้ทีละตัวและอ่านได้พร้อมกันหลายตัวด้วยหมายเลข"},
   {"id": "stack", "th": "สแตก", "en": "Stack", "explain_th": "พื้นที่ใน RAM ที่เก็บค่าแบบเข้าทีหลังออกก่อน ใช้กับ PUSH, POP และจำที่กลับของ CALL"},
-  {"id": "stack-pointer", "th": "ตัวชี้สแตก", "en": "Stack Pointer (SP)", "explain_th": "register ที่เก็บ address ของค่าบนสุดของ stack ใน Z8 stack โตลงล่างเริ่มที่ 0xF0"}
+  {"id": "stack-pointer", "th": "ตัวชี้สแตก", "en": "Stack Pointer (SP)", "explain_th": "register ที่เก็บ address ของค่าบนสุดของ stack ใน Z8 stack โตลงล่างเริ่มที่ 0xF0"},
+  {"id": "cpu", "th": "หน่วยประมวลผลกลาง", "en": "CPU (Central Processing Unit)", "explain_th": "วงจรที่ดึงคำสั่งจากหน่วยความจำมาทำทีละคำสั่ง ประกอบด้วย PC, decoder, register, ALU และทางเดินข้อมูล"},
+  {"id": "datapath", "th": "ทางเดินข้อมูล", "en": "Datapath", "explain_th": "เส้นทางที่ข้อมูลไหลผ่านใน CPU จาก register ผ่าน ALU และหน่วยความจำ กลับมาที่ register โดยมีสัญญาณควบคุมเลือกทาง"},
+  {"id": "memory-mapped-io", "th": "I/O แบบใช้ address หน่วยความจำ", "en": "Memory-mapped I/O", "explain_th": "การคุยกับอุปกรณ์ผ่าน address แบบเดียวกับ RAM เช่นเขียนที่ 0xF0 แล้วตัวเลขไปขึ้นจอ"}
 ]

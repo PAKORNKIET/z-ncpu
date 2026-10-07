@@ -2,6 +2,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ComponentLibrary, compile, contentHash, testComponent } from '@z-ncpu/engine';
+import { Z8_ORACLE } from '@z-ncpu/isa';
 import type { ComponentDef } from '@z-ncpu/shared';
 import { describe, expect, it } from 'vitest';
 import { GLOSSARY, HINTS_TH, LEVELS, term } from '../src';
@@ -30,7 +31,7 @@ describe('Level CI', () => {
       it('เฉลยผ่านเทสต์ทั้ง Visual Mode และ Fast Mode', () => {
         lib.add(sol);
         for (const mode of ['visual', 'fast'] as const) {
-          const { report, diagnostics } = testComponent(lib, sol.id, level.tests, mode);
+          const { report, diagnostics } = testComponent(lib, sol.id, level.tests, mode, undefined, Z8_ORACLE);
           expect(diagnostics).toEqual([]);
           expect(report?.passed).toBe(true);
         }

@@ -16,6 +16,7 @@
     "@z-ncpu/shared": "workspace:*"
   },
   "devDependencies": {
-    "@z-ncpu/engine": "workspace:*"
+    "@z-ncpu/engine": "workspace:*",
+    "@z-ncpu/isa": "workspace:*"
   }
 }

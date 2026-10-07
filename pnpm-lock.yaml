@@ -107,6 +107,9 @@ importers:
       '@z-ncpu/engine':
         specifier: workspace:*
         version: link:../engine
+      '@z-ncpu/isa':
+        specifier: workspace:*
+        version: link:../isa
 
   packages/engine:
     dependencies:

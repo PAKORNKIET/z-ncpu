@@ -10,6 +10,7 @@ import {
   testComponent,
   type Simulator,
 } from '@z-ncpu/engine';
+import { Z8_ORACLE } from '@z-ncpu/isa';
 import type { SignalValue, SimMode, UiToWorker, WorkerToUi } from '@z-ncpu/shared';
 
 declare const self: DedicatedWorkerGlobalScope;
@@ -164,7 +165,7 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         return;
 
       case 'test': {
-        const { report, diagnostics } = testComponent(lib, msg.defId, msg.tests, msg.mode);
+        const { report, diagnostics } = testComponent(lib, msg.defId, msg.tests, msg.mode, undefined, Z8_ORACLE);
         post({ rid: msg.rid, type: 'testResult', defId: msg.defId, mode: msg.mode, report, diagnostics });
         return;
       }

@@ -147,7 +147,62 @@ export interface RomSuite {
   seed?: number;
 }
 
-export type TestSuite = TruthTableSuite | SequenceSuite | ReferenceSuite | RomSuite;
+/** ขาเข้าของ I/O ที่ CPU อ่านได้ (Spec ส่วน 10: 0xF8 สวิตช์, 0xF9 ปุ่ม, 0xFA คีย์บอร์ด) */
+export interface CpuInputs {
+  sw?: number;
+  btn?: number;
+  key?: number;
+}
+
+/** โปรแกรมทดสอบ CPU: ซอร์ส assembly ที่ assemble ตอนทดสอบ (ไฟล์ด่านจึงไม่มีโค้ดที่รันได้) */
+export interface CpuProgram {
+  name: LocalizedText;
+  source: string;
+  /** จำนวน clock สูงสุด (หยุดก่อนถ้าถึง HALT) */
+  maxCycles: number;
+  inputs?: CpuInputs;
+}
+
+/**
+ * ทดสอบ CPU ทั้งเครื่อง (Spec ส่วน 17 "โปรแกรมบน CPU"): ใส่โปรแกรมลงแผงค่าคงที่ที่ต่อเข้าขา prog
+ * กด reset แล้วเดินนาฬิกา เทียบขาดีบักกับ emulator อ้างอิงทุก cycle
+ */
+export interface CpuSuite {
+  type: 'cpu';
+  programs: CpuProgram[];
+}
+
+export type TestSuite = TruthTableSuite | SequenceSuite | ReferenceSuite | RomSuite | CpuSuite;
+
+/**
+ * ค่าที่ขาของ CPU หลัง tick (ตรงกับขาดีบักของด่าน CPU) flags = Z<<2 | C<<1 | N
+ * out/leds/seg เป็น undefined จนกว่าโปรแกรมจะเขียน (register ของ I/O ไม่ต้อง reset)
+ */
+export interface CpuSnapshot {
+  cycle: number;
+  pc: number;
+  a: number;
+  b: number;
+  c: number;
+  d: number;
+  sp: number;
+  flags: number;
+  halt: number;
+  out?: number;
+  leds?: number;
+  /** รูปแบบไฟ 7 ส่วนของเลขฐานสิบหกในบิตล่างของค่าที่เขียนที่ 0xF2 */
+  seg?: number;
+}
+
+/**
+ * คำตอบอ้างอิงของ CPU ที่ส่งเข้า engine ตอนทดสอบ (engine import @z-ncpu/isa ไม่ได้ตามกฎ dependency)
+ * assemble โยน Error เมื่อซอร์สผิด
+ */
+export interface CpuOracle {
+  assemble(source: string): number[];
+  run(words: readonly number[], maxCycles: number, inputs: CpuInputs): CpuSnapshot[];
+  disassemble(word: number): string;
+}
 
 export interface TestCaseResult {
   index: number;
@@ -155,6 +210,8 @@ export interface TestCaseResult {
   inputs: Record<string, SignalValue>;
   expected: Record<string, SignalValue>;
   actual: Record<string, SignalValue>;
+  /** ด่าน CPU: ผิดที่โปรแกรมไหน cycle ไหน หลังคำสั่งอะไร */
+  cpu?: { program: number; cycle: number; pc?: number; instruction?: string };
 }
 
 export interface TestReport {

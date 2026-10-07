@@ -2,38 +2,14 @@
 // ใช้เป็นคำตอบที่ถูกต้องตอนทดสอบ CPU ที่ผู้เล่นต่อเอง: รันโปรแกรมเดียวกันแล้วเทียบค่าทุก cycle
 // พฤติกรรมต้องตรงกับ CPU single-cycle ในส่วน 11 ทุกบิต รวมถึงกรณีขอบ (wrap, คำสั่งที่ไม่ได้ใช้)
 
+import type { CpuInputs, CpuOracle, CpuSnapshot } from '@z-ncpu/shared';
+import { assemble, disassembleWord, formatDiagnostic } from './asm';
 import { Z8, type IsaDef } from './index';
 
-/** ค่าที่ขาเข้าของ I/O */
-export interface Z8Inputs {
-  /** สวิตช์ 8 ตัว (อ่านที่ 0xF8) */
-  sw?: number;
-  /** ปุ่มกด (อ่านที่ 0xF9) */
-  btn?: number;
-  /** รหัสปุ่มคีย์บอร์ดล่าสุด (อ่านที่ 0xFA) */
-  key?: number;
-}
+/** ค่าที่ขาเข้าของ I/O: sw อ่านที่ 0xF8, btn ที่ 0xF9, key ที่ 0xFA */
+export type Z8Inputs = CpuInputs;
 
-/**
- * สถานะที่มองเห็นจากขาของ CPU หลัง tick หนึ่งครั้ง (ตรงกับขาดีบักของด่าน CPU)
- * flags = Z<<2 | C<<1 | N, halt = คำสั่งที่ PC ชี้อยู่คือ HALT
- * out/leds/seg เป็น undefined จนกว่าโปรแกรมจะเขียน (register ของ I/O ไม่ต้อง reset)
- */
-export interface CpuSnapshot {
-  cycle: number;
-  pc: number;
-  a: number;
-  b: number;
-  c: number;
-  d: number;
-  sp: number;
-  flags: number;
-  halt: number;
-  out?: number;
-  leds?: number;
-  /** รูปแบบไฟ 7 ส่วน (gfedcba) ของเลขฐานสิบหกในบิตล่างของค่าที่เขียนที่ 0xF2 */
-  seg?: number;
-}
+export type { CpuSnapshot };
 
 /** รูปแบบไฟ 7-segment ของเลข 0–F (บิต 0 = a ... บิต 6 = g) ตรงกับด่าน io.seg7 */
 export const SEG7_PATTERNS = [0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71] as const;
@@ -256,3 +232,14 @@ export function runZ8(program: ArrayLike<number>, maxCycles: number, inputs: Z8I
   }
   return trace;
 }
+
+/** คำตอบอ้างอิงสำหรับทดสอบ CPU ของผู้เล่น (ส่งเข้า testComponent ของ engine) */
+export const Z8_ORACLE: CpuOracle = {
+  assemble(source) {
+    const r = assemble(source);
+    if (!r.ok) throw new Error(r.diagnostics.map((d) => formatDiagnostic(d)).join('\n'));
+    return r.words;
+  },
+  run: (words, maxCycles, inputs) => runZ8(words, maxCycles, inputs),
+  disassemble: (word) => disassembleWord(word),
+};

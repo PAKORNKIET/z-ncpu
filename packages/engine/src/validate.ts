@@ -1,5 +1,8 @@
 import type {
   ComponentDef,
+  CpuOracle,
+  CpuSnapshot,
+  CpuSuite,
   Diagnostic,
   RomSuite,
   SequenceSuite,
@@ -20,8 +23,9 @@ import { referenceRows } from './references';
 
 export { MAX_EXHAUSTIVE_BITS, exhaustiveRows } from './rows';
 
-export function runTests(sim: Simulator, suite: TestSuite): TestReport {
+export function runTests(sim: Simulator, suite: TestSuite, oracle?: CpuOracle): TestReport {
   if (suite.type === 'rom') return runRom(sim, suite);
+  if (suite.type === 'cpu') return runCpu(sim, suite, oracle);
   if (suite.type === 'truth-table') return runTruthTable(sim, suite);
   if (suite.type === 'sequence') return runSequence(sim, suite);
   let rows: TruthTableRow[];
@@ -74,17 +78,18 @@ export function testComponent(
   suite: TestSuite,
   mode: SimMode = 'fast',
   options?: CompileOptions,
+  oracle?: CpuOracle,
 ): ComponentTestResult {
-  if (suite.type === 'rom') {
-    const harness = romHarness(lib, defId, suite.words, suite.width);
+  if (suite.type === 'rom' || suite.type === 'cpu') {
+    const harness = suite.type === 'rom' ? romHarness(lib, defId, suite.words, suite.width) : cpuHarness(lib, defId);
     if ('code' in harness) return { diagnostics: [harness], report: null };
     const { netlist, diagnostics } = compile(new ComponentLibrary([...lib.all(), harness]), harness.id, options);
     if (!netlist || hasErrors(diagnostics)) return { diagnostics, report: null };
-    return { diagnostics, report: runRom(createSimulator(netlist, mode), suite) };
+    return { diagnostics, report: runTests(createSimulator(netlist, mode), suite, oracle) };
   }
   const { netlist, diagnostics } = compile(lib, defId, options);
   if (!netlist || hasErrors(diagnostics)) return { diagnostics, report: null };
-  return { diagnostics, report: runTests(createSimulator(netlist, mode), suite) };
+  return { diagnostics, report: runTests(createSimulator(netlist, mode), suite, oracle) };
 }
 
 export const ROM_HARNESS_ID = 'test.rom-harness';
@@ -129,6 +134,111 @@ export function romHarness(lib: ComponentLibrary, defId: string, words: number, 
       ],
     },
   };
+}
+
+export const CPU_HARNESS_ID = 'test.cpu-harness';
+/** โปรแกรมของ CPU: 256 คำสั่ง × 16 บิต */
+export const CPU_PROG_WORDS = 256;
+export const CPU_PROG_WIDTH = 16;
+/** ขาดีบักที่เทียบกับ emulator ทุก cycle (out/leds/seg เทียบหลังโปรแกรมเขียนค่าแล้ว) */
+export const CPU_DEBUG_PINS = ['pc', 'a', 'b', 'c', 'd', 'sp', 'flags', 'halt'] as const;
+export const CPU_IO_PINS = ['out', 'leds', 'seg'] as const;
+
+/**
+ * วงจรห่อสำหรับทดสอบ/รัน CPU: แผงค่าคงที่ (โปรแกรม) → ขา prog ของ CPU
+ * ขาอื่นของ CPU ต่อออกมาเป็นขาของวงจรห่อชื่อเดิม
+ */
+export function cpuHarness(lib: ComponentLibrary, defId: string): ComponentDef | Diagnostic {
+  const def = lib.get(defId);
+  const prog = def?.pins.find((p) => p.name === 'prog' && p.dir === 'in');
+  if (!def || !prog || prog.width !== CPU_PROG_WORDS * CPU_PROG_WIDTH) {
+    return err(
+      'unknown-pin',
+      `CPU ต้องมีขาเข้า prog กว้าง ${CPU_PROG_WORDS * CPU_PROG_WIDTH} บิต สำหรับต่อแผงโปรแกรม`,
+      `A CPU needs an input pin prog of ${CPU_PROG_WORDS * CPU_PROG_WIDTH} bits for the program panel`,
+    );
+  }
+  const others = def.pins.filter((p) => p !== prog);
+  return {
+    id: CPU_HARNESS_ID,
+    name: { th: 'ทดสอบ CPU', en: 'CPU harness' },
+    kind: 'circuit',
+    pins: others.map((p) => ({ ...p })),
+    body: {
+      instances: [
+        { id: ROM_PANEL, defId: 'prim.panel', params: { words: CPU_PROG_WORDS, width: CPU_PROG_WIDTH }, x: 0, y: 0, rotation: 0 },
+        { id: ROM_DUT, defId, x: 0, y: 0, rotation: 0 },
+      ],
+      wires: [
+        { id: 'w0', from: { inst: ROM_PANEL, pin: 'out' }, to: { inst: ROM_DUT, pin: 'prog' } },
+        ...others.map((p, i) =>
+          p.dir === 'in'
+            ? { id: `w${i + 1}`, from: { inst: 'self', pin: p.name }, to: { inst: ROM_DUT, pin: p.name } }
+            : { id: `w${i + 1}`, from: { inst: ROM_DUT, pin: p.name }, to: { inst: 'self', pin: p.name } },
+        ),
+      ],
+    },
+  };
+}
+
+/** reset CPU: reset = 1 แล้วเดินนาฬิกาหนึ่งจังหวะ (ใช้ทั้งตอนทดสอบและตอนรันบนหน้าจอ) */
+export function resetCpu(sim: Simulator, inputs: Record<string, number> = {}): SettleResult {
+  for (const [pin, v] of Object.entries(inputs)) if (sim.netlist.inputs.has(pin)) sim.setInput(pin, v);
+  sim.setInput('clk', 0);
+  sim.setInput('reset', 1);
+  let r = sim.settle();
+  if (r.ok) r = sim.tick('clk');
+  sim.setInput('reset', 0);
+  if (r.ok) r = sim.settle();
+  return r;
+}
+
+function runCpu(sim: Simulator, suite: CpuSuite, oracle?: CpuOracle): TestReport {
+  if (!oracle) {
+    return finish([], err('unsupported', 'การทดสอบ CPU ต้องมี emulator อ้างอิง', 'CPU tests need a reference emulator'));
+  }
+  for (const pin of ['clk', 'reset']) {
+    if (!sim.netlist.inputs.has(pin)) return finish([], err('unknown-pin', `CPU ต้องมีขาเข้า ${pin}`, `A CPU needs an input pin ${pin}`, pin));
+  }
+  const results: TestCaseResult[] = [];
+  for (let p = 0; p < suite.programs.length; p++) {
+    const program = suite.programs[p]!;
+    const where = { th: `โปรแกรม "${program.name.th}"`, en: `program "${program.name.en}"` };
+    let words: number[];
+    let trace: CpuSnapshot[];
+    try {
+      words = oracle.assemble(program.source);
+      trace = oracle.run(words, program.maxCycles, program.inputs ?? {});
+    } catch (e) {
+      const text = e instanceof Error ? e.message : String(e);
+      return finish(results, err('unsupported', `${where.th}: ${text}`, `${where.en}: ${text}`));
+    }
+    sim.loadPanel(words, ROM_PANEL);
+    let settled = resetCpu(sim, { sw: 0, btn: 0, key: 0, ...program.inputs });
+    for (let k = 0; k < trace.length; k++) {
+      if (k > 0 && settled.ok) settled = sim.tick('clk');
+      if (!settled.ok) return finish(results, oscillation(settled, sim, `${where.th} cycle ${k}`, `${where.en} cycle ${k}`));
+      const want = trace[k]!;
+      const expected: Record<string, SignalValue> = {};
+      for (const pin of [...CPU_DEBUG_PINS, ...CPU_IO_PINS]) {
+        const v = want[pin];
+        if (v !== undefined && sim.netlist.outputs.has(pin)) expected[pin] = v;
+      }
+      const row = check(sim, p, { program: p }, expected);
+      if (row.ok && k < trace.length - 1) continue;
+      row.cpu = { program: p, cycle: k };
+      const prev = trace[k - 1];
+      if (prev) {
+        row.cpu.pc = prev.pc;
+        row.cpu.instruction = oracle.disassemble(words[prev.pc] ?? 0);
+      }
+      results.push(row);
+      break;
+    }
+    // โปรแกรมแรกที่ผิดพอแล้ว ที่เหลือไม่ต้องรัน
+    if (results.at(-1)?.ok === false) break;
+  }
+  return finish(results);
 }
 
 /** ข้อมูลตัวอย่างใส่แผง (ไม่ซ้ำกันทุกคำ เห็นชัดว่าอ่านคำไหนออกมา) */

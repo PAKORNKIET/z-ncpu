@@ -1,0 +1,222 @@
+{
+  "id": "cpu.z8",
+  "chapter": 7,
+  "title": {
+    "th": "ประกอบ CPU Z8",
+    "en": "Build the Z8 CPU"
+  },
+  "lesson": "cpu/z8",
+  "available": [
+    "prim.nand",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.nor",
+    "user.xor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "user.ha",
+    "user.fa",
+    "user.add4",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.neg8",
+    "user.sub8",
+    "user.zero8",
+    "user.eq8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.alu8",
+    "user.srlatch",
+    "user.dlatch",
+    "user.dff",
+    "user.bit",
+    "user.reg8",
+    "user.counter8",
+    "user.demux4",
+    "user.demux8",
+    "user.ram8",
+    "user.ram64",
+    "user.ram256",
+    "user.mux16",
+    "user.rom8",
+    "user.rom64",
+    "user.rom256",
+    "user.pc",
+    "user.seg7",
+    "user.decoder",
+    "user.regfile",
+    "user.sp"
+  ],
+  "target": {
+    "defId": "user.cpu",
+    "pins": [
+      {
+        "name": "prog",
+        "dir": "in",
+        "width": 4096
+      },
+      {
+        "name": "reset",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "sw",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "btn",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "key",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "leds",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "seg",
+        "dir": "out",
+        "width": 7
+      },
+      {
+        "name": "halt",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "pc",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "a",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "c",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "d",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "sp",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "flags",
+        "dir": "out",
+        "width": 3
+      }
+    ]
+  },
+  "tests": {
+    "type": "cpu",
+    "programs": [
+      {
+        "name": {
+          "th": "นับ 0 ถึง 9",
+          "en": "Count 0 to 9"
+        },
+        "source": "; โปรแกรมตัวอย่างใน Spec ส่วน 10\n        MOV A, 0\nloop:   STORE [OUT], A\n        ADD A, 1\n        CMP A, 10\n        JNZ loop\n        HALT\n",
+        "maxCycles": 100
+      },
+      {
+        "name": {
+          "th": "ALU และ flags",
+          "en": "ALU and flags"
+        },
+        "source": "        MOV A, 200\n        MOV B, 100\n        ADD A, B        ; 300 ล้น: A = 44, C = 1\n        JC ok1\n        HALT\nok1:    SUB A, 45       ; 44 − 45 = 255, N = 1, C = 0\n        JN ok2\n        HALT\nok2:    MOV C, 0x0F\n        AND C, 0x3C     ; 0x0C\n        OR C, 0x30      ; 0x3C\n        XOR C, B        ; 0x3C ^ 0x64 = 0x58\n        NOT C           ; 0xA7\n        MOV D, C\n        CMP D, 0xA7     ; Z = 1, D ไม่เปลี่ยน\n        JZ ok3\n        HALT\nok3:    SUB D, D        ; 0, Z = 1 C = 1\n        JNZ bad\n        CMP B, 101      ; 100 < 101: C = 0\n        JC bad\n        STORE [OUT], C\n        STORE [LEDS], A\n        HALT\nbad:    MOV A, 0xEE\n        STORE [OUT], A\n        HALT\n",
+        "maxCycles": 100
+      },
+      {
+        "name": {
+          "th": "RAM, stack และ CALL",
+          "en": "RAM, stack and CALL"
+        },
+        "source": "        MOV A, 3\n        STORE [0x10], A\n        MOV B, 0x10\n        LOAD C, [B]     ; C = 3\n        ADD C, 0x10 - 0x10 + 4\n        PUSH C          ; stack: 7\n        CALL square     ; A = A * A\n        STORE [OUT], A\n        POP D           ; D = 7\n        STORE [SEG], D\n        CALL nested\n        STORE [LEDS], B\n        HALT\n; A = A * A ด้วยการบวกซ้ำ (ใช้ B, C เป็นตัวช่วย เก็บไว้บน stack)\nsquare: PUSH B\n        PUSH C\n        MOV B, A\n        MOV C, 0\nsq:     ADD C, A\n        SUB B, 1\n        JNZ sq\n        MOV A, C\n        POP C\n        POP B\n        RET\nnested: CALL inner\n        ADD B, 1\n        RET\ninner:  MOV B, 0x80\n        RET\n",
+        "maxCycles": 300
+      },
+      {
+        "name": {
+          "th": "สวิตช์ ปุ่ม และคีย์บอร์ด",
+          "en": "Switches, buttons and keyboard"
+        },
+        "source": "        LOAD A, [SW]\n        STORE [LEDS], A\n        LOAD B, [BTN]\n        LOAD C, [KEY]\n        STORE [SEG], C\n        ADD A, B\n        STORE [OUT], A\n        HALT\n",
+        "maxCycles": 50,
+        "inputs": {
+          "sw": 90,
+          "btn": 3,
+          "key": 11
+        }
+      },
+      {
+        "name": {
+          "th": "Fibonacci",
+          "en": "Fibonacci"
+        },
+        "source": "; แสดงลำดับ Fibonacci ที่ไม่เกิน 255 บนจอ\n        MOV A, 0\n        MOV B, 1\nnext:   STORE [OUT], A\n        MOV C, A\n        ADD C, B\n        JC done         ; เกิน 255\n        MOV A, B\n        MOV B, C\n        JMP next\ndone:   STORE [OUT], B  ; ตัวสุดท้ายที่ยังไม่เกิน 255\n        HALT\n",
+        "maxCycles": 200
+      }
+    ]
+  },
+  "unlocks": [
+    "user.cpu"
+  ],
+  "devices": {
+    "out": "number",
+    "leds": "leds",
+    "seg": "seg7"
+  },
+  "hints": [
+    "cpu/z8/h1",
+    "cpu/z8/h2",
+    "cpu/z8/h3",
+    "cpu/z8/h4",
+    "cpu/z8/h5"
+  ],
+  "glossary": [
+    "cpu",
+    "datapath",
+    "control-signal",
+    "memory-mapped-io"
+  ]
+}

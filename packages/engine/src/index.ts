@@ -27,6 +27,19 @@ export {
   MAX_EXHAUSTIVE_BITS,
 } from './validate';
 export type { ComponentTestResult } from './validate';
-export { romHarness, romSampleWords, ROM_DUT, ROM_HARNESS_ID, ROM_PANEL } from './validate';
+export {
+  cpuHarness,
+  resetCpu,
+  romHarness,
+  romSampleWords,
+  CPU_DEBUG_PINS,
+  CPU_HARNESS_ID,
+  CPU_IO_PINS,
+  CPU_PROG_WIDTH,
+  CPU_PROG_WORDS,
+  ROM_DUT,
+  ROM_HARNESS_ID,
+  ROM_PANEL,
+} from './validate';
 export { REFERENCES, referenceRows, SEG7 } from './references';
 export type { ReferenceFn } from './references';
