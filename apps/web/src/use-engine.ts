@@ -12,6 +12,8 @@ export function useEngine() {
   const [client, setClient] = useState<EngineClient | null>(null);
   const [pins, setPins] = useState<Record<string, SignalValue>>({});
   const [cycle, setCycle] = useState(0);
+  /** ช่วงที่ย้อนดูได้ด้วย time travel (นับจาก reset CPU) */
+  const [history, setHistory] = useState<{ first: number; last: number; pins: { name: string; width: number }[] } | null>(null);
   const [running, setRunning] = useState(false);
   /** เหตุที่หยุดเองครั้งล่าสุด (breakpoint หรือ HALT) ล้างเมื่อเริ่มรันใหม่ */
   const [stopReason, setStopReason] = useState<'breakpoint' | 'halt' | undefined>();
@@ -26,6 +28,7 @@ export function useEngine() {
         setPins(msg.pins);
         setScope({ path: msg.scopePath ?? '', values: msg.scope ?? {} });
         setCycle(msg.cycle);
+        setHistory(msg.history ?? null);
       } else if (msg.type === 'status') {
         setRunning(msg.running);
         setStopReason(msg.reason);
@@ -39,7 +42,7 @@ export function useEngine() {
     return () => engine.terminate();
   }, []);
 
-  return { client, pins, scope, cycle, running, stopReason, diagnostics, setDiagnostics };
+  return { client, pins, scope, cycle, running, stopReason, history, diagnostics, setDiagnostics };
 }
 
 /** รันขั้นตอนเริ่มต้นแบบ async และไม่ทำต่อถ้า panel ถูก unmount หรือ client ถูกปิดระหว่างทาง */

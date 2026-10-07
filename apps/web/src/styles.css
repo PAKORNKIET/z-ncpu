@@ -985,3 +985,79 @@ pre.asm {
     grid-template-columns: 1fr;
   }
 }
+
+/* Time travel + Logic Analyzer */
+.analyzer {
+  grid-column: 1 / -1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  min-width: 0;
+}
+.tt-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.tt-controls input[type='range'] {
+  flex: 1;
+  min-width: 160px;
+}
+.probes {
+  border: 0;
+  padding: 0;
+  margin: 8px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+.la-scroll {
+  overflow-x: auto;
+}
+svg.la {
+  display: block;
+  cursor: pointer;
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+.la-axis,
+.la-label {
+  fill: var(--muted);
+  font-size: 11px;
+}
+.la-label {
+  fill: var(--text);
+}
+.la-grid {
+  stroke: var(--border);
+}
+.la-high {
+  stroke: var(--signal-high);
+  stroke-width: 2.5;
+}
+.la-low {
+  stroke: var(--signal-low);
+  stroke-width: 1.5;
+}
+.la-edge {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+.la-bus {
+  fill: color-mix(in srgb, var(--accent) 16%, transparent);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.la-value {
+  fill: var(--text);
+  font-size: 11px;
+}
+.la-x {
+  fill: color-mix(in srgb, var(--signal-unknown) 30%, transparent);
+}
+.la-cursor {
+  fill: color-mix(in srgb, var(--signal-high) 18%, transparent);
+  stroke: var(--signal-high);
+  stroke-width: 1;
+}

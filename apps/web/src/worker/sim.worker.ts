@@ -12,6 +12,7 @@ import {
   parseCondition,
   resetCpu,
   testComponent,
+  TimeTravel,
   type CondEnv,
   type CondNode,
   type Simulator,
@@ -35,6 +36,11 @@ let scopePath: string | null = null;
 let cycleBase = 0;
 /** breakpoint ที่ตั้งไว้ และตัวอ่านค่าที่ใช้กับมัน */
 let breakpoint: { ast: CondNode; env: CondEnv } | null = null;
+/** time travel ของ simulator ตัวปัจจุบัน (Spec ส่วน 9) */
+let history: TimeTravel | null = null;
+
+/** เดินนาฬิกาหนึ่งจังหวะผ่าน time travel (บันทึก input และ keyframe) */
+const tickOnce = () => (history ? history.tick() : sim!.tick(clockPin));
 
 const post = (msg: WorkerToUi): void => self.postMessage(msg);
 const cycleNow = (): number => (sim ? sim.cycle - cycleBase : 0);
@@ -93,6 +99,11 @@ function pins(): Record<string, SignalValue> {
 
 function signals(rid: number): WorkerToUi {
   const msg: Extract<WorkerToUi, { type: 'signals' }> = { rid, type: 'signals', cycle: cycleNow(), pins: pins() };
+  if (history && sim) {
+    const { inputs, outputs } = sim.netlist;
+    const pins = history.pins.map((name) => ({ name, width: (outputs.get(name) ?? inputs.get(name))?.length ?? 1 }));
+    msg.history = { first: history.first - cycleBase, last: history.last - cycleBase, pins };
+  }
   if (scopePath !== null && sim) {
     msg.scope = sim.readScope(scopePath);
     msg.scopePath = scopePath;
@@ -130,7 +141,7 @@ function step(rid: number, count: number, watch = false, budgetMs = Infinity): b
   if (!sim) return false;
   const start = performance.now();
   for (let i = 0; i < count; i++) {
-    const r = sim.tick(clockPin);
+    const r = tickOnce();
     if (!r.ok) {
       reportOscillation(rid, r.nets);
       return false;
@@ -167,6 +178,7 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         sim = netlist && !hasErrors(diagnostics) ? createSimulator(netlist, simMode) : null;
         cycleBase = 0;
         breakpoint = null;
+        history = sim ? new TimeTravel(sim, netlist?.inputs.has('clk') ? 'clk' : undefined) : null;
         // M0: ถ้าวงจรมี input ชื่อ clk ถือว่าเป็น clock
         clockPin = netlist?.inputs.has('clk') ? 'clk' : undefined;
         post({
@@ -202,6 +214,8 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         sim.loadPanel(msg.words, msg.panel);
         const r = sim.settle();
         if (!r.ok) reportOscillation(msg.rid, r.nets);
+        // โปรแกรมในแผงเปลี่ยน ประวัติเดิมใช้ย้อนไม่ได้แล้ว
+        history?.start();
         post(signals(msg.rid));
         return;
       }
@@ -231,6 +245,7 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         if (!sim) return;
         const r = resetCpu(sim);
         cycleBase = sim.cycle;
+        history?.start();
         if (!r.ok) reportOscillation(msg.rid, r.nets);
         post(signals(msg.rid));
         post({ rid: msg.rid, type: 'status', cycle: 0, running: false });
@@ -269,6 +284,7 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         if (sim) sim = createSimulator(sim.netlist, simMode);
         cycleBase = 0;
         breakpoint = null;
+        history = sim ? new TimeTravel(sim, clockPin) : null;
         post(signals(msg.rid));
         post({ rid: msg.rid, type: 'status', cycle: 0, running: false });
         return;
@@ -285,10 +301,28 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         if (sim) post(signals(msg.rid));
         return;
 
-      case 'seek':
+      case 'seek': {
+        stop();
+        if (!sim || !history) return;
+        const r = history.seek(cycleBase + msg.cycle);
+        if (!r.ok) reportOscillation(msg.rid, r.nets);
+        post(signals(msg.rid));
+        post({ rid: msg.rid, type: 'status', cycle: cycleNow(), running: false });
+        return;
+      }
+
+      case 'trace': {
+        const columns: Record<string, (number | null)[]> = {};
+        const from = Math.max(0, Math.floor(msg.from));
+        const to = Math.min(from + 4096, Math.floor(msg.to));
+        if (history) for (const pin of msg.pins.slice(0, 32)) columns[pin] = history.read(pin, cycleBase + from, cycleBase + to);
+        post({ rid: msg.rid, type: 'traceData', from, to, columns });
+        return;
+      }
+
       case 'probe':
       case 'why':
-        // M1–M3: time travel, probe, Why? และ subscribe ตามชั้น
+        // probe และ Why? มาใน M3-6
         post({
           rid: msg.rid,
           type: 'diagnostics',

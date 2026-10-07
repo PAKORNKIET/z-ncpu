@@ -109,6 +109,10 @@ export class VisualSimulator extends Simulator {
     return [...nets].sort((a, b) => a - b);
   }
 
+  protected override afterRestore(): void {
+    this.clearDirty();
+  }
+
   private clearDirty(): void {
     for (let i = 0; i < this.dirtyCount; i++) this.dirty[this.dirtyList[i] as number] = 0;
     this.dirtyCount = 0;

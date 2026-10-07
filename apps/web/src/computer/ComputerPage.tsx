@@ -11,6 +11,7 @@ import type { SaveFile } from '../game/save';
 import { useEngine } from '../use-engine';
 import { LedBar, NumberDisplay, SevenSegment } from '../ui/devices';
 import { BusInput } from '../ui/widgets';
+import { LogicAnalyzer } from './LogicAnalyzer';
 
 const CPU_ID = 'user.cpu';
 const PROGRAM_ID = 'main';
@@ -49,7 +50,7 @@ export function ComputerPage({ save, setSave }: { save: SaveFile; setSave: Dispa
 }
 
 function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStateAction<SaveFile>> }) {
-  const { client, pins, cycle, running, stopReason } = useEngine();
+  const { client, pins, cycle, running, stopReason, history } = useEngine();
   const stored = save.programs.find((p) => p.id === PROGRAM_ID)?.source;
   const [source, setSource] = useState(stored ?? EXAMPLE_PROGRAMS[0]!.source);
   const asm = useMemo(() => assemble(source), [source]);
@@ -469,6 +470,8 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
           </ul>
         </div>
       </section>
+
+      <LogicAnalyzer client={ok ? client : null} history={history} cycle={cycle} running={running} onStep={() => client?.post({ type: 'step', count: 1 })} />
     </div>
   );
 }

@@ -33,6 +33,23 @@ export abstract class Simulator {
   /** มี input ที่ถูกเขียนแต่ยังไม่ได้ settle */
   private inputsPending = false;
 
+  /** สำเนาค่าของทุก net (ใช้เป็น keyframe ของ time travel ต้องเรียกตอนวงจรนิ่งแล้ว) */
+  saveState(): Uint8Array {
+    return this.values.slice();
+  }
+
+  /** กลับไปสถานะที่ saveState เก็บไว้ (ค่าทุก net และเลข cycle) */
+  restoreState(values: Uint8Array, cycle: number): void {
+    if (values.length !== this.values.length) throw new Error('keyframe ไม่ตรงกับวงจรนี้');
+    this.values.set(values);
+    this.cycle = cycle;
+    this.inputsPending = false;
+    this.afterRestore();
+  }
+
+  /** ให้ subclass ล้างสถานะภายในหลัง restoreState */
+  protected afterRestore(): void {}
+
   /** คำนวณจนสัญญาณนิ่ง (ให้แต่ละโหมด implement) */
   protected abstract propagate(): SettleResult;
 
