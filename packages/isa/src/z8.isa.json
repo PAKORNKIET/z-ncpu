@@ -39,11 +39,11 @@
   ],
   "memoryMap": [
     { "from": 0, "to": 239, "name": { "th": "RAM ข้อมูลและ stack", "en": "Data RAM and stack" } },
-    { "from": 240, "to": 240, "name": { "th": "จอแสดงตัวเลข", "en": "Number display" }, "access": "w" },
-    { "from": 241, "to": 241, "name": { "th": "LED 8 ดวง", "en": "8 LEDs" }, "access": "w" },
-    { "from": 242, "to": 242, "name": { "th": "7-segment", "en": "7-segment" }, "access": "w" },
-    { "from": 248, "to": 248, "name": { "th": "สวิตช์ 8 ตัว", "en": "8 switches" }, "access": "r" },
-    { "from": 249, "to": 249, "name": { "th": "ปุ่มกด", "en": "Buttons" }, "access": "r" },
-    { "from": 250, "to": 250, "name": { "th": "คีย์บอร์ด", "en": "Keyboard" }, "access": "r" }
+    { "from": 240, "to": 240, "symbol": "OUT", "name": { "th": "จอแสดงตัวเลข", "en": "Number display" }, "access": "w" },
+    { "from": 241, "to": 241, "symbol": "LEDS", "name": { "th": "LED 8 ดวง", "en": "8 LEDs" }, "access": "w" },
+    { "from": 242, "to": 242, "symbol": "SEG", "name": { "th": "7-segment", "en": "7-segment" }, "access": "w" },
+    { "from": 248, "to": 248, "symbol": "SW", "name": { "th": "สวิตช์ 8 ตัว", "en": "8 switches" }, "access": "r" },
+    { "from": 249, "to": 249, "symbol": "BTN", "name": { "th": "ปุ่มกด", "en": "Buttons" }, "access": "r" },
+    { "from": 250, "to": 250, "symbol": "KEY", "name": { "th": "คีย์บอร์ด", "en": "Keyboard" }, "access": "r" }
   ]
 }

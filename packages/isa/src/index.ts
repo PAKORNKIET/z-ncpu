@@ -1,5 +1,5 @@
 // @z-ncpu/isa — นิยามชุดคำสั่งแบบ data-driven (Spec ส่วน 10, ข้อ 11)
-// M0 มีแค่ encode/decode ทีละคำสั่ง; assembler เต็ม (label, parser, diagnostics) มาใน M3
+// encode/decode ทีละคำสั่งอยู่ที่นี่ ส่วน assembler อยู่ใน asm.ts และ emulator อ้างอิงอยู่ใน machine.ts
 
 import type { LocalizedText } from '@z-ncpu/shared';
 import z8Json from './z8.isa.json';
@@ -23,7 +23,8 @@ export interface IsaDef {
   fields: Record<'group' | 'func' | 'rd' | 'm' | 'operand', [number, number]>;
   registers: Record<string, number>;
   instructions: InstructionDef[];
-  memoryMap: { from: number; to: number; name: LocalizedText; access?: 'r' | 'w' }[];
+  /** symbol คือชื่อที่ assembler รู้จักเอง เช่น OUT = 0xF0 */
+  memoryMap: { from: number; to: number; symbol?: string; name: LocalizedText; access?: 'r' | 'w' }[];
 }
 
 // JSON import ให้ fields เป็น number[] จึงต้อง cast ผ่าน unknown (รูปแบบถูกตรวจในเทสต์)
@@ -106,3 +107,6 @@ export function formatDecoded(d: Decoded): string {
 }
 
 export const hex16 = (w: number): string => w.toString(16).toUpperCase().padStart(4, '0');
+
+export * from './asm';
+export * from './machine';
