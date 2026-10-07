@@ -27,6 +27,53 @@ export const REFERENCES: Readonly<Record<string, ReferenceFn>> = {
   zero8: ({ a = 0 }) => ({ z: a === 0 ? 1 : 0 }),
   /** eq = 1 เมื่อ a = b */
   eq8: ({ a = 0, b = 0 }) => ({ eq: a === b ? 1 : 0 }),
+  and8: ({ a = 0, b = 0 }) => ({ y: a & b }),
+  or8: ({ a = 0, b = 0 }) => ({ y: a | b }),
+  xor8: ({ a = 0, b = 0 }) => ({ y: a ^ b }),
+  /** sel = 0 → a, sel = 1 → b */
+  mux8: ({ a = 0, b = 0, sel }) => ({ y: bit(sel) ? b : a }),
+  /** เลือก d0..d3 ตาม sel (2 บิต) */
+  sel4: (ins) => ({ y: ins[`d${(ins.sel ?? 0) & 3}`] ?? 0 }),
+  /** เลือก d0..d7 ตาม sel (3 บิต) */
+  sel8: (ins) => ({ y: ins[`d${(ins.sel ?? 0) & 7}`] ?? 0 }),
+  /**
+   * ALU ของ Z8 (Spec ส่วน 10): op = func ของคำสั่งกลุ่ม 01
+   * 0 ADD, 1 SUB, 2 AND, 3 OR, 4 XOR, 5 NOT a, 6 ไม่ใช้ (ได้ 0), 7 CMP (คำนวณเหมือน SUB)
+   * C = ตัวทดออกของตัวบวก (SUB/CMP คำนวณ a + NOT b + 1 จึง C = 1 เมื่อ a ≥ b), คำสั่งตรรกะ C = 0
+   * Z = ผลเป็น 0, N = บิต 7 ของผล
+   */
+  alu8: ({ a = 0, b = 0, op = 0 }) => {
+    let y = 0;
+    let c = 0;
+    switch (op & 7) {
+      case 0: {
+        const s = a + b;
+        y = s & 0xff;
+        c = s >> 8;
+        break;
+      }
+      case 1:
+      case 7: {
+        const s = a + (~b & 0xff) + 1;
+        y = s & 0xff;
+        c = s >> 8;
+        break;
+      }
+      case 2:
+        y = a & b;
+        break;
+      case 3:
+        y = a | b;
+        break;
+      case 4:
+        y = a ^ b;
+        break;
+      case 5:
+        y = ~a & 0xff;
+        break;
+    }
+    return { y, z: y === 0 ? 1 : 0, c, n: y >> 7 };
+  },
 };
 
 /** PRNG แบบ mulberry32: เร็ว ได้ลำดับเดิมทุกครั้งจาก seed เดียวกัน */

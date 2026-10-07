@@ -1,0 +1,99 @@
+{
+  "id": "alu.alu8",
+  "chapter": 3,
+  "title": {
+    "th": "ALU 8 บิต",
+    "en": "8-bit ALU"
+  },
+  "lesson": "alu/alu8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.ha",
+    "user.fa",
+    "user.add4",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.neg8",
+    "user.sub8",
+    "user.zero8",
+    "user.eq8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8"
+  ],
+  "target": {
+    "defId": "user.alu8",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "op",
+        "dir": "in",
+        "width": 3
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "z",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "c",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "n",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "alu8"
+  },
+  "unlocks": [
+    "user.alu8"
+  ],
+  "hints": [
+    "alu/alu8/h1",
+    "alu/alu8/h2",
+    "alu/alu8/h3",
+    "alu/alu8/h4"
+  ],
+  "glossary": [
+    "alu",
+    "zero-flag",
+    "carry-flag",
+    "negative-flag",
+    "opcode"
+  ]
+}

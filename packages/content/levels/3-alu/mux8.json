@@ -1,0 +1,66 @@
+{
+  "id": "alu.mux8",
+  "chapter": 3,
+  "title": {
+    "th": "MUX 8 บิต",
+    "en": "8-bit MUX"
+  },
+  "lesson": "alu/mux8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.and8",
+    "user.or8",
+    "user.xor8"
+  ],
+  "target": {
+    "defId": "user.mux8",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "sel",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "mux8"
+  },
+  "unlocks": [
+    "user.mux8"
+  ],
+  "hints": [
+    "alu/mux8/h1",
+    "alu/mux8/h2"
+  ],
+  "glossary": [
+    "mux",
+    "bus"
+  ]
+}

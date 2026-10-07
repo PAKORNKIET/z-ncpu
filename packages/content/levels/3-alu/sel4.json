@@ -1,0 +1,73 @@
+{
+  "id": "alu.sel4",
+  "chapter": 3,
+  "title": {
+    "th": "เลือก 1 ใน 4 (8 บิต)",
+    "en": "4-way selector"
+  },
+  "lesson": "alu/sel4",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.mux8"
+  ],
+  "target": {
+    "defId": "user.sel4",
+    "pins": [
+      {
+        "name": "d0",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "d1",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "d2",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "d3",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "sel",
+        "dir": "in",
+        "width": 2
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "sel4"
+  },
+  "unlocks": [
+    "user.sel4"
+  ],
+  "hints": [
+    "alu/sel4/h1",
+    "alu/sel4/h2"
+  ],
+  "glossary": [
+    "mux"
+  ]
+}

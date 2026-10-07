@@ -98,3 +98,33 @@ test('บวกเลข 8 บิต: ขาเข้า 17 บิตทดส�
   await expect(page.locator('.test-result')).toContainText('ยังไม่ผ่าน');
   await expect(page.getByRole('table', { name: 'ผลการทดสอบ' }).locator('tbody tr')).toHaveCount(30);
 });
+
+test('ALU 8 บิต: ADD, SUB, CMP และ flags เปลี่ยนตาม op แบบสด แล้วผ่านการทดสอบ', async ({ page }) => {
+  await openWithSave(page, before('alu.alu8'), ['alu.alu8']);
+  await levelNamed(page, /ALU 8 บิต/).click();
+  await expect(page.getByTestId('nand-count')).toHaveText('506');
+  const y = page.getByRole('status', { name: /^y = / });
+  const flag = (n: string) => page.getByRole('status', { name: new RegExp(`^${n} = `) });
+
+  // a = 5, b = 3, op = ADD → 8
+  await page.getByRole('button', { name: 'a บิต 0' }).click();
+  await page.getByRole('button', { name: 'a บิต 2' }).click();
+  await page.getByRole('button', { name: 'b บิต 0' }).click();
+  await page.getByRole('button', { name: 'b บิต 1' }).click();
+  await expect(y).toHaveAttribute('aria-label', 'y = 8 (00001000)');
+  // op = 001 SUB → 2, c = 1 (5 ≥ 3)
+  await page.getByRole('button', { name: 'op บิต 0' }).click();
+  await expect(y).toHaveAttribute('aria-label', 'y = 2 (00000010)');
+  await expect(flag('c')).toHaveAttribute('aria-label', 'c = 1 HIGH');
+  // op = 111 CMP กับ b = 5 → 0, z = 1
+  await page.getByRole('button', { name: 'op บิต 1' }).click();
+  await page.getByRole('button', { name: 'op บิต 2' }).click();
+  await page.getByRole('button', { name: 'b บิต 1' }).click();
+  await page.getByRole('button', { name: 'b บิต 2' }).click();
+  await expect(y).toHaveAttribute('aria-label', 'y = 0 (00000000)');
+  await expect(flag('z')).toHaveAttribute('aria-label', 'z = 1 HIGH');
+  await expect(flag('n')).toHaveAttribute('aria-label', 'n = 0 LOW');
+
+  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
+});

@@ -1,0 +1,94 @@
+{
+  "id": "alu.sel8",
+  "chapter": 3,
+  "title": {
+    "th": "เลือก 1 ใน 8 (8 บิต)",
+    "en": "8-way selector"
+  },
+  "lesson": "alu/sel8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.mux8",
+    "user.sel4"
+  ],
+  "target": {
+    "defId": "user.sel8",
+    "pins": [
+      {
+        "name": "d0",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "d1",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "d2",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "d3",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "d4",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "d5",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "d6",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "d7",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "sel",
+        "dir": "in",
+        "width": 3
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "sel8"
+  },
+  "unlocks": [
+    "user.sel8"
+  ],
+  "hints": [
+    "alu/sel8/h1",
+    "alu/sel8/h2"
+  ],
+  "glossary": [
+    "mux"
+  ]
+}

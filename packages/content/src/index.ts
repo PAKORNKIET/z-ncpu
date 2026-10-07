@@ -13,6 +13,13 @@ import xnorLevel from '../levels/1-logic/xnor.json';
 import notLevel from '../levels/1-logic/not.json';
 import orLevel from '../levels/1-logic/or.json';
 import xorLevel from '../levels/1-logic/xor.json';
+import alu_and8Level from '../levels/3-alu/and8.json';
+import alu_or8Level from '../levels/3-alu/or8.json';
+import alu_xor8Level from '../levels/3-alu/xor8.json';
+import alu_mux8Level from '../levels/3-alu/mux8.json';
+import alu_sel4Level from '../levels/3-alu/sel4.json';
+import alu_sel8Level from '../levels/3-alu/sel8.json';
+import alu_alu8Level from '../levels/3-alu/alu8.json';
 import add4Level from '../levels/2-arith/add4.json';
 import add8Level from '../levels/2-arith/add8.json';
 import eq8Level from '../levels/2-arith/eq8.json';
@@ -47,6 +54,13 @@ export const LEVELS: LevelDef[] = [
   sub8Level,
   zero8Level,
   eq8Level,
+  alu_and8Level,
+  alu_or8Level,
+  alu_xor8Level,
+  alu_mux8Level,
+  alu_sel4Level,
+  alu_sel8Level,
+  alu_alu8Level,
   srLatchLevel,
   dLatchLevel,
   dffLevel,
@@ -56,6 +70,7 @@ export const LEVELS: LevelDef[] = [
 export const CHAPTERS: Record<number, { th: string; en: string }> = {
   1: { th: 'ตรรกะพื้นฐาน', en: 'Basic logic' },
   2: { th: 'การบวกเลข', en: 'Arithmetic' },
+  3: { th: 'ALU', en: 'ALU' },
   4: { th: 'วงจรจำค่า', en: 'State' },
 };
 

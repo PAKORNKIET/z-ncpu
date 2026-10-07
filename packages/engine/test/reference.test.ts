@@ -1,6 +1,6 @@
 // ทดสอบด้วยฟังก์ชันอ้างอิง (Spec ส่วน 7): ขาเข้าเกิน 16 บิตใช้กรณีขอบ + สุ่ม
 import { describe, expect, it } from 'vitest';
-import { circuit, inp, out, referenceRows, testComponent } from '../src';
+import { circuit, inp, out, REFERENCES, referenceRows, testComponent } from '../src';
 import { referenceLibrary } from '../fixtures/reference';
 
 /** บวก 8 บิตจาก Full Adder 8 ตัว */
@@ -53,5 +53,22 @@ describe('ReferenceSuite', () => {
     const r = testComponent(add8Library(), 'user.add8', { type: 'reference', ref: 'nope' }, 'fast').report;
     expect(r?.passed).toBe(false);
     expect(r?.error?.message.th).toMatch(/nope/);
+  });
+});
+
+describe('ALU ของ Z8', () => {
+  const alu = (a: number, b: number, op: number) => REFERENCES.alu8!({ a, b, op });
+  it('ADD/SUB/CMP: ตัวทดและ flags ตาม Spec ส่วน 10', () => {
+    expect(alu(200, 100, 0)).toEqual({ y: 44, z: 0, c: 1, n: 0 });
+    expect(alu(5, 3, 1)).toEqual({ y: 2, z: 0, c: 1, n: 0 }); // 5 ≥ 3 → C = 1
+    expect(alu(3, 5, 1)).toEqual({ y: 254, z: 0, c: 0, n: 1 }); // 3 < 5 → C = 0, ผลติดลบ
+    expect(alu(7, 7, 7)).toEqual({ y: 0, z: 1, c: 1, n: 0 }); // CMP เท่ากัน
+  });
+  it('คำสั่งตรรกะ C = 0 และ op 6 ได้ 0', () => {
+    expect(alu(0b1100, 0b1010, 2)).toEqual({ y: 0b1000, z: 0, c: 0, n: 0 });
+    expect(alu(0b1100, 0b1010, 3).y).toBe(0b1110);
+    expect(alu(0b1100, 0b1010, 4).y).toBe(0b0110);
+    expect(alu(0, 99, 5)).toEqual({ y: 255, z: 0, c: 0, n: 1 });
+    expect(alu(9, 9, 6)).toEqual({ y: 0, z: 1, c: 0, n: 0 });
   });
 });

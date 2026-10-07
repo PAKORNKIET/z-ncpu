@@ -1,0 +1,60 @@
+{
+  "id": "alu.or8",
+  "chapter": 3,
+  "title": {
+    "th": "OR 8 บิต",
+    "en": "8-bit OR"
+  },
+  "lesson": "alu/or8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.and8"
+  ],
+  "target": {
+    "defId": "user.or8",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "or8"
+  },
+  "optimize": {
+    "bestNand": 24
+  },
+  "unlocks": [
+    "user.or8"
+  ],
+  "hints": [
+    "alu/or8/h1"
+  ],
+  "glossary": [
+    "bitwise"
+  ]
+}

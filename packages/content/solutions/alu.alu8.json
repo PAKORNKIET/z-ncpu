@@ -1,0 +1,856 @@
+{
+  "id": "user.alu8",
+  "name": {
+    "th": "ALU",
+    "en": "ALU"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "op",
+      "dir": "in",
+      "width": 3
+    },
+    {
+      "name": "y",
+      "dir": "out",
+      "width": 8
+    },
+    {
+      "name": "z",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "c",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "n",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "const01",
+        "defId": "prim.const0",
+        "x": 120,
+        "y": 400,
+        "rotation": 0
+      },
+      {
+        "id": "const11",
+        "defId": "prim.const1",
+        "x": 120,
+        "y": 460,
+        "rotation": 0
+      },
+      {
+        "id": "add81",
+        "defId": "user.add8",
+        "x": 300,
+        "y": -300,
+        "rotation": 0
+      },
+      {
+        "id": "not81",
+        "defId": "user.not8",
+        "x": 200,
+        "y": -160,
+        "rotation": 0
+      },
+      {
+        "id": "add82",
+        "defId": "user.add8",
+        "x": 300,
+        "y": -160,
+        "rotation": 0
+      },
+      {
+        "id": "and81",
+        "defId": "user.and8",
+        "x": 300,
+        "y": -20,
+        "rotation": 0
+      },
+      {
+        "id": "or81",
+        "defId": "user.or8",
+        "x": 300,
+        "y": 100,
+        "rotation": 0
+      },
+      {
+        "id": "xor81",
+        "defId": "user.xor8",
+        "x": 300,
+        "y": 220,
+        "rotation": 0
+      },
+      {
+        "id": "not82",
+        "defId": "user.not8",
+        "x": 300,
+        "y": 340,
+        "rotation": 0
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 300,
+        "y": 460,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "sel81",
+        "defId": "user.sel8",
+        "x": 520,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "zero81",
+        "defId": "user.zero8",
+        "x": 700,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 700,
+        "y": 60,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "split2",
+        "defId": "prim.split",
+        "x": 520,
+        "y": 400,
+        "rotation": 0,
+        "params": {
+          "width": 3
+        }
+      },
+      {
+        "id": "mux1",
+        "defId": "user.mux",
+        "x": 640,
+        "y": 300,
+        "rotation": 0
+      },
+      {
+        "id": "mux2",
+        "defId": "user.mux",
+        "x": 640,
+        "y": 380,
+        "rotation": 0
+      },
+      {
+        "id": "mux3",
+        "defId": "user.mux",
+        "x": 640,
+        "y": 460,
+        "rotation": 0
+      },
+      {
+        "id": "mux4",
+        "defId": "user.mux",
+        "x": 640,
+        "y": 540,
+        "rotation": 0
+      },
+      {
+        "id": "mux5",
+        "defId": "user.mux",
+        "x": 760,
+        "y": 300,
+        "rotation": 0
+      },
+      {
+        "id": "mux6",
+        "defId": "user.mux",
+        "x": 760,
+        "y": 380,
+        "rotation": 0
+      },
+      {
+        "id": "mux7",
+        "defId": "user.mux",
+        "x": 880,
+        "y": 300,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "add81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "add81",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "add81",
+          "pin": "cin"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "not81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "add82",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "not81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "add82",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "add82",
+          "pin": "cin"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "and81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "and81",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "or81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "or81",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "xor81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "xor81",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "not82",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b6"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b7"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "add81",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "sel81",
+          "pin": "d0"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "add82",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "sel81",
+          "pin": "d1"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "and81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "sel81",
+          "pin": "d2"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "or81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "sel81",
+          "pin": "d3"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "xor81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "sel81",
+          "pin": "d4"
+        }
+      },
+      {
+        "id": "w28",
+        "from": {
+          "inst": "not82",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "sel81",
+          "pin": "d5"
+        }
+      },
+      {
+        "id": "w29",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel81",
+          "pin": "d6"
+        }
+      },
+      {
+        "id": "w30",
+        "from": {
+          "inst": "add82",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "sel81",
+          "pin": "d7"
+        }
+      },
+      {
+        "id": "w31",
+        "from": {
+          "inst": "self",
+          "pin": "op"
+        },
+        "to": {
+          "inst": "sel81",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w32",
+        "from": {
+          "inst": "sel81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "y"
+        }
+      },
+      {
+        "id": "w33",
+        "from": {
+          "inst": "sel81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "zero81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w34",
+        "from": {
+          "inst": "zero81",
+          "pin": "z"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "z"
+        }
+      },
+      {
+        "id": "w35",
+        "from": {
+          "inst": "sel81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w36",
+        "from": {
+          "inst": "split1",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "n"
+        }
+      },
+      {
+        "id": "w37",
+        "from": {
+          "inst": "self",
+          "pin": "op"
+        },
+        "to": {
+          "inst": "split2",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w38",
+        "from": {
+          "inst": "add81",
+          "pin": "cout"
+        },
+        "to": {
+          "inst": "mux1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w39",
+        "from": {
+          "inst": "add82",
+          "pin": "cout"
+        },
+        "to": {
+          "inst": "mux1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w40",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux1",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w41",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w42",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w43",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux2",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w44",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w45",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w46",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux3",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w47",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w48",
+        "from": {
+          "inst": "add82",
+          "pin": "cout"
+        },
+        "to": {
+          "inst": "mux4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w49",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux4",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w50",
+        "from": {
+          "inst": "mux1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux5",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w51",
+        "from": {
+          "inst": "mux2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux5",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w52",
+        "from": {
+          "inst": "split2",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "mux5",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w53",
+        "from": {
+          "inst": "mux3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux6",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w54",
+        "from": {
+          "inst": "mux4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux6",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w55",
+        "from": {
+          "inst": "split2",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "mux6",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w56",
+        "from": {
+          "inst": "mux5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux7",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w57",
+        "from": {
+          "inst": "mux6",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux7",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w58",
+        "from": {
+          "inst": "split2",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "mux7",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w59",
+        "from": {
+          "inst": "mux7",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "c"
+        }
+      }
+    ]
+  }
+}

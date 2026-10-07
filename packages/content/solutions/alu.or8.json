@@ -1,0 +1,414 @@
+{
+  "id": "user.or8",
+  "name": {
+    "th": "OR 8",
+    "en": "OR 8"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "y",
+      "dir": "out",
+      "width": 8
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": -160,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "split2",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 160,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 480,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "or1",
+        "defId": "user.or",
+        "x": 320,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "or2",
+        "defId": "user.or",
+        "x": 320,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "or3",
+        "defId": "user.or",
+        "x": 320,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "or4",
+        "defId": "user.or",
+        "x": 320,
+        "y": -40,
+        "rotation": 0
+      },
+      {
+        "id": "or5",
+        "defId": "user.or",
+        "x": 320,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "or6",
+        "defId": "user.or",
+        "x": 320,
+        "y": 120,
+        "rotation": 0
+      },
+      {
+        "id": "or7",
+        "defId": "user.or",
+        "x": 320,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or8",
+        "defId": "user.or",
+        "x": 320,
+        "y": 280,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "split2",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "y"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "or1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "or2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "split2",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "or2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "or2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "or3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "split2",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "or3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "or3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "or4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "split2",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "or4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "or4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "split1",
+          "pin": "b4"
+        },
+        "to": {
+          "inst": "or5",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "split2",
+          "pin": "b4"
+        },
+        "to": {
+          "inst": "or5",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "or5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "split1",
+          "pin": "b5"
+        },
+        "to": {
+          "inst": "or6",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "split2",
+          "pin": "b5"
+        },
+        "to": {
+          "inst": "or6",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "or6",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "split1",
+          "pin": "b6"
+        },
+        "to": {
+          "inst": "or7",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "split2",
+          "pin": "b6"
+        },
+        "to": {
+          "inst": "or7",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "or7",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b6"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "split1",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "or8",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "split2",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "or8",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "or8",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b7"
+        }
+      }
+    ]
+  }
+}

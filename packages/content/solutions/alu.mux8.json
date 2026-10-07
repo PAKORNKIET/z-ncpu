@@ -1,0 +1,507 @@
+{
+  "id": "user.mux8",
+  "name": {
+    "th": "MUX 8",
+    "en": "MUX 8"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "sel",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "y",
+      "dir": "out",
+      "width": 8
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": -160,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "split2",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 160,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 480,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "mux1",
+        "defId": "user.mux",
+        "x": 320,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "mux2",
+        "defId": "user.mux",
+        "x": 320,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "mux3",
+        "defId": "user.mux",
+        "x": 320,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "mux4",
+        "defId": "user.mux",
+        "x": 320,
+        "y": -40,
+        "rotation": 0
+      },
+      {
+        "id": "mux5",
+        "defId": "user.mux",
+        "x": 320,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "mux6",
+        "defId": "user.mux",
+        "x": 320,
+        "y": 120,
+        "rotation": 0
+      },
+      {
+        "id": "mux7",
+        "defId": "user.mux",
+        "x": 320,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "mux8",
+        "defId": "user.mux",
+        "x": 320,
+        "y": 280,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "split2",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "y"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "split2",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "mux1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "self",
+          "pin": "sel"
+        },
+        "to": {
+          "inst": "mux1",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "mux1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "mux2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "split2",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "mux2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "self",
+          "pin": "sel"
+        },
+        "to": {
+          "inst": "mux2",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "mux2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "mux3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "split2",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "mux3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "self",
+          "pin": "sel"
+        },
+        "to": {
+          "inst": "mux3",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "mux3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "mux4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "split2",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "mux4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "self",
+          "pin": "sel"
+        },
+        "to": {
+          "inst": "mux4",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "mux4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "split1",
+          "pin": "b4"
+        },
+        "to": {
+          "inst": "mux5",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "split2",
+          "pin": "b4"
+        },
+        "to": {
+          "inst": "mux5",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "self",
+          "pin": "sel"
+        },
+        "to": {
+          "inst": "mux5",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "mux5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "split1",
+          "pin": "b5"
+        },
+        "to": {
+          "inst": "mux6",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "split2",
+          "pin": "b5"
+        },
+        "to": {
+          "inst": "mux6",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "self",
+          "pin": "sel"
+        },
+        "to": {
+          "inst": "mux6",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "mux6",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w28",
+        "from": {
+          "inst": "split1",
+          "pin": "b6"
+        },
+        "to": {
+          "inst": "mux7",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w29",
+        "from": {
+          "inst": "split2",
+          "pin": "b6"
+        },
+        "to": {
+          "inst": "mux7",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w30",
+        "from": {
+          "inst": "self",
+          "pin": "sel"
+        },
+        "to": {
+          "inst": "mux7",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w31",
+        "from": {
+          "inst": "mux7",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b6"
+        }
+      },
+      {
+        "id": "w32",
+        "from": {
+          "inst": "split1",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "mux8",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w33",
+        "from": {
+          "inst": "split2",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "mux8",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w34",
+        "from": {
+          "inst": "self",
+          "pin": "sel"
+        },
+        "to": {
+          "inst": "mux8",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w35",
+        "from": {
+          "inst": "mux8",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b7"
+        }
+      }
+    ]
+  }
+}

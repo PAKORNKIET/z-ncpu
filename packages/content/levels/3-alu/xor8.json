@@ -1,0 +1,61 @@
+{
+  "id": "alu.xor8",
+  "chapter": 3,
+  "title": {
+    "th": "XOR 8 บิต",
+    "en": "8-bit XOR"
+  },
+  "lesson": "alu/xor8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.and8",
+    "user.or8"
+  ],
+  "target": {
+    "defId": "user.xor8",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "xor8"
+  },
+  "optimize": {
+    "bestNand": 32
+  },
+  "unlocks": [
+    "user.xor8"
+  ],
+  "hints": [
+    "alu/xor8/h1"
+  ],
+  "glossary": [
+    "bitwise"
+  ]
+}

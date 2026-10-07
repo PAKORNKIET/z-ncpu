@@ -65,7 +65,22 @@ async function place(page: Page, part: RegExp, fx: number, fy: number) {
   await canvas(page).click({ position: { x: box.width * fx, y: box.height * fy } });
 }
 
-const ARITH8 = ['arith.add8', 'arith.not8', 'arith.inc8', 'arith.negate', 'arith.sub8', 'arith.zero8', 'arith.eq8'];
+const ARITH8 = [
+  'arith.add8',
+  'arith.not8',
+  'arith.inc8',
+  'arith.negate',
+  'arith.sub8',
+  'arith.zero8',
+  'arith.eq8',
+  'alu.and8',
+  'alu.or8',
+  'alu.xor8',
+  'alu.mux8',
+  'alu.sel4',
+  'alu.sel8',
+  'alu.alu8',
+];
 const BEFORE_ADD4 = [
   'logic.not',
   'logic.and',
@@ -80,8 +95,8 @@ const BEFORE_ADD4 = [
 ];
 
 test('มีด่านครบทุกบท และล็อกตามลำดับ', async ({ page }) => {
-  for (const ch of ['ตรรกะพื้นฐาน', 'การบวกเลข', 'วงจรจำค่า']) await expect(page.getByRole('heading', { name: new RegExp(ch) })).toBeVisible();
-  await expect(page.locator('.level-item')).toHaveCount(21);
+  for (const ch of ['ตรรกะพื้นฐาน', 'การบวกเลข', 'ALU', 'วงจรจำค่า']) await expect(page.getByRole('heading', { name: new RegExp(ch) })).toBeVisible();
+  await expect(page.locator('.level-item')).toHaveCount(28);
   await expect(level(page, 3)).toBeDisabled();
   await seed(page, ['logic.not', 'logic.and']);
   await expect(level(page, 3)).toBeEnabled();

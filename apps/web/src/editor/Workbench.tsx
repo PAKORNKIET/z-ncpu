@@ -349,7 +349,7 @@ export function Workbench(props: {
   );
 }
 
-const BUS_WIDTHS = [2, 4, 8, 16];
+const BUS_WIDTHS = [2, 3, 4, 8, 16];
 
 /** ตั้งค่าชิ้นที่เลือก: ตอนนี้มีแค่ความกว้างและจำนวนส่วนของตัวแยก/รวมบัส */
 function PartSettings({ model }: { model: EditorModel }) {

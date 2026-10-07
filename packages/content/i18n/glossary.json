@@ -27,5 +27,9 @@
   {"id": "twos-complement", "th": "ส่วนเติมเต็มสอง", "en": "Two's complement", "explain_th": "วิธีเขียนเลขติดลบในฐานสอง: −a = (กลับทุกบิตของ a) + 1 บิตบนสุดบอกว่าติดลบ"},
   {"id": "signed", "th": "เลขมีเครื่องหมาย", "en": "Signed number", "explain_th": "การอ่านบัสแบบที่บิตบนสุดหมายถึงติดลบ 8 บิตแทน −128 ถึง 127"},
   {"id": "subtractor", "th": "วงจรลบ", "en": "Subtractor", "explain_th": "คำนวณ a − b โดยใช้ตัวบวกกับ two's complement ของ b"},
-  {"id": "zero-flag", "th": "ธงศูนย์", "en": "Zero flag (Z)", "explain_th": "บิตที่บอกว่าผลลัพธ์ล่าสุดเป็น 0 หรือไม่ CPU ใช้ตัดสินใจกระโดด (JZ, JNZ)"}
+  {"id": "zero-flag", "th": "ธงศูนย์", "en": "Zero flag (Z)", "explain_th": "บิตที่บอกว่าผลลัพธ์ล่าสุดเป็น 0 หรือไม่ CPU ใช้ตัดสินใจกระโดด (JZ, JNZ)"},
+  {"id": "alu", "th": "หน่วยคำนวณและตรรกะ", "en": "Arithmetic Logic Unit (ALU)", "explain_th": "ส่วนของ CPU ที่บวก ลบ และทำ AND/OR/XOR/NOT ตามรหัสคำสั่ง (op)"},
+  {"id": "carry-flag", "th": "ธงตัวทด", "en": "Carry flag (C)", "explain_th": "ตัวทดออกจากการบวก ตอนลบ C = 1 แปลว่าตัวตั้งมากกว่าหรือเท่ากับตัวลบ ใช้กับ JC"},
+  {"id": "negative-flag", "th": "ธงติดลบ", "en": "Negative flag (N)", "explain_th": "บิตบนสุดของผล ถ้าอ่านแบบมีเครื่องหมาย N = 1 แปลว่าผลติดลบ ใช้กับ JN"},
+  {"id": "opcode", "th": "รหัสคำสั่ง", "en": "Opcode", "explain_th": "ตัวเลขที่บอกว่าจะให้ทำคำสั่งอะไร เช่น op = 000 คือบวก"}
 ]
