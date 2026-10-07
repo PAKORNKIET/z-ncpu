@@ -1,7 +1,7 @@
 // ข้อความระหว่าง UI thread กับ Web Worker (Architecture Spec v3 ส่วน 14)
 // ทุกข้อความจาก UI มี rid เพื่อจับคู่กับคำตอบ
 
-import type { ComponentDef, Diagnostic, SignalValue, TestReport, TestSuite } from './types';
+import type { ComponentDef, Diagnostic, LocalizedText, SignalValue, TestReport, TestSuite } from './types';
 
 export type SimMode = 'visual' | 'fast';
 
@@ -15,6 +15,13 @@ export type UiToWorker =
   | { rid: number; type: 'run'; hz: number }
   | { rid: number; type: 'pause' }
   | { rid: number; type: 'reset' }
+  /** reset CPU: ขา reset = 1 เดินนาฬิกาหนึ่งจังหวะแล้วปล่อย นับ cycle ใหม่จาก 0 (แผงโปรแกรมยังอยู่) */
+  | { rid: number; type: 'resetCpu' }
+  /**
+   * ตั้ง breakpoint (null = ลบ) ตอน run หยุดเมื่อเงื่อนไขเป็นจริงหรือขา halt = 1
+   * scopePrefix: ชั้นของวงจรผู้เล่นใน net("...") เช่น 'dut' เมื่อจำลองผ่านวงจรห่อ
+   */
+  | { rid: number; type: 'breakpoint'; expr: string | null; scopePrefix?: string }
   | { rid: number; type: 'seek'; cycle: number }
   | { rid: number; type: 'test'; defId: string; tests: TestSuite; mode: SimMode }
   | { rid: number; type: 'probe'; net: number }
@@ -42,6 +49,9 @@ export type WorkerToUi =
       /** ชั้นของค่าใน scope เช่น '' = บนสุด, 'g/inv' = ข้างใน inv ที่อยู่ใน g */
       scopePath?: string;
     }
-  | { rid: number; type: 'status'; cycle: number; running: boolean }
+  /** reason: เหตุที่หยุดเอง ('breakpoint' หรือ 'halt') */
+  | { rid: number; type: 'status'; cycle: number; running: boolean; reason?: 'breakpoint' | 'halt' }
+  /** ผลการตั้ง breakpoint: error บอกคอลัมน์ที่ผิด */
+  | { rid: number; type: 'breakpointSet'; ok: boolean; error?: { col: number; message: LocalizedText } }
   | { rid: number; type: 'testResult'; defId: string; mode: SimMode; report: TestReport | null; diagnostics: Diagnostic[] }
   | { rid: number; type: 'diagnostics'; diagnostics: Diagnostic[] };

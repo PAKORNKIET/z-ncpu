@@ -13,6 +13,8 @@ export function useEngine() {
   const [pins, setPins] = useState<Record<string, SignalValue>>({});
   const [cycle, setCycle] = useState(0);
   const [running, setRunning] = useState(false);
+  /** เหตุที่หยุดเองครั้งล่าสุด (breakpoint หรือ HALT) ล้างเมื่อเริ่มรันใหม่ */
+  const [stopReason, setStopReason] = useState<'breakpoint' | 'halt' | undefined>();
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
   /** ค่าของทุกขาในชั้นที่ subscribe ไว้ พร้อมบอกว่าเป็นชั้นไหน */
   const [scope, setScope] = useState<{ path: string; values: Record<string, SignalValue> }>({ path: '', values: {} });
@@ -26,6 +28,7 @@ export function useEngine() {
         setCycle(msg.cycle);
       } else if (msg.type === 'status') {
         setRunning(msg.running);
+        setStopReason(msg.reason);
         setCycle(msg.cycle);
       } else if (msg.type === 'diagnostics') {
         setDiagnostics(msg.diagnostics);
@@ -36,7 +39,7 @@ export function useEngine() {
     return () => engine.terminate();
   }, []);
 
-  return { client, pins, scope, cycle, running, diagnostics, setDiagnostics };
+  return { client, pins, scope, cycle, running, stopReason, diagnostics, setDiagnostics };
 }
 
 /** รันขั้นตอนเริ่มต้นแบบ async และไม่ทำต่อถ้า panel ถูก unmount หรือ client ถูกปิดระหว่างทาง */

@@ -117,6 +117,36 @@ export abstract class Simulator {
     return out;
   }
 
+  /**
+   * nets ของขาหนึ่ง: key = "ชิ้น.ขา" ในชั้น scope หรือ "self.ขา" (ใช้กับ net("...") ของ breakpoint)
+   * หาไว้ครั้งเดียวแล้วอ่านซ้ำด้วย readNets ได้เร็ว
+   */
+  pinNets(scope: string, key: string): Int32Array | undefined {
+    const { inputs, outputs, scopes, nodeNet } = this.netlist;
+    const dot = key.lastIndexOf('.');
+    if (dot <= 0) return undefined;
+    const inst = key.slice(0, dot);
+    const pin = key.slice(dot + 1);
+    const nets = (nodes: number[]): Int32Array => Int32Array.from(nodes, (n) => nodeNet[n] as number);
+    if (inst === 'self') {
+      if (scope === '') {
+        const n = inputs.get(pin) ?? outputs.get(pin);
+        return n ? Int32Array.from(n) : undefined;
+      }
+      const cut = scope.lastIndexOf('/');
+      const me = scopes.get(cut === -1 ? '' : scope.slice(0, cut))?.find((i) => i.id === scope.slice(cut + 1));
+      const nodes = me?.pins.get(pin);
+      return nodes ? nets(nodes) : undefined;
+    }
+    const nodes = scopes.get(scope)?.find((i) => i.id === inst)?.pins.get(pin);
+    return nodes ? nets(nodes) : undefined;
+  }
+
+  /** ค่าของกลุ่ม net (บิต 0 = ตัวแรก) ถ้ากว้างเกิน 32 บิตคืน 1 เมื่อมีบิตใดเป็น 1 */
+  readNets(nets: Int32Array): SignalValue {
+    return this.summary(nets);
+  }
+
   private summary(nets: Int32Array): SignalValue {
     if (nets.length <= 32) return this.valueOf(nets);
     let any = 0;

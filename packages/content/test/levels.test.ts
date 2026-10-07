@@ -62,3 +62,12 @@ describe('Level CI', () => {
     for (const level of LEVELS) for (const g of level.glossary) expect(GLOSSARY.map((e) => e.id)).toContain(g);
   });
 });
+
+describe('โปรแกรมตัวอย่าง', () => {
+  it('assemble ผ่านทุกตัว และ id ไม่ซ้ำ', async () => {
+    const { EXAMPLE_PROGRAMS } = await import('../src');
+    const { assemble } = await import('@z-ncpu/isa');
+    for (const p of EXAMPLE_PROGRAMS) expect(assemble(p.source).diagnostics, p.id).toEqual([]);
+    expect(new Set(EXAMPLE_PROGRAMS.map((p) => p.id)).size).toBe(EXAMPLE_PROGRAMS.length);
+  });
+});

@@ -179,3 +179,14 @@ describe('แอปรุ่นใหม่แทรกด่านเพิ่�
     expect(isUnlocked(LEVELS, at('logic.mux'), save)).toBe(false);
   });
 });
+
+describe('โปรแกรมในไฟล์บันทึก', () => {
+  it('เก็บโปรแกรม Z8 และไม่รับ ISA อื่นหรือซอร์สที่ยาวเกิน', () => {
+    const base = { ...emptySave(), programs: [{ id: 'main', isa: 'Z8', source: 'HALT' }] };
+    const r = parseSave(serializeSave(base));
+    expect(r.ok && r.save.programs).toEqual([{ id: 'main', isa: 'Z8', source: 'HALT' }]);
+    expect(parseSave(JSON.stringify({ ...base, programs: [{ id: 'main', isa: 'X86', source: '' }] })).ok).toBe(false);
+    expect(parseSave(JSON.stringify({ ...base, programs: [{ id: 'main', isa: 'Z8', source: 'x'.repeat(70_000) }] })).ok).toBe(false);
+    expect(parseSave(JSON.stringify({ ...base, programs: [{ id: '../x', isa: 'Z8', source: '' }] })).ok).toBe(false);
+  });
+});

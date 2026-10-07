@@ -1,15 +1,17 @@
-// หน้าหลัก: ด่าน (M1) · สนามทดลอง · ตัวอย่าง engine จาก M0
+// หน้าหลัก: ด่าน · คอมพิวเตอร์ (รันโปรแกรมบน CPU ของผู้เล่น) · สนามทดลอง · ตัวอย่าง engine จาก M0
 import { useRef, useState } from 'react';
+import { ComputerPage } from './computer/ComputerPage';
 import { Demo } from './demo/Demo';
 import { SandboxPage } from './editor/SandboxPage';
 import { GamePage } from './game/GamePage';
 import { emptySave, parseSave, serializeSave } from './game/save';
 import { useSave } from './game/use-save';
 
-type Tab = 'game' | 'sandbox' | 'demo';
+type Tab = 'game' | 'computer' | 'sandbox' | 'demo';
 
 const TABS: [Tab, string][] = [
   ['game', 'ด่าน'],
+  ['computer', '💻 คอมพิวเตอร์'],
   ['sandbox', 'สนามทดลอง'],
   ['demo', 'ตัวอย่าง engine'],
 ];
@@ -95,6 +97,8 @@ export function App() {
       <main>
         {tab === 'game' ? (
           <GamePage key={generation} save={save} setSave={setSave} generation={generation} />
+        ) : tab === 'computer' ? (
+          <ComputerPage key={generation} save={save} setSave={setSave} />
         ) : tab === 'sandbox' ? (
           <SandboxPage save={save} />
         ) : (

@@ -248,6 +248,9 @@ function TestPanel(props: {
             <p>
               <strong>✓ ผ่านด่านแล้ว!</strong> {level.unlocks.map((id) => partName(id, LEVELS)).join(', ')} อยู่ในกล่องชิ้นส่วนของด่านถัดไปแล้ว
             </p>
+            {level.tests.type === 'cpu' ? (
+              <p className="small">💻 CPU ของคุณพร้อมแล้ว: ไปที่แท็บ “คอมพิวเตอร์” เพื่อเขียนโปรแกรม assembly แล้วรันบน CPU ที่ต่อเองจาก NAND</p>
+            ) : null}
             {result.nand !== null ? (
               <p className="small">
                 ใช้ NAND {result.nand} ตัว

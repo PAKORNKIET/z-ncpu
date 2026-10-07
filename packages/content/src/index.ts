@@ -113,6 +113,8 @@ export const CHAPTERS: Record<number, { th: string; en: string }> = {
   7: { th: 'CPU', en: 'CPU' },
 };
 
+export { EXAMPLE_PROGRAMS, type ExampleProgram } from './programs';
+
 export const GLOSSARY: GlossaryEntry[] = glossaryJson;
 
 export const HINTS_TH: Record<string, string> = hintsTh;
