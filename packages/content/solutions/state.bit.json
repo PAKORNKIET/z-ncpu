@@ -1,0 +1,116 @@
+{
+  "id": "user.bit",
+  "name": {
+    "th": "Bit",
+    "en": "Bit"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "in",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "load",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "clk",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "out",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "mux1",
+        "defId": "user.mux",
+        "x": 220,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "dff1",
+        "defId": "user.dff",
+        "x": 380,
+        "y": 0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "dff1",
+          "pin": "q"
+        },
+        "to": {
+          "inst": "mux1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "mux1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "mux1",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "mux1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "dff1",
+          "pin": "d"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "dff1",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "dff1",
+          "pin": "q"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "out"
+        }
+      }
+    ]
+  }
+}

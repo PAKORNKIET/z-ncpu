@@ -15,8 +15,10 @@
 | ด่าน NOR, XNOR, MUX, DEMUX | ✅ |
 | เลขคณิต 8 บิต: Adder, NOT 8 บิต, Incrementer, Negator (two's complement), Subtractor, Zero, Equal | ✅ |
 | บท ALU: AND/OR/XOR 8 บิต, MUX 8 บิต, เลือก 1 ใน 4 / 1 ใน 8, ALU 8 บิตพร้อม flags Z C N ตามคำสั่งของ Z8 | ✅ |
-| Register, Counter, RAM8 → RAM256 | ⏳ |
+| Register 1/8 บิต, ตัวนับ, ตัวกระจาย 1→4 / 1→8, RAM8 → RAM64 → RAM256 | ✅ |
 | ROM, Program Counter, อุปกรณ์ I/O | ⏳ |
+
+**เกณฑ์ผ่าน M2 (RAM256 รันใน Fast Mode ได้ลื่น):** RAM256 ที่ต่อจาก NAND 35,804 ตัว เปิดด่าน ~0.4 วินาที, กดปุ่มเปลี่ยน address แล้วเห็นค่าใหม่ใน 50–120 ms, ทดสอบเขียน/อ่านทั้งชุด ~0.45 วินาที (วัดใน Chromium บนเครื่อง CI)
 
 ### M1 · ต่อวงจร ✅
 

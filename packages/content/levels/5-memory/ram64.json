@@ -1,0 +1,252 @@
+{
+  "id": "mem.ram64",
+  "chapter": 5,
+  "title": {
+    "th": "RAM64",
+    "en": "RAM64"
+  },
+  "lesson": "memory/ram64",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.srlatch",
+    "user.dlatch",
+    "user.dff",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.zero8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.bit",
+    "user.reg8",
+    "user.demux4",
+    "user.demux8",
+    "user.ram8"
+  ],
+  "target": {
+    "defId": "user.ram64",
+    "pins": [
+      {
+        "name": "in",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "load",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "addr",
+        "dir": "in",
+        "width": 6
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "clock": "clk",
+    "steps": [
+      {
+        "set": {
+          "addr": 0,
+          "in": 11,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 11
+        }
+      },
+      {
+        "set": {
+          "addr": 63,
+          "in": 22,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 22
+        }
+      },
+      {
+        "set": {
+          "addr": 9,
+          "in": 33,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 33
+        }
+      },
+      {
+        "set": {
+          "addr": 1,
+          "in": 44,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 44
+        }
+      },
+      {
+        "set": {
+          "addr": 8,
+          "in": 55,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 55
+        }
+      },
+      {
+        "set": {
+          "addr": 36,
+          "in": 66,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 66
+        }
+      },
+      {
+        "set": {
+          "addr": 7,
+          "in": 77,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 77
+        }
+      },
+      {
+        "set": {
+          "addr": 56,
+          "in": 88,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 88
+        }
+      },
+      {
+        "set": {
+          "addr": 0,
+          "in": 12,
+          "load": 0
+        },
+        "tick": 1,
+        "expect": {
+          "out": 11
+        }
+      },
+      {
+        "set": {
+          "addr": 0
+        },
+        "expect": {
+          "out": 11
+        }
+      },
+      {
+        "set": {
+          "addr": 63
+        },
+        "expect": {
+          "out": 22
+        }
+      },
+      {
+        "set": {
+          "addr": 9
+        },
+        "expect": {
+          "out": 33
+        }
+      },
+      {
+        "set": {
+          "addr": 1
+        },
+        "expect": {
+          "out": 44
+        }
+      },
+      {
+        "set": {
+          "addr": 8
+        },
+        "expect": {
+          "out": 55
+        }
+      },
+      {
+        "set": {
+          "addr": 36
+        },
+        "expect": {
+          "out": 66
+        }
+      },
+      {
+        "set": {
+          "addr": 7
+        },
+        "expect": {
+          "out": 77
+        }
+      },
+      {
+        "set": {
+          "addr": 56
+        },
+        "expect": {
+          "out": 88
+        }
+      }
+    ]
+  },
+  "unlocks": [
+    "user.ram64"
+  ],
+  "hints": [
+    "memory/ram64/h1",
+    "memory/ram64/h2"
+  ],
+  "glossary": [
+    "ram",
+    "address"
+  ]
+}

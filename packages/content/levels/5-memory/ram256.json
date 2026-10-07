@@ -1,0 +1,291 @@
+{
+  "id": "mem.ram256",
+  "chapter": 5,
+  "title": {
+    "th": "RAM256",
+    "en": "RAM256"
+  },
+  "lesson": "memory/ram256",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.srlatch",
+    "user.dlatch",
+    "user.dff",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.zero8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.bit",
+    "user.reg8",
+    "user.demux4",
+    "user.demux8",
+    "user.ram8",
+    "user.ram64"
+  ],
+  "target": {
+    "defId": "user.ram256",
+    "pins": [
+      {
+        "name": "in",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "load",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "addr",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "clock": "clk",
+    "steps": [
+      {
+        "set": {
+          "addr": 0,
+          "in": 1,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 1
+        }
+      },
+      {
+        "set": {
+          "addr": 255,
+          "in": 2,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 2
+        }
+      },
+      {
+        "set": {
+          "addr": 64,
+          "in": 3,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 3
+        }
+      },
+      {
+        "set": {
+          "addr": 128,
+          "in": 4,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 4
+        }
+      },
+      {
+        "set": {
+          "addr": 1,
+          "in": 5,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 5
+        }
+      },
+      {
+        "set": {
+          "addr": 65,
+          "in": 6,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 6
+        }
+      },
+      {
+        "set": {
+          "addr": 192,
+          "in": 7,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 7
+        }
+      },
+      {
+        "set": {
+          "addr": 127,
+          "in": 8,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 8
+        }
+      },
+      {
+        "set": {
+          "addr": 170,
+          "in": 9,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 9
+        }
+      },
+      {
+        "set": {
+          "addr": 85,
+          "in": 10,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 10
+        }
+      },
+      {
+        "set": {
+          "addr": 0,
+          "in": 2,
+          "load": 0
+        },
+        "tick": 1,
+        "expect": {
+          "out": 1
+        }
+      },
+      {
+        "set": {
+          "addr": 0
+        },
+        "expect": {
+          "out": 1
+        }
+      },
+      {
+        "set": {
+          "addr": 255
+        },
+        "expect": {
+          "out": 2
+        }
+      },
+      {
+        "set": {
+          "addr": 64
+        },
+        "expect": {
+          "out": 3
+        }
+      },
+      {
+        "set": {
+          "addr": 128
+        },
+        "expect": {
+          "out": 4
+        }
+      },
+      {
+        "set": {
+          "addr": 1
+        },
+        "expect": {
+          "out": 5
+        }
+      },
+      {
+        "set": {
+          "addr": 65
+        },
+        "expect": {
+          "out": 6
+        }
+      },
+      {
+        "set": {
+          "addr": 192
+        },
+        "expect": {
+          "out": 7
+        }
+      },
+      {
+        "set": {
+          "addr": 127
+        },
+        "expect": {
+          "out": 8
+        }
+      },
+      {
+        "set": {
+          "addr": 170
+        },
+        "expect": {
+          "out": 9
+        }
+      },
+      {
+        "set": {
+          "addr": 85
+        },
+        "expect": {
+          "out": 10
+        }
+      }
+    ]
+  },
+  "unlocks": [
+    "user.ram256"
+  ],
+  "hints": [
+    "memory/ram256/h1",
+    "memory/ram256/h2"
+  ],
+  "glossary": [
+    "ram",
+    "address"
+  ]
+}

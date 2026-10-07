@@ -1,0 +1,132 @@
+{
+  "id": "state.bit",
+  "chapter": 4,
+  "title": {
+    "th": "Register 1 บิต",
+    "en": "1-bit Register"
+  },
+  "lesson": "state/bit",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.srlatch",
+    "user.dlatch",
+    "user.dff"
+  ],
+  "target": {
+    "defId": "user.bit",
+    "pins": [
+      {
+        "name": "in",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "load",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "clock": "clk",
+    "steps": [
+      {
+        "set": {
+          "in": 1,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 1
+        }
+      },
+      {
+        "set": {
+          "in": 0,
+          "load": 0
+        },
+        "tick": 1,
+        "expect": {
+          "out": 1
+        }
+      },
+      {
+        "tick": 3,
+        "expect": {
+          "out": 1
+        }
+      },
+      {
+        "set": {
+          "load": 1
+        },
+        "expect": {
+          "out": 1
+        }
+      },
+      {
+        "tick": 1,
+        "expect": {
+          "out": 0
+        }
+      },
+      {
+        "set": {
+          "in": 1,
+          "load": 0
+        },
+        "tick": 2,
+        "expect": {
+          "out": 0
+        }
+      },
+      {
+        "set": {
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 1
+        }
+      }
+    ]
+  },
+  "optimize": {
+    "bestNand": 13
+  },
+  "unlocks": [
+    "user.bit"
+  ],
+  "hints": [
+    "state/bit/h1",
+    "state/bit/h2",
+    "state/bit/h3"
+  ],
+  "glossary": [
+    "register",
+    "load"
+  ]
+}

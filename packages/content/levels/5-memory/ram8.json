@@ -1,0 +1,252 @@
+{
+  "id": "mem.ram8",
+  "chapter": 5,
+  "title": {
+    "th": "RAM8: หน่วยความจำ 8 ช่อง",
+    "en": "RAM8"
+  },
+  "lesson": "memory/ram8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.srlatch",
+    "user.dlatch",
+    "user.dff",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.zero8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.bit",
+    "user.reg8",
+    "user.demux4",
+    "user.demux8"
+  ],
+  "target": {
+    "defId": "user.ram8",
+    "pins": [
+      {
+        "name": "in",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "load",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "addr",
+        "dir": "in",
+        "width": 3
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "clock": "clk",
+    "steps": [
+      {
+        "set": {
+          "addr": 0,
+          "in": 11,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 11
+        }
+      },
+      {
+        "set": {
+          "addr": 1,
+          "in": 48,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 48
+        }
+      },
+      {
+        "set": {
+          "addr": 2,
+          "in": 85,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 85
+        }
+      },
+      {
+        "set": {
+          "addr": 3,
+          "in": 122,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 122
+        }
+      },
+      {
+        "set": {
+          "addr": 4,
+          "in": 159,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 159
+        }
+      },
+      {
+        "set": {
+          "addr": 5,
+          "in": 196,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 196
+        }
+      },
+      {
+        "set": {
+          "addr": 6,
+          "in": 233,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 233
+        }
+      },
+      {
+        "set": {
+          "addr": 7,
+          "in": 14,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 14
+        }
+      },
+      {
+        "set": {
+          "addr": 0,
+          "in": 12,
+          "load": 0
+        },
+        "tick": 1,
+        "expect": {
+          "out": 11
+        }
+      },
+      {
+        "set": {
+          "addr": 0
+        },
+        "expect": {
+          "out": 11
+        }
+      },
+      {
+        "set": {
+          "addr": 1
+        },
+        "expect": {
+          "out": 48
+        }
+      },
+      {
+        "set": {
+          "addr": 2
+        },
+        "expect": {
+          "out": 85
+        }
+      },
+      {
+        "set": {
+          "addr": 3
+        },
+        "expect": {
+          "out": 122
+        }
+      },
+      {
+        "set": {
+          "addr": 4
+        },
+        "expect": {
+          "out": 159
+        }
+      },
+      {
+        "set": {
+          "addr": 5
+        },
+        "expect": {
+          "out": 196
+        }
+      },
+      {
+        "set": {
+          "addr": 6
+        },
+        "expect": {
+          "out": 233
+        }
+      },
+      {
+        "set": {
+          "addr": 7
+        },
+        "expect": {
+          "out": 14
+        }
+      }
+    ]
+  },
+  "unlocks": [
+    "user.ram8"
+  ],
+  "hints": [
+    "memory/ram8/h1",
+    "memory/ram8/h2",
+    "memory/ram8/h3"
+  ],
+  "glossary": [
+    "ram",
+    "address"
+  ]
+}

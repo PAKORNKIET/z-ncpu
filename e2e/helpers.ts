@@ -93,5 +93,13 @@ export const ORDER = [
   'memory.sr-latch',
   'memory.d-latch',
   'memory.dff',
+  'state.bit',
+  'state.reg8',
+  'state.counter8',
+  'mem.demux4',
+  'mem.demux8',
+  'mem.ram8',
+  'mem.ram64',
+  'mem.ram256',
 ];
 export const before = (id: string): string[] => ORDER.slice(0, ORDER.indexOf(id));

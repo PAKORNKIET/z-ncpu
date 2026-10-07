@@ -1,0 +1,413 @@
+{
+  "id": "user.ram256",
+  "name": {
+    "th": "RAM256",
+    "en": "RAM256"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "in",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "load",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "addr",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "clk",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "out",
+      "dir": "out",
+      "width": 8
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 120,
+        "y": 300,
+        "rotation": 0,
+        "params": {
+          "width": 8,
+          "parts": 4
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 220,
+        "y": 300,
+        "rotation": 0,
+        "params": {
+          "width": 6,
+          "parts": 3
+        }
+      },
+      {
+        "id": "demux41",
+        "defId": "user.demux4",
+        "x": 200,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "sel41",
+        "defId": "user.sel4",
+        "x": 560,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "ram641",
+        "defId": "user.ram64",
+        "x": 380,
+        "y": -600,
+        "rotation": 0
+      },
+      {
+        "id": "ram642",
+        "defId": "user.ram64",
+        "x": 380,
+        "y": -420,
+        "rotation": 0
+      },
+      {
+        "id": "ram643",
+        "defId": "user.ram64",
+        "x": 380,
+        "y": -240,
+        "rotation": 0
+      },
+      {
+        "id": "ram644",
+        "defId": "user.ram64",
+        "x": 380,
+        "y": -60,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "self",
+          "pin": "addr"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "demux41",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "demux41",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "sel41",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "out"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "ram641",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "demux41",
+          "pin": "o0"
+        },
+        "to": {
+          "inst": "ram641",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "ram641",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "ram641",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d0"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "ram641",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "ram642",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "demux41",
+          "pin": "o1"
+        },
+        "to": {
+          "inst": "ram642",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "ram642",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "ram642",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d1"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "ram642",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "ram643",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "demux41",
+          "pin": "o2"
+        },
+        "to": {
+          "inst": "ram643",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "ram643",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "ram643",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d2"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "ram643",
+          "pin": "addr"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "ram644",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "demux41",
+          "pin": "o3"
+        },
+        "to": {
+          "inst": "ram644",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "ram644",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "ram644",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d3"
+        }
+      },
+      {
+        "id": "w28",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "ram644",
+          "pin": "addr"
+        }
+      }
+    ]
+  }
+}

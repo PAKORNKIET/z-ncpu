@@ -1,0 +1,134 @@
+{
+  "id": "state.reg8",
+  "chapter": 4,
+  "title": {
+    "th": "Register 8 บิต",
+    "en": "8-bit Register"
+  },
+  "lesson": "state/reg8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.srlatch",
+    "user.dlatch",
+    "user.dff",
+    "user.bit"
+  ],
+  "target": {
+    "defId": "user.reg8",
+    "pins": [
+      {
+        "name": "in",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "load",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "clock": "clk",
+    "steps": [
+      {
+        "set": {
+          "in": 42,
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 42
+        }
+      },
+      {
+        "set": {
+          "in": 7,
+          "load": 0
+        },
+        "tick": 1,
+        "expect": {
+          "out": 42
+        }
+      },
+      {
+        "set": {
+          "load": 1
+        },
+        "expect": {
+          "out": 42
+        }
+      },
+      {
+        "tick": 1,
+        "expect": {
+          "out": 7
+        }
+      },
+      {
+        "set": {
+          "in": 255
+        },
+        "tick": 1,
+        "expect": {
+          "out": 255
+        }
+      },
+      {
+        "set": {
+          "in": 0,
+          "load": 0
+        },
+        "tick": 4,
+        "expect": {
+          "out": 255
+        }
+      },
+      {
+        "set": {
+          "load": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 0
+        }
+      }
+    ]
+  },
+  "optimize": {
+    "bestNand": 104
+  },
+  "unlocks": [
+    "user.reg8"
+  ],
+  "hints": [
+    "state/reg8/h1",
+    "state/reg8/h2"
+  ],
+  "glossary": [
+    "register"
+  ]
+}

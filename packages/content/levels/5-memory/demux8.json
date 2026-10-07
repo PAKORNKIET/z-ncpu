@@ -1,0 +1,94 @@
+{
+  "id": "mem.demux8",
+  "chapter": 5,
+  "title": {
+    "th": "ตัวกระจาย 1 ไป 8",
+    "en": "1-to-8 DEMUX"
+  },
+  "lesson": "memory/demux8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.demux4"
+  ],
+  "target": {
+    "defId": "user.demux8",
+    "pins": [
+      {
+        "name": "in",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "sel",
+        "dir": "in",
+        "width": 3
+      },
+      {
+        "name": "o0",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "o1",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "o2",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "o3",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "o4",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "o5",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "o6",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "o7",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "demux8"
+  },
+  "unlocks": [
+    "user.demux8"
+  ],
+  "hints": [
+    "memory/demux8/h1",
+    "memory/demux8/h2"
+  ],
+  "glossary": [
+    "demux"
+  ]
+}

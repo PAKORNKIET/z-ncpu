@@ -1,0 +1,486 @@
+{
+  "id": "user.reg8",
+  "name": {
+    "th": "Register 8",
+    "en": "Register 8"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "in",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "load",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "clk",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "out",
+      "dir": "out",
+      "width": 8
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 480,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "bit1",
+        "defId": "user.bit",
+        "x": 320,
+        "y": -280,
+        "rotation": 0
+      },
+      {
+        "id": "bit2",
+        "defId": "user.bit",
+        "x": 320,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "bit3",
+        "defId": "user.bit",
+        "x": 320,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "bit4",
+        "defId": "user.bit",
+        "x": 320,
+        "y": -40,
+        "rotation": 0
+      },
+      {
+        "id": "bit5",
+        "defId": "user.bit",
+        "x": 320,
+        "y": 40,
+        "rotation": 0
+      },
+      {
+        "id": "bit6",
+        "defId": "user.bit",
+        "x": 320,
+        "y": 120,
+        "rotation": 0
+      },
+      {
+        "id": "bit7",
+        "defId": "user.bit",
+        "x": 320,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "bit8",
+        "defId": "user.bit",
+        "x": 320,
+        "y": 280,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "out"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "bit1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "bit1",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "bit1",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "bit1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "bit2",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "bit2",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "bit2",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "bit2",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "bit3",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "bit3",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "bit3",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "bit3",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "split1",
+          "pin": "b3"
+        },
+        "to": {
+          "inst": "bit4",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "bit4",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "bit4",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "bit4",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "split1",
+          "pin": "b4"
+        },
+        "to": {
+          "inst": "bit5",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "bit5",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "bit5",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "bit5",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "split1",
+          "pin": "b5"
+        },
+        "to": {
+          "inst": "bit6",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "bit6",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "bit6",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "bit6",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "split1",
+          "pin": "b6"
+        },
+        "to": {
+          "inst": "bit7",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w28",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "bit7",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w29",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "bit7",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w30",
+        "from": {
+          "inst": "bit7",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b6"
+        }
+      },
+      {
+        "id": "w31",
+        "from": {
+          "inst": "split1",
+          "pin": "b7"
+        },
+        "to": {
+          "inst": "bit8",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w32",
+        "from": {
+          "inst": "self",
+          "pin": "load"
+        },
+        "to": {
+          "inst": "bit8",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w33",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "bit8",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w34",
+        "from": {
+          "inst": "bit8",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b7"
+        }
+      }
+    ]
+  }
+}

@@ -36,6 +36,9 @@ export const REFERENCES: Readonly<Record<string, ReferenceFn>> = {
   sel4: (ins) => ({ y: ins[`d${(ins.sel ?? 0) & 3}`] ?? 0 }),
   /** เลือก d0..d7 ตาม sel (3 บิต) */
   sel8: (ins) => ({ y: ins[`d${(ins.sel ?? 0) & 7}`] ?? 0 }),
+  /** ส่ง in ไปที่ o{sel} ขาอื่นเป็น 0 */
+  demux4: (ins) => Object.fromEntries([0, 1, 2, 3].map((i) => [`o${i}`, i === ((ins.sel ?? 0) & 3) ? bit(ins.in) : 0])),
+  demux8: (ins) => Object.fromEntries([0, 1, 2, 3, 4, 5, 6, 7].map((i) => [`o${i}`, i === ((ins.sel ?? 0) & 7) ? bit(ins.in) : 0])),
   /**
    * ALU ของ Z8 (Spec ส่วน 10): op = func ของคำสั่งกลุ่ม 01
    * 0 ADD, 1 SUB, 2 AND, 3 OR, 4 XOR, 5 NOT a, 6 ไม่ใช้ (ได้ 0), 7 CMP (คำนวณเหมือน SUB)

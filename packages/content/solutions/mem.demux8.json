@@ -1,0 +1,294 @@
+{
+  "id": "user.demux8",
+  "name": {
+    "th": "DEMUX 1-8",
+    "en": "DEMUX 1-8"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "in",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "sel",
+      "dir": "in",
+      "width": 3
+    },
+    {
+      "name": "o0",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "o1",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "o2",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "o3",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "o4",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "o5",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "o6",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "o7",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "split1",
+        "defId": "prim.split",
+        "x": 140,
+        "y": 200,
+        "rotation": 0,
+        "params": {
+          "width": 3
+        }
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 260,
+        "y": 200,
+        "rotation": 0,
+        "params": {
+          "width": 2
+        }
+      },
+      {
+        "id": "demux1",
+        "defId": "user.demux",
+        "x": 260,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "demux41",
+        "defId": "user.demux4",
+        "x": 420,
+        "y": -120,
+        "rotation": 0
+      },
+      {
+        "id": "demux42",
+        "defId": "user.demux4",
+        "x": 420,
+        "y": 120,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "sel"
+        },
+        "to": {
+          "inst": "split1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "split1",
+          "pin": "b0"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "split1",
+          "pin": "b1"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "demux1",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "split1",
+          "pin": "b2"
+        },
+        "to": {
+          "inst": "demux1",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "demux1",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "demux41",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "demux1",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "demux42",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "demux41",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "demux42",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "demux41",
+          "pin": "o0"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "o0"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "demux42",
+          "pin": "o0"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "o4"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "demux41",
+          "pin": "o1"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "o1"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "demux42",
+          "pin": "o1"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "o5"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "demux41",
+          "pin": "o2"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "o2"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "demux42",
+          "pin": "o2"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "o6"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "demux41",
+          "pin": "o3"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "o3"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "demux42",
+          "pin": "o3"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "o7"
+        }
+      }
+    ]
+  }
+}

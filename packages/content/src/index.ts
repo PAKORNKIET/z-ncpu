@@ -20,6 +20,14 @@ import alu_mux8Level from '../levels/3-alu/mux8.json';
 import alu_sel4Level from '../levels/3-alu/sel4.json';
 import alu_sel8Level from '../levels/3-alu/sel8.json';
 import alu_alu8Level from '../levels/3-alu/alu8.json';
+import state_bitLevel from '../levels/4-state/bit.json';
+import state_reg8Level from '../levels/4-state/reg8.json';
+import state_counter8Level from '../levels/4-state/counter8.json';
+import mem_demux4Level from '../levels/5-memory/demux4.json';
+import mem_demux8Level from '../levels/5-memory/demux8.json';
+import mem_ram8Level from '../levels/5-memory/ram8.json';
+import mem_ram64Level from '../levels/5-memory/ram64.json';
+import mem_ram256Level from '../levels/5-memory/ram256.json';
 import add4Level from '../levels/2-arith/add4.json';
 import add8Level from '../levels/2-arith/add8.json';
 import eq8Level from '../levels/2-arith/eq8.json';
@@ -64,6 +72,14 @@ export const LEVELS: LevelDef[] = [
   srLatchLevel,
   dLatchLevel,
   dffLevel,
+  state_bitLevel,
+  state_reg8Level,
+  state_counter8Level,
+  mem_demux4Level,
+  mem_demux8Level,
+  mem_ram8Level,
+  mem_ram64Level,
+  mem_ram256Level,
 ] as LevelDef[];
 
 /** ชื่อบท (เลขบทตามหลักสูตรใน Spec ส่วน 12 บทที่ยังไม่มีด่านจะไม่แสดง) */
@@ -72,6 +88,7 @@ export const CHAPTERS: Record<number, { th: string; en: string }> = {
   2: { th: 'การบวกเลข', en: 'Arithmetic' },
   3: { th: 'ALU', en: 'ALU' },
   4: { th: 'วงจรจำค่า', en: 'State' },
+  5: { th: 'หน่วยความจำ', en: 'Memory' },
 };
 
 export const GLOSSARY: GlossaryEntry[] = glossaryJson;

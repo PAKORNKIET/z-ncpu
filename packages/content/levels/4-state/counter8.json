@@ -1,0 +1,139 @@
+{
+  "id": "state.counter8",
+  "chapter": 4,
+  "title": {
+    "th": "ตัวนับ 8 บิต (Counter)",
+    "en": "8-bit Counter"
+  },
+  "lesson": "state/counter8",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.srlatch",
+    "user.dlatch",
+    "user.dff",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.zero8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.bit",
+    "user.reg8"
+  ],
+  "target": {
+    "defId": "user.counter8",
+    "pins": [
+      {
+        "name": "reset",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "q",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "clock": "clk",
+    "steps": [
+      {
+        "set": {
+          "reset": 1
+        },
+        "tick": 1,
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "reset": 0
+        },
+        "tick": 1,
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "tick": 5,
+        "expect": {
+          "q": 6
+        }
+      },
+      {
+        "tick": 249,
+        "expect": {
+          "q": 255
+        }
+      },
+      {
+        "tick": 1,
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "tick": 3,
+        "expect": {
+          "q": 3
+        }
+      },
+      {
+        "set": {
+          "reset": 1
+        },
+        "expect": {
+          "q": 3
+        }
+      },
+      {
+        "tick": 1,
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "tick": 2,
+        "expect": {
+          "q": 0
+        }
+      }
+    ]
+  },
+  "unlocks": [
+    "user.counter8"
+  ],
+  "hints": [
+    "state/counter8/h1",
+    "state/counter8/h2",
+    "state/counter8/h3"
+  ],
+  "glossary": [
+    "counter",
+    "register"
+  ]
+}
