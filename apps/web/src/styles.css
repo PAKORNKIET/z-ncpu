@@ -681,3 +681,24 @@ button.primary {
 button.tick {
   margin: 4px 0 8px;
 }
+
+.part-settings {
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.part-settings h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.part-settings label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  color: var(--muted);
+}

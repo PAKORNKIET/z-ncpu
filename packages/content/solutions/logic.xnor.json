@@ -1,0 +1,89 @@
+{
+  "id": "user.xnor",
+  "name": {
+    "th": "XNOR",
+    "en": "XNOR"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "y",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "xor1",
+        "defId": "user.xor",
+        "x": 200,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "not1",
+        "defId": "user.not",
+        "x": 360,
+        "y": 0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "xor1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "xor1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "xor1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "not1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "y"
+        }
+      }
+    ]
+  }
+}

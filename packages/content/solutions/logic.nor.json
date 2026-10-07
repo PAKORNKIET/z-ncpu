@@ -1,0 +1,89 @@
+{
+  "id": "user.nor",
+  "name": {
+    "th": "NOR",
+    "en": "NOR"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "a",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "b",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "y",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "or1",
+        "defId": "user.or",
+        "x": 200,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "not1",
+        "defId": "user.not",
+        "x": 360,
+        "y": 0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "a"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "b"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "or1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "not1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "y"
+        }
+      }
+    ]
+  }
+}

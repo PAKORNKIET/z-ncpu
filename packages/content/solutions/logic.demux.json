@@ -1,0 +1,174 @@
+{
+  "id": "user.demux",
+  "name": {
+    "th": "DEMUX",
+    "en": "DEMUX"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "in",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "sel",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "a",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "b",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "nand1",
+        "defId": "prim.nand",
+        "x": 160,
+        "y": 60,
+        "rotation": 0
+      },
+      {
+        "id": "nand2",
+        "defId": "prim.nand",
+        "x": 320,
+        "y": 60,
+        "rotation": 0
+      },
+      {
+        "id": "nand3",
+        "defId": "prim.nand",
+        "x": 320,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "nand4",
+        "defId": "prim.nand",
+        "x": 460,
+        "y": -60,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "nand1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "sel"
+        },
+        "to": {
+          "inst": "nand1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "nand1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "nand1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "nand3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "nand1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "nand3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "nand3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "nand4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "nand4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "nand2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "b"
+        }
+      }
+    ]
+  }
+}

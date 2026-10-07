@@ -121,7 +121,21 @@ export interface SequenceSuite {
   steps: SequenceStep[];
 }
 
-export type TestSuite = TruthTableSuite | SequenceSuite;
+/**
+ * วงจรที่ขาเข้ารวมเกิน 16 บิต (เช่นบวกเลข 8 บิต) ทดสอบครบทุกกรณีไม่ไหว (Spec ส่วน 7)
+ * จึงใช้กรณีขอบ + สุ่ม samples แถว เทียบกับฟังก์ชันอ้างอิงชื่อ ref ที่อยู่ในโค้ดของ engine
+ * ไฟล์ด่านจึงยังเป็นข้อมูลล้วน ไม่มีโค้ด (ถ้าขาเข้าไม่เกิน 16 บิตจะทดสอบครบทุกกรณีแทน)
+ */
+export interface ReferenceSuite {
+  type: 'reference';
+  ref: string;
+  /** จำนวนแถวสุ่ม (ค่าเริ่มต้น 2000) */
+  samples?: number;
+  /** seed ของการสุ่ม ทำให้ได้แถวเดิมทุกครั้ง */
+  seed?: number;
+}
+
+export type TestSuite = TruthTableSuite | SequenceSuite | ReferenceSuite;
 
 export interface TestCaseResult {
   index: number;

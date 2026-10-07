@@ -1,6 +1,5 @@
 import type {
   Diagnostic,
-  PinDef,
   SequenceSuite,
   SignalValue,
   SimMode,
@@ -15,12 +14,21 @@ import { compile, type CompileOptions } from './flatten';
 import type { ComponentLibrary } from './library';
 import type { SettleResult, Simulator } from './sim/base';
 import { createSimulator } from './sim/create';
+import { referenceRows } from './references';
 
-/** input รวมไม่เกินกี่บิตจึงทดสอบครบทุกกรณีได้ (Spec ส่วน 7) */
-export const MAX_EXHAUSTIVE_BITS = 16;
+export { MAX_EXHAUSTIVE_BITS, exhaustiveRows } from './rows';
 
 export function runTests(sim: Simulator, suite: TestSuite): TestReport {
-  return suite.type === 'truth-table' ? runTruthTable(sim, suite) : runSequence(sim, suite);
+  if (suite.type === 'truth-table') return runTruthTable(sim, suite);
+  if (suite.type === 'sequence') return runSequence(sim, suite);
+  let rows: TruthTableRow[];
+  try {
+    rows = referenceRows(sim.netlist.inputPins, suite.ref, suite.samples, suite.seed);
+  } catch (e) {
+    const text = e instanceof Error ? e.message : String(e);
+    return finish([], err('unsupported', text, text));
+  }
+  return runTruthTable(sim, { type: 'truth-table', rows });
 }
 
 export function runTruthTable(sim: Simulator, suite: TruthTableSuite): TestReport {
@@ -48,28 +56,6 @@ export function runSequence(sim: Simulator, suite: SequenceSuite): TestReport {
     if (step.expect) results.push(check(sim, i, inputs, step.expect));
   }
   return finish(results);
-}
-
-/** สร้างทุกแถวของ truth table จาก reference function (บิต 0 ของ input ตัวแรกเปลี่ยนเร็วสุด) */
-export function exhaustiveRows(
-  inputs: PinDef[],
-  fn: (ins: Record<string, number>) => Record<string, SignalValue>,
-): TruthTableRow[] {
-  const totalBits = inputs.reduce((s, p) => s + p.width, 0);
-  if (totalBits > MAX_EXHAUSTIVE_BITS) {
-    throw new RangeError(`input รวม ${totalBits} บิต เกิน ${MAX_EXHAUSTIVE_BITS} บิตที่ทดสอบครบทุกกรณีได้`);
-  }
-  const rows: TruthTableRow[] = [];
-  for (let combo = 0; combo < 2 ** totalBits; combo++) {
-    const ins: Record<string, number> = {};
-    let shift = 0;
-    for (const p of inputs) {
-      ins[p.name] = Math.floor(combo / 2 ** shift) % 2 ** p.width;
-      shift += p.width;
-    }
-    rows.push({ in: { ...ins }, out: fn(ins) });
-  }
-  return rows;
 }
 
 export interface ComponentTestResult {

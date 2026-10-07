@@ -144,3 +144,35 @@ it('nextId ไม่ชนกับ id เดิม', () => {
   expect(nextId(['nand1', 'nand2'], 'prim.nand')).toBe('nand3');
   expect(nextId([], 'user.xor')).toBe('xor1');
 });
+
+describe('setParams', () => {
+  it('เปลี่ยนความกว้างตัวแยกบัส: สายที่ขาไม่เข้ากันถูกถอด และ undo กลับมาครบ', () => {
+    const def: ComponentDef = {
+      id: 'user.x',
+      name: { th: 'x', en: 'x' },
+      kind: 'circuit',
+      pins: [
+        { name: 'a', dir: 'in', width: 4 },
+        { name: 'y', dir: 'out', width: 1 },
+      ],
+      body: { instances: [], wires: [] },
+    };
+    const ed = new Editor(def, pinsOf);
+    const sp = ed.add({ defId: 'prim.split', x: 0, y: 0, params: { width: 4 } });
+    expect(ed.connect({ inst: 'self', pin: 'a' }, { inst: sp, pin: 'in' })).toBe(true);
+    expect(ed.connect({ inst: sp, pin: 'b3' }, { inst: 'self', pin: 'y' })).toBe(true);
+    // 4 บิต แบ่งเป็น 2 ส่วนส่วนละ 2 บิต: ขา in ยังกว้าง 4 (คงสาย) แต่ b3 หายไป (ถอดสาย)
+    expect(ed.setParams(sp, { width: 4, parts: 2 })).toBe(1);
+    expect(ed.def.body!.wires.map((w) => w.to.pin)).toEqual(['in']);
+    // 8 บิต: ขา in กว้างไม่เท่าเดิม ถอดอีกเส้น
+    expect(ed.setParams(sp, { width: 8 })).toBe(1);
+    expect(ed.def.body!.wires).toEqual([]);
+    // ค่าที่ใช้ไม่ได้
+    expect(ed.setParams(sp, { width: 8, parts: 3 })).toBeNull();
+    expect(ed.lastError?.th).toMatch(/ตั้งค่านี้ไม่ได้/);
+    ed.undo();
+    ed.undo();
+    expect(ed.def.body!.wires).toHaveLength(2);
+    expect(ed.def.body!.instances[0]!.params).toEqual({ width: 4 });
+  });
+});

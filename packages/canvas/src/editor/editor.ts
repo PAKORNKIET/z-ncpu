@@ -11,6 +11,7 @@ import {
   removeWires,
   rotateInstances,
   setLabel,
+  setParams,
   type AddInstanceInput,
   type PinResolver,
 } from './ops';
@@ -65,6 +66,18 @@ export class Editor {
 
   label(id: string, text: string): void {
     this.history.push(setLabel(this.def, id, text), 'ตั้งชื่อชิ้นส่วน');
+  }
+
+  /** เปลี่ยน params (เช่นความกว้างบัส) คืนจำนวนสายที่ถูกถอดเพราะขาไม่เข้ากันแล้ว หรือ null ถ้าตั้งไม่ได้ */
+  setParams(id: string, params: Record<string, number>): number | null {
+    const r = setParams(this.def, id, params, this.pinsOf);
+    if (!r.ok) {
+      this.lastError = r.reason;
+      return null;
+    }
+    this.lastError = undefined;
+    this.history.push(r.def, 'ตั้งค่าชิ้นส่วน');
+    return r.removedWires?.length ?? 0;
   }
 
   /** ต่อสาย ถ้าต่อไม่ได้คืน false และตั้ง lastError */

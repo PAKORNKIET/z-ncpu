@@ -1,27 +1,29 @@
 {
-  "id": "memory.sr-latch",
-  "chapter": 3,
+  "id": "memory.dff",
+  "chapter": 4,
   "title": {
-    "th": "SR Latch: วงจรจำค่าแรก",
-    "en": "SR Latch"
+    "th": "D Flip-Flop: จำค่าตอนนาฬิกาเดิน",
+    "en": "D Flip-Flop"
   },
-  "lesson": "memory/sr-latch",
+  "lesson": "memory/dff",
   "available": [
     "prim.nand",
     "user.not",
     "user.and",
-    "user.or"
+    "user.or",
+    "user.srlatch",
+    "user.dlatch"
   ],
   "target": {
-    "defId": "user.srlatch",
+    "defId": "user.dff",
     "pins": [
       {
-        "name": "s",
+        "name": "d",
         "dir": "in",
         "width": 1
       },
       {
-        "name": "r",
+        "name": "clk",
         "dir": "in",
         "width": 1
       },
@@ -34,71 +36,73 @@
   },
   "tests": {
     "type": "sequence",
+    "clock": "clk",
     "steps": [
       {
         "set": {
-          "s": 1,
-          "r": 0
+          "d": 1
         },
+        "tick": 1,
         "expect": {
           "q": 1
         }
       },
       {
         "set": {
-          "s": 0
+          "d": 0
         },
         "expect": {
           "q": 1
         }
       },
       {
-        "set": {
-          "r": 1
-        },
+        "tick": 1,
         "expect": {
           "q": 0
         }
       },
       {
         "set": {
-          "r": 0
+          "d": 1
         },
         "expect": {
           "q": 0
         }
       },
       {
-        "set": {
-          "s": 1
-        },
+        "tick": 1,
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "tick": 1,
         "expect": {
           "q": 1
         }
       },
       {
         "set": {
-          "s": 0
+          "d": 0
         },
+        "tick": 2,
         "expect": {
-          "q": 1
+          "q": 0
         }
       }
     ]
   },
-  "optimize": {
-    "bestNand": 4
-  },
   "unlocks": [
-    "user.srlatch"
+    "user.dff"
   ],
   "hints": [
-    "memory/sr-latch/h1",
-    "memory/sr-latch/h2",
-    "memory/sr-latch/h3"
+    "memory/dff/h1",
+    "memory/dff/h2",
+    "memory/dff/h3"
   ],
   "glossary": [
-    "latch",
-    "feedback"
+    "flip-flop",
+    "clock",
+    "edge"
   ]
 }

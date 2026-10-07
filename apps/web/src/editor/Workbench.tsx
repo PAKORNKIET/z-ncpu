@@ -332,6 +332,7 @@ export function Workbench(props: {
             </div>
           </section>
         ) : null}
+        {!inXRay ? <PartSettings model={model} /> : null}
         <dl className="stats">
           <dt>NAND รวม</dt>
           <dd data-testid="nand-count">{compiled.gates ?? '–'}</dd>
@@ -345,5 +346,56 @@ export function Workbench(props: {
         {props.side?.({ def, client, gates: compiled.gates })}
       </aside>
     </div>
+  );
+}
+
+const BUS_WIDTHS = [2, 4, 8, 16];
+
+/** ตั้งค่าชิ้นที่เลือก: ตอนนี้มีแค่ความกว้างและจำนวนส่วนของตัวแยก/รวมบัส */
+function PartSettings({ model }: { model: EditorModel }) {
+  const { editor } = model;
+  const ids = editor.selection.instances;
+  const inst = ids.length === 1 ? editor.def.body?.instances.find((i) => i.id === ids[0]) : undefined;
+  if (!inst || (inst.defId !== 'prim.split' && inst.defId !== 'prim.merge')) return null;
+  const width = inst.params?.width ?? 4;
+  const parts = inst.params?.parts ?? width;
+  const divisors = Array.from({ length: width }, (_, i) => i + 1).filter((d) => width % d === 0 && d > 1);
+  const apply = (next: Record<string, number>): void => {
+    const removed = editor.setParams(inst.id, next);
+    if (removed && removed > 0) {
+      editor.lastError = {
+        th: `ถอดสาย ${removed} เส้นที่ขากว้างไม่ตรงแล้ว`,
+        en: `Removed ${removed} wire(s) whose pin width no longer matches`,
+      };
+      model.ui.setCamera(model.ui.camera);
+    }
+  };
+  const label = inst.defId === 'prim.split' ? 'แยก bus' : 'รวม bus';
+  return (
+    <section className="part-settings" aria-label={`ตั้งค่า ${inst.id}`}>
+      <h3>
+        ⚙ {label} <span className="muted mono">{inst.id}</span>
+      </h3>
+      <label>
+        ความกว้าง
+        <select value={width} onChange={(e) => apply({ width: Number(e.target.value) })}>
+          {BUS_WIDTHS.map((w) => (
+            <option key={w} value={w}>
+              {w} บิต
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        แบ่งเป็น
+        <select value={parts} onChange={(e) => apply({ width, parts: Number(e.target.value) })}>
+          {divisors.map((d) => (
+            <option key={d} value={d}>
+              {d} ส่วน ส่วนละ {width / d} บิต
+            </option>
+          ))}
+        </select>
+      </label>
+    </section>
   );
 }

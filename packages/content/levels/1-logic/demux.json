@@ -1,0 +1,99 @@
+{
+  "id": "logic.demux",
+  "chapter": 1,
+  "title": {
+    "th": "ตัวกระจายสัญญาณ (DEMUX)",
+    "en": "Build DEMUX"
+  },
+  "lesson": "logic/demux",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor"
+  ],
+  "target": {
+    "defId": "user.demux",
+    "pins": [
+      {
+        "name": "in",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "sel",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "a",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "b",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "truth-table",
+    "rows": [
+      {
+        "in": {
+          "in": 0,
+          "sel": 0
+        },
+        "out": {
+          "a": 0,
+          "b": 0
+        }
+      },
+      {
+        "in": {
+          "in": 0,
+          "sel": 1
+        },
+        "out": {
+          "a": 0,
+          "b": 0
+        }
+      },
+      {
+        "in": {
+          "in": 1,
+          "sel": 0
+        },
+        "out": {
+          "a": 1,
+          "b": 0
+        }
+      },
+      {
+        "in": {
+          "in": 1,
+          "sel": 1
+        },
+        "out": {
+          "a": 0,
+          "b": 1
+        }
+      }
+    ]
+  },
+  "optimize": {
+    "bestNand": 4
+  },
+  "unlocks": [
+    "user.demux"
+  ],
+  "hints": [
+    "logic/demux/h1",
+    "logic/demux/h2"
+  ],
+  "glossary": [
+    "demux"
+  ]
+}

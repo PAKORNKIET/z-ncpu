@@ -32,14 +32,22 @@ const STATUS_TEXT: Record<LevelStatus, string> = {
 const STATUS_ICON: Record<LevelStatus, string> = { locked: '🔒', open: '○', passed: '✓', retest: '↻' };
 
 /** ชิ้นของผู้เล่นในกล่องเครื่องมือ: บอกว่ามาจากด่านไหน */
-export function paletteFor(ids: readonly string[]): PaletteItem[] {
+export function paletteFor(ids: readonly string[], busWidth = 4): PaletteItem[] {
   return ids.map((id) => {
     const prim = PRIMITIVE_PALETTE[id];
-    if (prim) return prim;
+    if (prim) {
+      if (!prim.params?.width || busWidth === prim.params.width) return prim;
+      // ตัวแยก/รวมบัสเริ่มที่ความกว้างของบัสในด่านนั้น
+      const desc = id === 'prim.split' ? `บัส ${busWidth} บิต → บิตเดี่ยว (b0 = บิตขวาสุด)` : `บิตเดี่ยว → บัส ${busWidth} บิต`;
+      return { ...prim, params: { width: busWidth }, desc };
+    }
     const from = LEVELS.find((l) => l.unlocks.includes(id));
     return { defId: id, title: partName(id, LEVELS), desc: from ? `สร้างเองในด่าน "${from.title.th}"` : 'ชิ้นที่สร้างเอง' };
   });
 }
+
+/** ความกว้างบัสที่กว้างที่สุดของด่าน (อย่างน้อย 4) */
+const busWidthOf = (level: LevelDef): number => Math.max(4, ...level.target.pins.map((p) => (p.width > 1 ? p.width : 0)));
 
 export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => SaveFile) => void; generation: number }) {
   const { save, setSave } = props;
@@ -88,7 +96,7 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
           key={`${level.id}#${props.generation}`}
           initial={draftFor(level, save)}
           deps={save.components.filter((c) => c.id !== level.target.defId)}
-          palette={paletteFor(availableParts(level, LEVELS, save))}
+          palette={paletteFor(availableParts(level, LEVELS, save), busWidthOf(level))}
           onChange={(def) => setSave((s) => putComponent(s, def))}
           side={(ctx) => (
             <TestPanel
@@ -195,8 +203,10 @@ function TestPanel(props: {
 
       {level.tests.type === 'truth-table' ? (
         <TruthTable level={level} report={stale ? null : (result?.report ?? null)} />
-      ) : (
+      ) : level.tests.type === 'sequence' ? (
         <SequenceTable level={level} report={stale ? null : (result?.report ?? null)} />
+      ) : (
+        <ReferenceTable level={level} report={stale ? null : (result?.report ?? null)} />
       )}
 
       <div role="status" aria-live="polite" className="test-result">
@@ -205,7 +215,9 @@ function TestPanel(props: {
           <p className="error">
             ✗ ยังไม่ผ่าน: ถูก {result.report.total - result.report.failed} จาก {result.report.total} แถว
             {result.report.firstFailure
-              ? ` · ดู${level.tests.type === 'sequence' ? 'ขั้น' : 'แถว'}ที่ ${result.report.firstFailure.index + 1}`
+              ? level.tests.type === 'reference'
+                ? ''
+                : ` · ดู${level.tests.type === 'sequence' ? 'ขั้น' : 'แถว'}ที่ ${result.report.firstFailure.index + 1}`
               : ''}
           </p>
         ) : null}
@@ -364,5 +376,73 @@ function SequenceTable({ level, report }: { level: LevelDef; report: TestReport 
         </tbody>
       </table>
     </div>
+  );
+}
+
+/**
+ * ด่านที่ขาเข้ากว้างเกินจะทดสอบครบทุกกรณี: engine สร้างกรณีขอบ + สุ่มเอง จึงไม่มีตารางให้ดูก่อนทดสอบ
+ * หลังทดสอบแสดงแถวที่ผิด (ไม่เกิน 30 แถว) หรือตัวอย่างแถวที่ถูกถ้าผ่านทั้งหมด
+ */
+function ReferenceTable({ level, report }: { level: LevelDef; report: TestReport | null }) {
+  if (level.tests.type !== 'reference') return null;
+  const ins = level.target.pins.filter((p) => p.dir === 'in').map((p) => p.name);
+  const outs = level.target.pins.filter((p) => p.dir === 'out').map((p) => p.name);
+  if (!report) {
+    return (
+      <p className="muted small" data-testid="reference-info">
+        ด่านนี้ขาเข้ามีหลายแบบเกินจะลองครบ จึงทดสอบด้วยกรณีขอบ (0, ค่ามากสุด, บิตเครื่องหมาย ฯลฯ) + สุ่มอีก{' '}
+        {(level.tests.samples ?? 2000).toLocaleString()} แบบ
+      </p>
+    );
+  }
+  const failed = report.results.filter((r) => !r.ok);
+  const shown = (failed.length > 0 ? failed : report.results).slice(0, 30);
+  return (
+    <>
+      <p className="muted small">
+        ทดสอบ {report.total.toLocaleString()} แบบ ·{' '}
+        {failed.length > 0 ? `ผิด ${failed.length.toLocaleString()} แบบ (แสดง ${shown.length} แบบแรก)` : `ตัวอย่าง ${shown.length} แบบ`}
+      </p>
+      <div className="table-scroll">
+        <table className="truth-table" aria-label="ผลการทดสอบ">
+          <thead>
+            <tr>
+              {ins.map((n) => (
+                <th key={n} scope="col">
+                  {n}
+                </th>
+              ))}
+              {outs.map((n) => (
+                <th key={n} scope="col">
+                  {n} ที่ต้องได้
+                </th>
+              ))}
+              {outs.map((n) => (
+                <th key={`a${n}`} scope="col">
+                  {n} ที่ได้
+                </th>
+              ))}
+              <th scope="col">ผล</th>
+            </tr>
+          </thead>
+          <tbody>
+            {shown.map((r) => (
+              <tr key={r.index} className={r.ok ? 'ok' : 'fail'}>
+                {ins.map((n) => (
+                  <td key={n}>{show(r.inputs[n])}</td>
+                ))}
+                {outs.map((n) => (
+                  <td key={n}>{show(r.expected[n])}</td>
+                ))}
+                {outs.map((n) => (
+                  <td key={`a${n}`}>{show(r.actual[n])}</td>
+                ))}
+                <td aria-label={r.ok ? 'ถูก' : 'ผิด'}>{r.ok ? '✓' : '✗'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }

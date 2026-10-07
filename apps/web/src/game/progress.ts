@@ -13,9 +13,14 @@ export type HashOf = (components: readonly ComponentDef[], defId: string) => str
 export const componentOf = (save: SaveFile, defId: string): ComponentDef | undefined =>
   save.components.find((c) => c.id === defId);
 
-/** ด่านแรกเปิดเสมอ ด่านถัดไปเปิดเมื่อด่านก่อนหน้าเคยผ่าน */
+/**
+ * ด่านแรกเปิดเสมอ ด่านถัดไปเปิดเมื่อด่านก่อนหน้าเคยผ่าน
+ * ด่านที่เคยผ่านแล้วเปิดค้างไว้เสมอ แม้แอปรุ่นใหม่จะแทรกด่านใหม่ไว้ข้างหน้า (ความคืบหน้าเดิมจะได้ไม่ถูกล็อก)
+ */
 export function isUnlocked(levels: readonly LevelDef[], index: number, save: SaveFile): boolean {
   if (index <= 0) return true;
+  const self = levels[index];
+  if (self && save.progress[self.id]?.passedHash) return true;
   const prev = levels[index - 1];
   return !!prev && !!save.progress[prev.id]?.passedHash;
 }

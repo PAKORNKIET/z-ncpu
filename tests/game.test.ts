@@ -161,3 +161,21 @@ describe('ไฟล์บันทึก', () => {
     expect(storeSave(denied, save)).toBe(false);
   });
 });
+
+describe('แอปรุ่นใหม่แทรกด่านเพิ่ม', () => {
+  it('ด่านที่เคยผ่านยังเปิดอยู่ แม้ด่านที่แทรกไว้ข้างหน้ายังไม่ผ่าน', () => {
+    // ผู้เล่นรุ่นเก่าผ่าน NOT, AND, OR, XOR, Half Adder แล้ว แต่ยังไม่เคยเห็น NOR / XNOR / MUX / DEMUX
+    let save = emptySave();
+    for (const id of ['logic.not', 'logic.and', 'logic.or', 'logic.xor', 'arith.half-adder']) {
+      save = recordTest(save, id, { passed: true, hash: 'h', nand: 1 });
+    }
+    const at = (id: string) => LEVELS.findIndex((l) => l.id === id);
+    expect(isUnlocked(LEVELS, at('arith.half-adder'), save)).toBe(true);
+    expect(isUnlocked(LEVELS, at('arith.full-adder'), save)).toBe(true);
+    expect(isUnlocked(LEVELS, at('logic.xor'), save)).toBe(true);
+    // ด่านใหม่: NOR เปิดเพราะ OR ผ่านแล้ว, XNOR เปิดเพราะ XOR ผ่านแล้ว, MUX ยังล็อกจนกว่าจะผ่าน XNOR
+    expect(isUnlocked(LEVELS, at('logic.nor'), save)).toBe(true);
+    expect(isUnlocked(LEVELS, at('logic.xnor'), save)).toBe(true);
+    expect(isUnlocked(LEVELS, at('logic.mux'), save)).toBe(false);
+  });
+});

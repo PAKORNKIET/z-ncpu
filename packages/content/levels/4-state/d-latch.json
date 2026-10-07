@@ -1,21 +1,20 @@
 {
-  "id": "memory.dff",
-  "chapter": 3,
+  "id": "memory.d-latch",
+  "chapter": 4,
   "title": {
-    "th": "D Flip-Flop: จำค่าตอนนาฬิกาเดิน",
-    "en": "D Flip-Flop"
+    "th": "D Latch: จำค่าตามสั่ง",
+    "en": "D Latch"
   },
-  "lesson": "memory/dff",
+  "lesson": "memory/d-latch",
   "available": [
     "prim.nand",
     "user.not",
     "user.and",
     "user.or",
-    "user.srlatch",
-    "user.dlatch"
+    "user.srlatch"
   ],
   "target": {
-    "defId": "user.dff",
+    "defId": "user.dlatch",
     "pins": [
       {
         "name": "d",
@@ -23,7 +22,7 @@
         "width": 1
       },
       {
-        "name": "clk",
+        "name": "e",
         "dir": "in",
         "width": 1
       },
@@ -36,13 +35,52 @@
   },
   "tests": {
     "type": "sequence",
-    "clock": "clk",
     "steps": [
       {
         "set": {
+          "d": 1,
+          "e": 1
+        },
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "set": {
+          "d": 0
+        },
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "e": 0
+        },
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
           "d": 1
         },
-        "tick": 1,
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "e": 1
+        },
+        "expect": {
+          "q": 1
+        }
+      },
+      {
+        "set": {
+          "e": 0
+        },
         "expect": {
           "q": 1
         }
@@ -53,56 +91,22 @@
         },
         "expect": {
           "q": 1
-        }
-      },
-      {
-        "tick": 1,
-        "expect": {
-          "q": 0
-        }
-      },
-      {
-        "set": {
-          "d": 1
-        },
-        "expect": {
-          "q": 0
-        }
-      },
-      {
-        "tick": 1,
-        "expect": {
-          "q": 1
-        }
-      },
-      {
-        "tick": 1,
-        "expect": {
-          "q": 1
-        }
-      },
-      {
-        "set": {
-          "d": 0
-        },
-        "tick": 2,
-        "expect": {
-          "q": 0
         }
       }
     ]
   },
+  "optimize": {
+    "bestNand": 4
+  },
   "unlocks": [
-    "user.dff"
+    "user.dlatch"
   ],
   "hints": [
-    "memory/dff/h1",
-    "memory/dff/h2",
-    "memory/dff/h3"
+    "memory/d-latch/h1",
+    "memory/d-latch/h2"
   ],
   "glossary": [
-    "flip-flop",
-    "clock",
-    "edge"
+    "d-latch",
+    "latch"
   ]
 }

@@ -6,22 +6,30 @@ import type { GlossaryEntry, LevelDef } from '@z-ncpu/shared';
 import glossaryJson from '../i18n/glossary.json';
 import hintsTh from '../i18n/hints.th.json';
 import andLevel from '../levels/1-logic/and.json';
+import demuxLevel from '../levels/1-logic/demux.json';
+import muxLevel from '../levels/1-logic/mux.json';
+import norLevel from '../levels/1-logic/nor.json';
+import xnorLevel from '../levels/1-logic/xnor.json';
 import notLevel from '../levels/1-logic/not.json';
 import orLevel from '../levels/1-logic/or.json';
 import xorLevel from '../levels/1-logic/xor.json';
 import add4Level from '../levels/2-arith/add4.json';
 import fullAdderLevel from '../levels/2-arith/full-adder.json';
 import halfAdderLevel from '../levels/2-arith/half-adder.json';
-import dLatchLevel from '../levels/3-memory/d-latch.json';
-import dffLevel from '../levels/3-memory/dff.json';
-import srLatchLevel from '../levels/3-memory/sr-latch.json';
+import dLatchLevel from '../levels/4-state/d-latch.json';
+import dffLevel from '../levels/4-state/dff.json';
+import srLatchLevel from '../levels/4-state/sr-latch.json';
 
 /** ด่านเรียงตามลำดับที่เล่น */
 export const LEVELS: LevelDef[] = [
   notLevel,
   andLevel,
   orLevel,
+  norLevel,
   xorLevel,
+  xnorLevel,
+  muxLevel,
+  demuxLevel,
   halfAdderLevel,
   fullAdderLevel,
   add4Level,
@@ -30,11 +38,11 @@ export const LEVELS: LevelDef[] = [
   dffLevel,
 ] as LevelDef[];
 
-/** ชื่อบท */
+/** ชื่อบท (เลขบทตามหลักสูตรใน Spec ส่วน 12 บทที่ยังไม่มีด่านจะไม่แสดง) */
 export const CHAPTERS: Record<number, { th: string; en: string }> = {
   1: { th: 'ตรรกะพื้นฐาน', en: 'Basic logic' },
   2: { th: 'การบวกเลข', en: 'Arithmetic' },
-  3: { th: 'หน่วยความจำ', en: 'Memory' },
+  4: { th: 'วงจรจำค่า', en: 'State' },
 };
 
 export const GLOSSARY: GlossaryEntry[] = glossaryJson;

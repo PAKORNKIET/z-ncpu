@@ -1,0 +1,89 @@
+{
+  "id": "logic.nor",
+  "chapter": 1,
+  "title": {
+    "th": "สร้าง NOR",
+    "en": "Build NOR"
+  },
+  "lesson": "logic/nor",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or"
+  ],
+  "target": {
+    "defId": "user.nor",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "truth-table",
+    "rows": [
+      {
+        "in": {
+          "a": 0,
+          "b": 0
+        },
+        "out": {
+          "y": 1
+        }
+      },
+      {
+        "in": {
+          "a": 0,
+          "b": 1
+        },
+        "out": {
+          "y": 0
+        }
+      },
+      {
+        "in": {
+          "a": 1,
+          "b": 0
+        },
+        "out": {
+          "y": 0
+        }
+      },
+      {
+        "in": {
+          "a": 1,
+          "b": 1
+        },
+        "out": {
+          "y": 0
+        }
+      }
+    ]
+  },
+  "optimize": {
+    "bestNand": 4
+  },
+  "unlocks": [
+    "user.nor"
+  ],
+  "hints": [
+    "logic/nor/h1",
+    "logic/nor/h2"
+  ],
+  "glossary": [
+    "nor"
+  ]
+}

@@ -1,28 +1,27 @@
 {
-  "id": "memory.d-latch",
-  "chapter": 3,
+  "id": "memory.sr-latch",
+  "chapter": 4,
   "title": {
-    "th": "D Latch: จำค่าตามสั่ง",
-    "en": "D Latch"
+    "th": "SR Latch: วงจรจำค่าแรก",
+    "en": "SR Latch"
   },
-  "lesson": "memory/d-latch",
+  "lesson": "memory/sr-latch",
   "available": [
     "prim.nand",
     "user.not",
     "user.and",
-    "user.or",
-    "user.srlatch"
+    "user.or"
   ],
   "target": {
-    "defId": "user.dlatch",
+    "defId": "user.srlatch",
     "pins": [
       {
-        "name": "d",
+        "name": "s",
         "dir": "in",
         "width": 1
       },
       {
-        "name": "e",
+        "name": "r",
         "dir": "in",
         "width": 1
       },
@@ -38,8 +37,8 @@
     "steps": [
       {
         "set": {
-          "d": 1,
-          "e": 1
+          "s": 1,
+          "r": 0
         },
         "expect": {
           "q": 1
@@ -47,31 +46,7 @@
       },
       {
         "set": {
-          "d": 0
-        },
-        "expect": {
-          "q": 0
-        }
-      },
-      {
-        "set": {
-          "e": 0
-        },
-        "expect": {
-          "q": 0
-        }
-      },
-      {
-        "set": {
-          "d": 1
-        },
-        "expect": {
-          "q": 0
-        }
-      },
-      {
-        "set": {
-          "e": 1
+          "s": 0
         },
         "expect": {
           "q": 1
@@ -79,7 +54,23 @@
       },
       {
         "set": {
-          "e": 0
+          "r": 1
+        },
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "r": 0
+        },
+        "expect": {
+          "q": 0
+        }
+      },
+      {
+        "set": {
+          "s": 1
         },
         "expect": {
           "q": 1
@@ -87,7 +78,7 @@
       },
       {
         "set": {
-          "d": 0
+          "s": 0
         },
         "expect": {
           "q": 1
@@ -99,14 +90,15 @@
     "bestNand": 4
   },
   "unlocks": [
-    "user.dlatch"
+    "user.srlatch"
   ],
   "hints": [
-    "memory/d-latch/h1",
-    "memory/d-latch/h2"
+    "memory/sr-latch/h1",
+    "memory/sr-latch/h2",
+    "memory/sr-latch/h3"
   ],
   "glossary": [
-    "d-latch",
-    "latch"
+    "latch",
+    "feedback"
   ]
 }

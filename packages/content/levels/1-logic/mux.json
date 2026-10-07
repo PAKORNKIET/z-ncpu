@@ -1,0 +1,140 @@
+{
+  "id": "logic.mux",
+  "chapter": 1,
+  "title": {
+    "th": "ตัวเลือกสัญญาณ (MUX)",
+    "en": "Build MUX"
+  },
+  "lesson": "logic/mux",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor"
+  ],
+  "target": {
+    "defId": "user.mux",
+    "pins": [
+      {
+        "name": "a",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "b",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "sel",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "truth-table",
+    "rows": [
+      {
+        "in": {
+          "a": 0,
+          "b": 0,
+          "sel": 0
+        },
+        "out": {
+          "y": 0
+        }
+      },
+      {
+        "in": {
+          "a": 0,
+          "b": 0,
+          "sel": 1
+        },
+        "out": {
+          "y": 0
+        }
+      },
+      {
+        "in": {
+          "a": 0,
+          "b": 1,
+          "sel": 0
+        },
+        "out": {
+          "y": 0
+        }
+      },
+      {
+        "in": {
+          "a": 0,
+          "b": 1,
+          "sel": 1
+        },
+        "out": {
+          "y": 1
+        }
+      },
+      {
+        "in": {
+          "a": 1,
+          "b": 0,
+          "sel": 0
+        },
+        "out": {
+          "y": 1
+        }
+      },
+      {
+        "in": {
+          "a": 1,
+          "b": 0,
+          "sel": 1
+        },
+        "out": {
+          "y": 0
+        }
+      },
+      {
+        "in": {
+          "a": 1,
+          "b": 1,
+          "sel": 0
+        },
+        "out": {
+          "y": 1
+        }
+      },
+      {
+        "in": {
+          "a": 1,
+          "b": 1,
+          "sel": 1
+        },
+        "out": {
+          "y": 1
+        }
+      }
+    ]
+  },
+  "optimize": {
+    "bestNand": 4
+  },
+  "unlocks": [
+    "user.mux"
+  ],
+  "hints": [
+    "logic/mux/h1",
+    "logic/mux/h2",
+    "logic/mux/h3"
+  ],
+  "glossary": [
+    "mux"
+  ]
+}

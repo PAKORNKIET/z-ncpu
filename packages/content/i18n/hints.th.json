@@ -23,5 +23,14 @@
   "memory/d-latch/h2": "ให้เหลือ 4 NAND: n1 = NAND(d, e), n2 = NAND(n1, e) แล้วส่ง n1 กับ n2 เข้า NAND สองตัวที่ไขว้กันเหมือนใน SR Latch",
   "memory/dff/h1": "D Latch ปล่อยค่าผ่านตลอดเวลาที่ e = 1 แต่ Flip-Flop ต้องรับค่าเฉพาะ \"ตอนที่นาฬิกาเปลี่ยนจาก 0 เป็น 1\" เท่านั้น",
   "memory/dff/h2": "ใช้ D Latch สองตัวต่อกัน ตัวแรก (master) เปิดตอน clk = 0 ตัวที่สอง (slave) เปิดตอน clk = 1",
-  "memory/dff/h3": "master: d เข้า d, NOT clk เข้า e · slave: q ของ master เข้า d, clk เข้า e · q ของ slave คือ q ของวงจร"
+  "memory/dff/h3": "master: d เข้า d, NOT clk เข้า e · slave: q ของ master เข้า d, clk เข้า e · q ของ slave คือ q ของวงจร",
+  "logic/nor/h1": "NOR คือ OR ที่กลับค่าขาออก (Not OR)",
+  "logic/nor/h2": "ต่อ OR ที่สร้างไว้ แล้วกลับค่าด้วย NOT",
+  "logic/xnor/h1": "XNOR = 1 เมื่อขาเข้าสองขาเท่ากัน ตรงข้ามกับ XOR ทุกแถว",
+  "logic/xnor/h2": "XOR แล้วต่อ NOT ใช้ NAND รวม 5 ตัวพอดี",
+  "logic/mux/h1": "MUX เลือกว่าจะส่ง a หรือ b ออกไป: sel = 0 ส่ง a, sel = 1 ส่ง b",
+  "logic/mux/h2": "แบ่งเป็นสองทาง: \"a และ ไม่ใช่ sel\" กับ \"b และ sel\" แล้วรวมด้วย OR",
+  "logic/mux/h3": "ให้เหลือ 4 NAND: t1 = NAND(a, NOT sel), t2 = NAND(b, sel), y = NAND(t1, t2)",
+  "logic/demux/h1": "DEMUX ส่ง in ไปทางเดียวจากสองทาง: sel = 0 ไปที่ a, sel = 1 ไปที่ b ทางที่ไม่ได้เลือกเป็น 0",
+  "logic/demux/h2": "b = in AND sel และ a = in AND (NOT sel) ถ้าอยากให้เหลือ 4 NAND: in AND NOT(in AND sel) ก็คือ a เหมือนกัน"
 }

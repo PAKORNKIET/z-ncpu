@@ -18,6 +18,8 @@ let lib = new ComponentLibrary();
 let sim: Simulator | null = null;
 let clockPin: string | undefined;
 let simMode: SimMode = 'fast';
+/** วงจรที่มี NAND เกินนี้ใช้ Fast Mode เสมอ */
+const VISUAL_MAX_GATES = 3000;
 let timer: ReturnType<typeof setInterval> | null = null;
 /** ชั้นที่ส่งค่าของทุกขาไปด้วย (null = ไม่ส่ง) ตั้งด้วย subscribe */
 let scopePath: string | null = null;
@@ -90,7 +92,8 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
       case 'compile': {
         stop();
         const { netlist, diagnostics } = compile(lib, msg.defId);
-        simMode = msg.mode;
+        // Visual Mode ละเอียดทีละ step แต่ช้ากับวงจรใหญ่ (เช่น RAM) จึงสลับเป็น Fast Mode ให้อัตโนมัติ
+        simMode = msg.mode === 'visual' && netlist && netlist.gateCount > VISUAL_MAX_GATES ? 'fast' : msg.mode;
         sim = netlist && !hasErrors(diagnostics) ? createSimulator(netlist, simMode) : null;
         // M0: ถ้าวงจรมี input ชื่อ clk ถือว่าเป็น clock
         clockPin = netlist?.inputs.has('clk') ? 'clk' : undefined;
@@ -98,7 +101,7 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
           rid: msg.rid,
           type: 'compiled',
           defId: msg.defId,
-          mode: msg.mode,
+          mode: simMode,
           stats: netlist
             ? {
                 nets: netlist.netCount,

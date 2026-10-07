@@ -27,3 +27,5 @@ export {
   MAX_EXHAUSTIVE_BITS,
 } from './validate';
 export type { ComponentTestResult } from './validate';
+export { REFERENCES, referenceRows } from './references';
+export type { ReferenceFn } from './references';

@@ -153,6 +153,44 @@ export function connect(def: ComponentDef, a: PinRef, b: PinRef, pinsOf: PinReso
   return { ok: true, def: withBody(def, { ...bd, wires: [...bd.wires, wire] }), wireId: id };
 }
 
+/**
+ * เปลี่ยน params ของชิ้น (เช่นความกว้างของตัวแยกบัส) สายที่ต่อกับขาที่หายไปหรือกว้างไม่เท่าเดิมถูกถอดออก
+ * ถ้า params ใช้ไม่ได้ (pinsOf โยน error) คืน ok: false
+ */
+export function setParams(
+  def: ComponentDef,
+  id: string,
+  params: Record<string, number>,
+  pinsOf: PinResolver,
+): OpResult & { removedWires?: string[] } {
+  const bd = body(def);
+  const inst = bd.instances.find((i) => i.id === id);
+  if (!inst) return fail(`ไม่มีชิ้นส่วน "${id}"`, `No instance "${id}"`);
+  let before: PinDef[] | undefined;
+  let after: PinDef[] | undefined;
+  try {
+    before = pinsOf(inst.defId, inst.params);
+    after = pinsOf(inst.defId, params);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return fail(`ตั้งค่านี้ไม่ได้: ${msg}`, `Invalid setting: ${msg}`);
+  }
+  if (!after) return fail(`ไม่รู้จักชิ้นส่วน "${inst.defId}"`, `Unknown component "${inst.defId}"`);
+  const widthBefore = new Map((before ?? []).map((p) => [p.name, p.width]));
+  const widthAfter = new Map(after.map((p) => [p.name, p.width]));
+  const keep = (pin: string): boolean => widthAfter.has(pin) && widthAfter.get(pin) === widthBefore.get(pin);
+  const removed = bd.wires.filter((w) => (w.from.inst === id && !keep(w.from.pin)) || (w.to.inst === id && !keep(w.to.pin)));
+  const gone = new Set(removed.map((w) => w.id));
+  return {
+    ok: true,
+    def: withBody(def, {
+      instances: bd.instances.map((i) => (i.id === id ? { ...i, params: { ...params } } : i)),
+      wires: bd.wires.filter((w) => !gone.has(w.id)),
+    }),
+    removedWires: removed.map((w) => w.id),
+  };
+}
+
 /** ชิ้นส่วนที่ถูกใช้อยู่ในวงจรนี้กี่ตัว (ใช้แสดงจำนวน NAND ระดับบนสุด) */
 export function countByDef(def: ComponentDef): Map<string, number> {
   const counts = new Map<string, number>();
