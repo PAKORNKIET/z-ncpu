@@ -1,0 +1,501 @@
+{
+  "id": "user.sp",
+  "name": {
+    "th": "Stack Pointer",
+    "en": "Stack Pointer"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "op",
+      "dir": "in",
+      "width": 2
+    },
+    {
+      "name": "reset",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "clk",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "out",
+      "dir": "out",
+      "width": 8
+    },
+    {
+      "name": "down",
+      "dir": "out",
+      "width": 8
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "reg81",
+        "defId": "user.reg8",
+        "x": 700,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "inc81",
+        "defId": "user.inc8",
+        "x": 300,
+        "y": -150,
+        "rotation": 0
+      },
+      {
+        "id": "add81",
+        "defId": "user.add8",
+        "x": 300,
+        "y": 100,
+        "rotation": 0
+      },
+      {
+        "id": "const01",
+        "defId": "prim.const0",
+        "x": 150,
+        "y": 250,
+        "rotation": 0
+      },
+      {
+        "id": "const02",
+        "defId": "prim.const0",
+        "x": 100,
+        "y": 150,
+        "rotation": 0
+      },
+      {
+        "id": "const11",
+        "defId": "prim.const1",
+        "x": 100,
+        "y": 210,
+        "rotation": 0
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 200,
+        "y": 150,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "sel41",
+        "defId": "user.sel4",
+        "x": 450,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "mux81",
+        "defId": "user.mux8",
+        "x": 580,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "const03",
+        "defId": "prim.const0",
+        "x": 400,
+        "y": 300,
+        "rotation": 0
+      },
+      {
+        "id": "const12",
+        "defId": "prim.const1",
+        "x": 400,
+        "y": 360,
+        "rotation": 0
+      },
+      {
+        "id": "merge2",
+        "defId": "prim.merge",
+        "x": 500,
+        "y": 300,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "const13",
+        "defId": "prim.const1",
+        "x": 580,
+        "y": 150,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "inc81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "add81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b6"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b7"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "add81",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "add81",
+          "pin": "cin"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d0"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "add81",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d1"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "inc81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d2"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d3"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "self",
+          "pin": "op"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "sel41",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "mux81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "const03",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge2",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "const03",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge2",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "const03",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge2",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "const03",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge2",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "const12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge2",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "const12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge2",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "const12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge2",
+          "pin": "b6"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "const12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge2",
+          "pin": "b7"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "merge2",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux81",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w28",
+        "from": {
+          "inst": "self",
+          "pin": "reset"
+        },
+        "to": {
+          "inst": "mux81",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w29",
+        "from": {
+          "inst": "mux81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg81",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w30",
+        "from": {
+          "inst": "const13",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg81",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w31",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "reg81",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w32",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "out"
+        }
+      },
+      {
+        "id": "w33",
+        "from": {
+          "inst": "add81",
+          "pin": "sum"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "down"
+        }
+      }
+    ]
+  }
+}

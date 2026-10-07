@@ -1,0 +1,723 @@
+{
+  "id": "user.regfile",
+  "name": {
+    "th": "Register file",
+    "en": "Register file"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "rd",
+      "dir": "in",
+      "width": 2
+    },
+    {
+      "name": "rs",
+      "dir": "in",
+      "width": 2
+    },
+    {
+      "name": "in",
+      "dir": "in",
+      "width": 8
+    },
+    {
+      "name": "write",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "reset",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "clk",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "x",
+      "dir": "out",
+      "width": 8
+    },
+    {
+      "name": "y",
+      "dir": "out",
+      "width": 8
+    },
+    {
+      "name": "a",
+      "dir": "out",
+      "width": 8
+    },
+    {
+      "name": "b",
+      "dir": "out",
+      "width": 8
+    },
+    {
+      "name": "c",
+      "dir": "out",
+      "width": 8
+    },
+    {
+      "name": "d",
+      "dir": "out",
+      "width": 8
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "demux41",
+        "defId": "user.demux4",
+        "x": 150,
+        "y": -300,
+        "rotation": 0
+      },
+      {
+        "id": "mux81",
+        "defId": "user.mux8",
+        "x": 150,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "const01",
+        "defId": "prim.const0",
+        "x": 0,
+        "y": 100,
+        "rotation": 0
+      },
+      {
+        "id": "const11",
+        "defId": "prim.const1",
+        "x": 0,
+        "y": 160,
+        "rotation": 0
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 100,
+        "y": 100,
+        "rotation": 0,
+        "params": {
+          "width": 8
+        }
+      },
+      {
+        "id": "sel41",
+        "defId": "user.sel4",
+        "x": 700,
+        "y": -100,
+        "rotation": 0
+      },
+      {
+        "id": "sel42",
+        "defId": "user.sel4",
+        "x": 700,
+        "y": 200,
+        "rotation": 0
+      },
+      {
+        "id": "or1",
+        "defId": "user.or",
+        "x": 350,
+        "y": -300,
+        "rotation": 0
+      },
+      {
+        "id": "reg81",
+        "defId": "user.reg8",
+        "x": 500,
+        "y": -300,
+        "rotation": 0
+      },
+      {
+        "id": "or2",
+        "defId": "user.or",
+        "x": 350,
+        "y": -180,
+        "rotation": 0
+      },
+      {
+        "id": "reg82",
+        "defId": "user.reg8",
+        "x": 500,
+        "y": -180,
+        "rotation": 0
+      },
+      {
+        "id": "or3",
+        "defId": "user.or",
+        "x": 350,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "reg83",
+        "defId": "user.reg8",
+        "x": 500,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "or4",
+        "defId": "user.or",
+        "x": 350,
+        "y": 60,
+        "rotation": 0
+      },
+      {
+        "id": "reg84",
+        "defId": "user.reg8",
+        "x": 500,
+        "y": 60,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "write"
+        },
+        "to": {
+          "inst": "demux41",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "rd"
+        },
+        "to": {
+          "inst": "demux41",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "self",
+          "pin": "in"
+        },
+        "to": {
+          "inst": "mux81",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b2"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b3"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b4"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b5"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b6"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "const01",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b7"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "mux81",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "self",
+          "pin": "reset"
+        },
+        "to": {
+          "inst": "mux81",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "self",
+          "pin": "rd"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "self",
+          "pin": "rs"
+        },
+        "to": {
+          "inst": "sel42",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "sel41",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "x"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "sel42",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "y"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "demux41",
+          "pin": "o0"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "self",
+          "pin": "reset"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "or1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg81",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "mux81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg81",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "reg81",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d0"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "reg81",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel42",
+          "pin": "d0"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "demux41",
+          "pin": "o1"
+        },
+        "to": {
+          "inst": "or2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "self",
+          "pin": "reset"
+        },
+        "to": {
+          "inst": "or2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w28",
+        "from": {
+          "inst": "or2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg82",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w29",
+        "from": {
+          "inst": "mux81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg82",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w30",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "reg82",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w31",
+        "from": {
+          "inst": "reg82",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w32",
+        "from": {
+          "inst": "reg82",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d1"
+        }
+      },
+      {
+        "id": "w33",
+        "from": {
+          "inst": "reg82",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel42",
+          "pin": "d1"
+        }
+      },
+      {
+        "id": "w34",
+        "from": {
+          "inst": "demux41",
+          "pin": "o2"
+        },
+        "to": {
+          "inst": "or3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w35",
+        "from": {
+          "inst": "self",
+          "pin": "reset"
+        },
+        "to": {
+          "inst": "or3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w36",
+        "from": {
+          "inst": "or3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg83",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w37",
+        "from": {
+          "inst": "mux81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg83",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w38",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "reg83",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w39",
+        "from": {
+          "inst": "reg83",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "c"
+        }
+      },
+      {
+        "id": "w40",
+        "from": {
+          "inst": "reg83",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d2"
+        }
+      },
+      {
+        "id": "w41",
+        "from": {
+          "inst": "reg83",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel42",
+          "pin": "d2"
+        }
+      },
+      {
+        "id": "w42",
+        "from": {
+          "inst": "demux41",
+          "pin": "o3"
+        },
+        "to": {
+          "inst": "or4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w43",
+        "from": {
+          "inst": "self",
+          "pin": "reset"
+        },
+        "to": {
+          "inst": "or4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w44",
+        "from": {
+          "inst": "or4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg84",
+          "pin": "load"
+        }
+      },
+      {
+        "id": "w45",
+        "from": {
+          "inst": "mux81",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "reg84",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w46",
+        "from": {
+          "inst": "self",
+          "pin": "clk"
+        },
+        "to": {
+          "inst": "reg84",
+          "pin": "clk"
+        }
+      },
+      {
+        "id": "w47",
+        "from": {
+          "inst": "reg84",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "d"
+        }
+      },
+      {
+        "id": "w48",
+        "from": {
+          "inst": "reg84",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel41",
+          "pin": "d3"
+        }
+      },
+      {
+        "id": "w49",
+        "from": {
+          "inst": "reg84",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "sel42",
+          "pin": "d3"
+        }
+      }
+    ]
+  }
+}

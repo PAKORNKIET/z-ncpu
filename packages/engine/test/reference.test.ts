@@ -72,3 +72,33 @@ describe('ALU ของ Z8', () => {
     expect(alu(9, 9, 6)).toEqual({ y: 0, z: 1, c: 0, n: 0 });
   });
 });
+
+describe('Instruction Decoder ของ Z8', () => {
+  const dec = (group: number, func: number, flags: { m?: number; z?: number; c?: number; n?: number } = {}) => REFERENCES.decoder!({ group, func, ...flags });
+  it('คำสั่งกลุ่ม 00', () => {
+    expect(dec(0, 0)).toMatchObject({ reg_write: 0, mem_write: 0, pc_sel: 0, halt: 0 });
+    expect(dec(0, 1, { m: 1 })).toMatchObject({ reg_write: 1, wb_sel: 2, src_sel: 1 });
+    expect(dec(0, 2)).toMatchObject({ reg_write: 1, wb_sel: 1, addr_sel: 0 });
+    expect(dec(0, 3)).toMatchObject({ reg_write: 0, mem_write: 1, addr_sel: 0, mem_src: 0 });
+    expect(dec(0, 4)).toMatchObject({ mem_write: 1, addr_sel: 2, sp_op: 1 });
+    expect(dec(0, 5)).toMatchObject({ reg_write: 1, wb_sel: 1, addr_sel: 1, sp_op: 2 });
+    expect(dec(0, 7)).toMatchObject({ halt: 1, reg_write: 0 });
+  });
+  it('คำสั่ง ALU: CMP เขียนแค่ flags', () => {
+    expect(dec(1, 0)).toMatchObject({ alu_op: 0, reg_write: 1, flag_write: 1, wb_sel: 0 });
+    expect(dec(1, 7)).toMatchObject({ alu_op: 7, reg_write: 0, flag_write: 1 });
+  });
+  it('กระโดดตาม flags, CALL และ RET', () => {
+    expect(dec(2, 0).pc_sel).toBe(1);
+    expect([dec(2, 1, { z: 0 }).pc_sel, dec(2, 1, { z: 1 }).pc_sel]).toEqual([0, 1]);
+    expect([dec(2, 2, { z: 0 }).pc_sel, dec(2, 2, { z: 1 }).pc_sel]).toEqual([1, 0]);
+    expect([dec(2, 3, { c: 1 }).pc_sel, dec(2, 4, { n: 1 }).pc_sel, dec(2, 4).pc_sel]).toEqual([1, 1, 0]);
+    expect(dec(2, 5)).toMatchObject({ pc_sel: 1, mem_write: 1, mem_src: 1, addr_sel: 2, sp_op: 1 });
+    expect(dec(2, 6)).toMatchObject({ pc_sel: 2, addr_sel: 1, sp_op: 2, mem_write: 0 });
+  });
+  it('คำสั่งที่ไม่ได้ใช้ไม่ทำอะไร', () => {
+    for (const [g, f] of [[3, 0], [3, 7], [2, 7], [0, 6]] as const) {
+      expect(dec(g, f, { z: 1, c: 1, n: 1 })).toMatchObject({ reg_write: 0, flag_write: 0, mem_write: 0, pc_sel: 0, sp_op: 0, halt: 0 });
+    }
+  });
+});

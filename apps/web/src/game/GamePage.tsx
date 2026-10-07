@@ -92,7 +92,7 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
             </ol>
           </section>
         ))}
-        <p className="muted small">บทถัดไป (ALU, หน่วยความจำ, CPU) มาใน M2–M3</p>
+        <p className="muted small">บทถัดไป (CPU และการเขียนโปรแกรม) กำลังมา</p>
       </nav>
 
       <div className="level-main">

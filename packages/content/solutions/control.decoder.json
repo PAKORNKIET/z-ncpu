@@ -1,0 +1,1013 @@
+{
+  "id": "user.decoder",
+  "name": {
+    "th": "Instruction Decoder",
+    "en": "Instruction Decoder"
+  },
+  "kind": "circuit",
+  "pins": [
+    {
+      "name": "group",
+      "dir": "in",
+      "width": 2
+    },
+    {
+      "name": "func",
+      "dir": "in",
+      "width": 3
+    },
+    {
+      "name": "m",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "z",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "c",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "n",
+      "dir": "in",
+      "width": 1
+    },
+    {
+      "name": "alu_op",
+      "dir": "out",
+      "width": 3
+    },
+    {
+      "name": "reg_write",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "flag_write",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "mem_write",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "src_sel",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "wb_sel",
+      "dir": "out",
+      "width": 2
+    },
+    {
+      "name": "addr_sel",
+      "dir": "out",
+      "width": 2
+    },
+    {
+      "name": "sp_op",
+      "dir": "out",
+      "width": 2
+    },
+    {
+      "name": "pc_sel",
+      "dir": "out",
+      "width": 2
+    },
+    {
+      "name": "mem_src",
+      "dir": "out",
+      "width": 1
+    },
+    {
+      "name": "halt",
+      "dir": "out",
+      "width": 1
+    }
+  ],
+  "body": {
+    "instances": [
+      {
+        "id": "demux41",
+        "defId": "user.demux4",
+        "x": 150,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "const11",
+        "defId": "prim.const1",
+        "x": 40,
+        "y": -200,
+        "rotation": 0
+      },
+      {
+        "id": "demux81",
+        "defId": "user.demux8",
+        "x": 300,
+        "y": -400,
+        "rotation": 0
+      },
+      {
+        "id": "demux82",
+        "defId": "user.demux8",
+        "x": 300,
+        "y": 0,
+        "rotation": 0
+      },
+      {
+        "id": "demux83",
+        "defId": "user.demux8",
+        "x": 300,
+        "y": 400,
+        "rotation": 0
+      },
+      {
+        "id": "xor1",
+        "defId": "user.xor",
+        "x": 610,
+        "y": -555,
+        "rotation": 0
+      },
+      {
+        "id": "or1",
+        "defId": "user.or",
+        "x": 700,
+        "y": -510,
+        "rotation": 0
+      },
+      {
+        "id": "or2",
+        "defId": "user.or",
+        "x": 790,
+        "y": -465,
+        "rotation": 0
+      },
+      {
+        "id": "or3",
+        "defId": "user.or",
+        "x": 880,
+        "y": -420,
+        "rotation": 0
+      },
+      {
+        "id": "or4",
+        "defId": "user.or",
+        "x": 970,
+        "y": -375,
+        "rotation": 0
+      },
+      {
+        "id": "or5",
+        "defId": "user.or",
+        "x": 520,
+        "y": -330,
+        "rotation": 0
+      },
+      {
+        "id": "merge1",
+        "defId": "prim.merge",
+        "x": 900,
+        "y": -200,
+        "rotation": 0,
+        "params": {
+          "width": 2
+        }
+      },
+      {
+        "id": "or6",
+        "defId": "user.or",
+        "x": 610,
+        "y": -285,
+        "rotation": 0
+      },
+      {
+        "id": "or7",
+        "defId": "user.or",
+        "x": 700,
+        "y": -240,
+        "rotation": 0
+      },
+      {
+        "id": "or8",
+        "defId": "user.or",
+        "x": 790,
+        "y": -195,
+        "rotation": 0
+      },
+      {
+        "id": "merge2",
+        "defId": "prim.merge",
+        "x": 900,
+        "y": 0,
+        "rotation": 0,
+        "params": {
+          "width": 2
+        }
+      },
+      {
+        "id": "merge3",
+        "defId": "prim.merge",
+        "x": 900,
+        "y": 100,
+        "rotation": 0,
+        "params": {
+          "width": 2
+        }
+      },
+      {
+        "id": "not1",
+        "defId": "user.not",
+        "x": 400,
+        "y": 600,
+        "rotation": 0
+      },
+      {
+        "id": "and1",
+        "defId": "user.and",
+        "x": 880,
+        "y": -150,
+        "rotation": 0
+      },
+      {
+        "id": "and2",
+        "defId": "user.and",
+        "x": 970,
+        "y": -105,
+        "rotation": 0
+      },
+      {
+        "id": "and3",
+        "defId": "user.and",
+        "x": 520,
+        "y": -60,
+        "rotation": 0
+      },
+      {
+        "id": "and4",
+        "defId": "user.and",
+        "x": 610,
+        "y": -15,
+        "rotation": 0
+      },
+      {
+        "id": "or9",
+        "defId": "user.or",
+        "x": 700,
+        "y": 30,
+        "rotation": 0
+      },
+      {
+        "id": "or10",
+        "defId": "user.or",
+        "x": 790,
+        "y": 75,
+        "rotation": 0
+      },
+      {
+        "id": "or11",
+        "defId": "user.or",
+        "x": 880,
+        "y": 120,
+        "rotation": 0
+      },
+      {
+        "id": "or12",
+        "defId": "user.or",
+        "x": 970,
+        "y": 165,
+        "rotation": 0
+      },
+      {
+        "id": "or13",
+        "defId": "user.or",
+        "x": 520,
+        "y": 210,
+        "rotation": 0
+      },
+      {
+        "id": "merge4",
+        "defId": "prim.merge",
+        "x": 900,
+        "y": 300,
+        "rotation": 0,
+        "params": {
+          "width": 2
+        }
+      }
+    ],
+    "wires": [
+      {
+        "id": "w1",
+        "from": {
+          "inst": "self",
+          "pin": "func"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "alu_op"
+        }
+      },
+      {
+        "id": "w2",
+        "from": {
+          "inst": "self",
+          "pin": "m"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "src_sel"
+        }
+      },
+      {
+        "id": "w3",
+        "from": {
+          "inst": "const11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "demux41",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w4",
+        "from": {
+          "inst": "self",
+          "pin": "group"
+        },
+        "to": {
+          "inst": "demux41",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w5",
+        "from": {
+          "inst": "demux41",
+          "pin": "o1"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "flag_write"
+        }
+      },
+      {
+        "id": "w6",
+        "from": {
+          "inst": "demux41",
+          "pin": "o0"
+        },
+        "to": {
+          "inst": "demux81",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w7",
+        "from": {
+          "inst": "self",
+          "pin": "func"
+        },
+        "to": {
+          "inst": "demux81",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w8",
+        "from": {
+          "inst": "demux41",
+          "pin": "o1"
+        },
+        "to": {
+          "inst": "demux82",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w9",
+        "from": {
+          "inst": "self",
+          "pin": "func"
+        },
+        "to": {
+          "inst": "demux82",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w10",
+        "from": {
+          "inst": "demux41",
+          "pin": "o2"
+        },
+        "to": {
+          "inst": "demux83",
+          "pin": "in"
+        }
+      },
+      {
+        "id": "w11",
+        "from": {
+          "inst": "self",
+          "pin": "func"
+        },
+        "to": {
+          "inst": "demux83",
+          "pin": "sel"
+        }
+      },
+      {
+        "id": "w12",
+        "from": {
+          "inst": "demux81",
+          "pin": "o7"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "halt"
+        }
+      },
+      {
+        "id": "w13",
+        "from": {
+          "inst": "demux83",
+          "pin": "o5"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "mem_src"
+        }
+      },
+      {
+        "id": "w14",
+        "from": {
+          "inst": "demux41",
+          "pin": "o1"
+        },
+        "to": {
+          "inst": "xor1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w15",
+        "from": {
+          "inst": "demux82",
+          "pin": "o7"
+        },
+        "to": {
+          "inst": "xor1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w16",
+        "from": {
+          "inst": "demux81",
+          "pin": "o1"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w17",
+        "from": {
+          "inst": "demux81",
+          "pin": "o2"
+        },
+        "to": {
+          "inst": "or1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w18",
+        "from": {
+          "inst": "or1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w19",
+        "from": {
+          "inst": "demux81",
+          "pin": "o5"
+        },
+        "to": {
+          "inst": "or2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w20",
+        "from": {
+          "inst": "or2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w21",
+        "from": {
+          "inst": "xor1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w22",
+        "from": {
+          "inst": "or3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "reg_write"
+        }
+      },
+      {
+        "id": "w23",
+        "from": {
+          "inst": "demux81",
+          "pin": "o3"
+        },
+        "to": {
+          "inst": "or4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w24",
+        "from": {
+          "inst": "demux81",
+          "pin": "o4"
+        },
+        "to": {
+          "inst": "or4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w25",
+        "from": {
+          "inst": "or4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or5",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w26",
+        "from": {
+          "inst": "demux83",
+          "pin": "o5"
+        },
+        "to": {
+          "inst": "or5",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w27",
+        "from": {
+          "inst": "or5",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "mem_write"
+        }
+      },
+      {
+        "id": "w28",
+        "from": {
+          "inst": "demux81",
+          "pin": "o2"
+        },
+        "to": {
+          "inst": "or6",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w29",
+        "from": {
+          "inst": "demux81",
+          "pin": "o5"
+        },
+        "to": {
+          "inst": "or6",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w30",
+        "from": {
+          "inst": "or6",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w31",
+        "from": {
+          "inst": "demux81",
+          "pin": "o1"
+        },
+        "to": {
+          "inst": "merge1",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w32",
+        "from": {
+          "inst": "merge1",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "wb_sel"
+        }
+      },
+      {
+        "id": "w33",
+        "from": {
+          "inst": "demux81",
+          "pin": "o4"
+        },
+        "to": {
+          "inst": "or7",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w34",
+        "from": {
+          "inst": "demux83",
+          "pin": "o5"
+        },
+        "to": {
+          "inst": "or7",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w35",
+        "from": {
+          "inst": "demux81",
+          "pin": "o5"
+        },
+        "to": {
+          "inst": "or8",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w36",
+        "from": {
+          "inst": "demux83",
+          "pin": "o6"
+        },
+        "to": {
+          "inst": "or8",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w37",
+        "from": {
+          "inst": "or8",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge2",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w38",
+        "from": {
+          "inst": "or7",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge2",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w39",
+        "from": {
+          "inst": "merge2",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "addr_sel"
+        }
+      },
+      {
+        "id": "w40",
+        "from": {
+          "inst": "or7",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge3",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w41",
+        "from": {
+          "inst": "or8",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge3",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w42",
+        "from": {
+          "inst": "merge3",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "sp_op"
+        }
+      },
+      {
+        "id": "w43",
+        "from": {
+          "inst": "self",
+          "pin": "z"
+        },
+        "to": {
+          "inst": "not1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w44",
+        "from": {
+          "inst": "demux83",
+          "pin": "o1"
+        },
+        "to": {
+          "inst": "and1",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w45",
+        "from": {
+          "inst": "self",
+          "pin": "z"
+        },
+        "to": {
+          "inst": "and1",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w46",
+        "from": {
+          "inst": "demux83",
+          "pin": "o2"
+        },
+        "to": {
+          "inst": "and2",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w47",
+        "from": {
+          "inst": "not1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "and2",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w48",
+        "from": {
+          "inst": "demux83",
+          "pin": "o3"
+        },
+        "to": {
+          "inst": "and3",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w49",
+        "from": {
+          "inst": "self",
+          "pin": "c"
+        },
+        "to": {
+          "inst": "and3",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w50",
+        "from": {
+          "inst": "demux83",
+          "pin": "o4"
+        },
+        "to": {
+          "inst": "and4",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w51",
+        "from": {
+          "inst": "self",
+          "pin": "n"
+        },
+        "to": {
+          "inst": "and4",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w52",
+        "from": {
+          "inst": "demux83",
+          "pin": "o0"
+        },
+        "to": {
+          "inst": "or9",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w53",
+        "from": {
+          "inst": "and1",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or9",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w54",
+        "from": {
+          "inst": "or9",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or10",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w55",
+        "from": {
+          "inst": "and2",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or10",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w56",
+        "from": {
+          "inst": "or10",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or11",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w57",
+        "from": {
+          "inst": "and3",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or11",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w58",
+        "from": {
+          "inst": "or11",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or12",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w59",
+        "from": {
+          "inst": "and4",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or12",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w60",
+        "from": {
+          "inst": "or12",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "or13",
+          "pin": "a"
+        }
+      },
+      {
+        "id": "w61",
+        "from": {
+          "inst": "demux83",
+          "pin": "o5"
+        },
+        "to": {
+          "inst": "or13",
+          "pin": "b"
+        }
+      },
+      {
+        "id": "w62",
+        "from": {
+          "inst": "or13",
+          "pin": "y"
+        },
+        "to": {
+          "inst": "merge4",
+          "pin": "b0"
+        }
+      },
+      {
+        "id": "w63",
+        "from": {
+          "inst": "demux83",
+          "pin": "o6"
+        },
+        "to": {
+          "inst": "merge4",
+          "pin": "b1"
+        }
+      },
+      {
+        "id": "w64",
+        "from": {
+          "inst": "merge4",
+          "pin": "out"
+        },
+        "to": {
+          "inst": "self",
+          "pin": "pc_sel"
+        }
+      }
+    ]
+  }
+}

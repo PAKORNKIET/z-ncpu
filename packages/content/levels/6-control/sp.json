@@ -1,0 +1,171 @@
+{
+  "id": "control.sp",
+  "chapter": 6,
+  "title": {
+    "th": "ตัวชี้ Stack (Stack Pointer)",
+    "en": "Stack Pointer"
+  },
+  "lesson": "control/sp",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.zero8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.dff",
+    "user.bit",
+    "user.reg8",
+    "user.counter8"
+  ],
+  "target": {
+    "defId": "user.sp",
+    "pins": [
+      {
+        "name": "op",
+        "dir": "in",
+        "width": 2
+      },
+      {
+        "name": "reset",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "down",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "clock": "clk",
+    "steps": [
+      {
+        "set": {
+          "op": 0,
+          "reset": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 240,
+          "down": 239
+        }
+      },
+      {
+        "set": {
+          "reset": 0
+        },
+        "tick": 2,
+        "expect": {
+          "out": 240
+        }
+      },
+      {
+        "set": {
+          "op": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 239,
+          "down": 238
+        }
+      },
+      {
+        "tick": 2,
+        "expect": {
+          "out": 237
+        }
+      },
+      {
+        "set": {
+          "op": 2
+        },
+        "tick": 1,
+        "expect": {
+          "out": 238
+        }
+      },
+      {
+        "set": {
+          "op": 0
+        },
+        "tick": 3,
+        "expect": {
+          "out": 238
+        }
+      },
+      {
+        "set": {
+          "op": 2
+        },
+        "tick": 18,
+        "expect": {
+          "out": 0,
+          "down": 255
+        }
+      },
+      {
+        "set": {
+          "op": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 255
+        }
+      },
+      {
+        "set": {
+          "reset": 1
+        },
+        "tick": 1,
+        "expect": {
+          "out": 240
+        }
+      }
+    ]
+  },
+  "unlocks": [
+    "user.sp"
+  ],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "control/sp/h1",
+    "control/sp/h2",
+    "control/sp/h3"
+  ],
+  "glossary": [
+    "stack",
+    "stack-pointer"
+  ]
+}

@@ -1,0 +1,271 @@
+{
+  "id": "control.regfile",
+  "chapter": 6,
+  "title": {
+    "th": "ชุด Register (Register file)",
+    "en": "Register file"
+  },
+  "lesson": "control/regfile",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.zero8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.dff",
+    "user.bit",
+    "user.reg8",
+    "user.counter8",
+    "user.demux4",
+    "user.demux8"
+  ],
+  "target": {
+    "defId": "user.regfile",
+    "pins": [
+      {
+        "name": "rd",
+        "dir": "in",
+        "width": 2
+      },
+      {
+        "name": "rs",
+        "dir": "in",
+        "width": 2
+      },
+      {
+        "name": "in",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "write",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "reset",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "x",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "y",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "a",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "c",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "d",
+        "dir": "out",
+        "width": 8
+      }
+    ]
+  },
+  "tests": {
+    "type": "sequence",
+    "clock": "clk",
+    "steps": [
+      {
+        "set": {
+          "rd": 0,
+          "rs": 1,
+          "in": 99,
+          "write": 1,
+          "reset": 1
+        },
+        "tick": 1,
+        "expect": {
+          "a": 0,
+          "b": 0,
+          "c": 0,
+          "d": 0,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "set": {
+          "reset": 0,
+          "in": 11
+        },
+        "tick": 1,
+        "expect": {
+          "a": 11,
+          "b": 0,
+          "x": 11,
+          "y": 0
+        }
+      },
+      {
+        "set": {
+          "rd": 1,
+          "in": 22
+        },
+        "tick": 1,
+        "expect": {
+          "a": 11,
+          "b": 22,
+          "x": 22
+        }
+      },
+      {
+        "set": {
+          "rd": 2,
+          "in": 33
+        },
+        "tick": 1,
+        "expect": {
+          "c": 33,
+          "x": 33
+        }
+      },
+      {
+        "set": {
+          "rd": 3,
+          "in": 44
+        },
+        "tick": 1,
+        "expect": {
+          "a": 11,
+          "b": 22,
+          "c": 33,
+          "d": 44,
+          "x": 44
+        }
+      },
+      {
+        "set": {
+          "write": 0,
+          "in": 200,
+          "rd": 0,
+          "rs": 3
+        },
+        "tick": 2,
+        "expect": {
+          "a": 11,
+          "d": 44,
+          "x": 11,
+          "y": 44
+        }
+      },
+      {
+        "set": {
+          "rs": 2
+        },
+        "expect": {
+          "y": 33
+        }
+      },
+      {
+        "set": {
+          "rd": 2,
+          "rs": 2,
+          "write": 1,
+          "in": 255
+        },
+        "tick": 1,
+        "expect": {
+          "c": 255,
+          "x": 255,
+          "y": 255,
+          "a": 11,
+          "b": 22,
+          "d": 44
+        }
+      },
+      {
+        "set": {
+          "rd": 1,
+          "rs": 0,
+          "in": 7
+        },
+        "tick": 1,
+        "expect": {
+          "b": 7,
+          "x": 7,
+          "y": 11
+        }
+      },
+      {
+        "set": {
+          "write": 0,
+          "reset": 1
+        },
+        "tick": 1,
+        "expect": {
+          "a": 0,
+          "b": 0,
+          "c": 0,
+          "d": 0
+        }
+      },
+      {
+        "set": {
+          "reset": 0,
+          "write": 1,
+          "rd": 3,
+          "in": 128
+        },
+        "tick": 1,
+        "expect": {
+          "a": 0,
+          "d": 128,
+          "x": 128
+        }
+      }
+    ]
+  },
+  "unlocks": [
+    "user.regfile"
+  ],
+  "hints": [
+    "control/regfile/h1",
+    "control/regfile/h2",
+    "control/regfile/h3"
+  ],
+  "glossary": [
+    "register-file",
+    "register"
+  ]
+}

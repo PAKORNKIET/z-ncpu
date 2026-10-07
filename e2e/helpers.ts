@@ -107,5 +107,8 @@ export const ORDER = [
   'mem.rom256',
   'control.pc',
   'io.seg7',
+  'control.decoder',
+  'control.regfile',
+  'control.sp',
 ];
 export const before = (id: string): string[] => ORDER.slice(0, ORDER.indexOf(id));

@@ -1,0 +1,136 @@
+{
+  "id": "control.decoder",
+  "chapter": 6,
+  "title": {
+    "th": "ตัวถอดรหัสคำสั่ง (Instruction Decoder)",
+    "en": "Instruction Decoder"
+  },
+  "lesson": "control/decoder",
+  "available": [
+    "prim.nand",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.xor",
+    "user.nor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.demux4",
+    "user.demux8",
+    "user.and8",
+    "user.or8"
+  ],
+  "target": {
+    "defId": "user.decoder",
+    "pins": [
+      {
+        "name": "group",
+        "dir": "in",
+        "width": 2
+      },
+      {
+        "name": "func",
+        "dir": "in",
+        "width": 3
+      },
+      {
+        "name": "m",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "z",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "c",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "n",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "alu_op",
+        "dir": "out",
+        "width": 3
+      },
+      {
+        "name": "reg_write",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "flag_write",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "mem_write",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "src_sel",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "wb_sel",
+        "dir": "out",
+        "width": 2
+      },
+      {
+        "name": "addr_sel",
+        "dir": "out",
+        "width": 2
+      },
+      {
+        "name": "sp_op",
+        "dir": "out",
+        "width": 2
+      },
+      {
+        "name": "pc_sel",
+        "dir": "out",
+        "width": 2
+      },
+      {
+        "name": "mem_src",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "halt",
+        "dir": "out",
+        "width": 1
+      }
+    ]
+  },
+  "tests": {
+    "type": "reference",
+    "ref": "decoder"
+  },
+  "unlocks": [
+    "user.decoder"
+  ],
+  "hints": [
+    "control/decoder/h1",
+    "control/decoder/h2",
+    "control/decoder/h3",
+    "control/decoder/h4"
+  ],
+  "glossary": [
+    "decoder",
+    "opcode",
+    "control-signal"
+  ]
+}

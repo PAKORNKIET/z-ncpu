@@ -50,7 +50,7 @@ export function App() {
         <div className="header-row">
           <div>
             <h1>Z-NCPU</h1>
-            <p className="subtitle">สร้าง CPU จากเกต NAND · M1</p>
+            <p className="subtitle">สร้าง CPU จากเกต NAND · M3</p>
           </div>
           <div className="file-actions">
             <button onClick={exportFile}>⭳ บันทึกเป็นไฟล์</button>

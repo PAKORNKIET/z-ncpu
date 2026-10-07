@@ -83,6 +83,40 @@ export const REFERENCES: Readonly<Record<string, ReferenceFn>> = {
     }
     return { y, z: y === 0 ? 1 : 0, c, n: y >> 7 };
   },
+  /**
+   * Instruction Decoder ของ Z8 (Spec ส่วน 11): อ่าน group, func, m และ flags แล้วสร้างสัญญาณควบคุม
+   * wb_sel 0 ALU / 1 RAM / 2 src · addr_sel 0 src / 1 SP / 2 SP−1 · sp_op 0 คงที่ / 1 ลด / 2 เพิ่ม
+   * pc_sel 0 PC+1 / 1 src / 2 RAM · mem_src 0 rd / 1 PC+1 (CALL) · คำสั่งที่ไม่ได้ใช้ทำงานเหมือน NOP
+   */
+  decoder: ({ group = 0, func = 0, m, z, c, n }) => {
+    const g0 = group === 0;
+    const g1 = group === 1;
+    const g2 = group === 2;
+    const is = (g: boolean, f: number): boolean => g && func === f;
+    const load = is(g0, 2);
+    const pop = is(g0, 5);
+    const push = is(g0, 4);
+    const call = is(g2, 5);
+    const ret = is(g2, 6);
+    let pcSel = 0;
+    if (g2) {
+      const taken = [1, bit(z), 1 - bit(z), bit(c), bit(n), 1, 0, 0][func] ?? 0;
+      pcSel = ret ? 2 : taken;
+    }
+    return {
+      alu_op: func,
+      reg_write: (g0 && (func === 1 || load || pop)) || (g1 && func !== 7) ? 1 : 0,
+      flag_write: g1 ? 1 : 0,
+      mem_write: is(g0, 3) || push || call ? 1 : 0,
+      src_sel: bit(m),
+      wb_sel: g0 && (load || pop) ? 1 : is(g0, 1) ? 2 : 0,
+      addr_sel: pop || ret ? 1 : push || call ? 2 : 0,
+      sp_op: push || call ? 1 : pop || ret ? 2 : 0,
+      pc_sel: pcSel,
+      mem_src: call ? 1 : 0,
+      halt: is(g0, 7) ? 1 : 0,
+    };
+  },
 };
 
 /** PRNG แบบ mulberry32: เร็ว ได้ลำดับเดิมทุกครั้งจาก seed เดียวกัน */

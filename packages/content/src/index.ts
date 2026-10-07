@@ -34,6 +34,9 @@ import mem_rom64Level from '../levels/5-memory/rom64.json';
 import mem_rom256Level from '../levels/5-memory/rom256.json';
 import control_pcLevel from '../levels/6-control/pc.json';
 import io_seg7Level from '../levels/6-control/seg7.json';
+import control_decoderLevel from '../levels/6-control/decoder.json';
+import control_regfileLevel from '../levels/6-control/regfile.json';
+import control_spLevel from '../levels/6-control/sp.json';
 import add4Level from '../levels/2-arith/add4.json';
 import add8Level from '../levels/2-arith/add8.json';
 import eq8Level from '../levels/2-arith/eq8.json';
@@ -92,6 +95,9 @@ export const LEVELS: LevelDef[] = [
   mem_rom256Level,
   control_pcLevel,
   io_seg7Level,
+  control_decoderLevel,
+  control_regfileLevel,
+  control_spLevel,
 ] as LevelDef[];
 
 /** ชื่อบท (เลขบทตามหลักสูตรใน Spec ส่วน 12 บทที่ยังไม่มีด่านจะไม่แสดง) */
