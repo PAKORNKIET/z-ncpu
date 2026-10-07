@@ -3,7 +3,7 @@
 // ค่า register อ่านจากขาดีบักของ CPU ไม่ได้มาจาก emulator
 import { EXAMPLE_PROGRAMS } from '@z-ncpu/content';
 import { ComponentLibrary, contentHash, cpuHarness, ROM_DUT, ROM_PANEL } from '@z-ncpu/engine';
-import { assemble, formatDiagnostic, hex16, type AsmResult } from '@z-ncpu/isa';
+import { assemble, explainInstruction, hex16, type AsmResult } from '@z-ncpu/isa';
 import type { SignalValue } from '@z-ncpu/shared';
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { EngineClosedError } from '../engine-client';
@@ -11,6 +11,7 @@ import type { SaveFile } from '../game/save';
 import { useEngine } from '../use-engine';
 import { LedBar, NumberDisplay, SevenSegment } from '../ui/devices';
 import { BusInput } from '../ui/widgets';
+import { AsmEditor } from './AsmEditor';
 import { LogicAnalyzer } from './LogicAnalyzer';
 
 const CPU_ID = 'user.cpu';
@@ -62,8 +63,6 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
   const [breakpoints, setBreakpoints] = useState<string[]>([]);
   const [bpDraft, setBpDraft] = useState('');
   const [bpError, setBpError] = useState<string | null>(null);
-  const editorRef = useRef<HTMLTextAreaElement>(null);
-  const gutterRef = useRef<HTMLDivElement>(null);
   const listingRef = useRef<HTMLDivElement>(null);
 
   const levelPassed = !!save.progress['cpu.z8']?.passedHash;
@@ -188,19 +187,8 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
     setBpDraft('');
     setBreakpoints((b) => (b.includes(text) ? [...b] : [...b, text]));
   };
-  const jumpTo = (line: number, col: number): void => {
-    const ta = editorRef.current;
-    if (!ta) return;
-    const lines = source.split('\n');
-    const at = lines.slice(0, line - 1).reduce((n, l) => n + l.length + 1, 0) + col - 1;
-    ta.focus();
-    ta.setSelectionRange(at, at);
-  };
-
   const shown = loaded?.asm ?? null;
   const sourceLines = (loaded?.source ?? source).split('\n');
-  const lineCount = source.split('\n').length;
-  const errorLines = new Set(asm.diagnostics.map((d) => d.line));
   const registers: [string, string, SignalValue | undefined][] = [
     ['PC', 'pc', pins.pc],
     ['A', 'a', pins.a],
@@ -210,6 +198,21 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
     ['SP', 'sp', pins.sp],
   ];
   const flags = num(pins.flags);
+  const regValues = [pins.pc, pins.a, pins.b, pins.c, pins.d, pins.sp, pins.flags].map(num);
+  const explain =
+    pc !== undefined && regValues.every((v) => v !== undefined) && loaded
+      ? halted
+        ? 'HALT: CPU หยุดแล้ว กด Reset เพื่อเริ่มใหม่'
+        : explainInstruction(loaded.asm.words[pc] ?? 0, {
+            pc,
+            a: regValues[1]!,
+            b: regValues[2]!,
+            c: regValues[3]!,
+            d: regValues[4]!,
+            sp: regValues[5]!,
+            flags: regValues[6]!,
+          })
+      : null;
 
   return (
     <div className="computer">
@@ -238,54 +241,7 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
             </select>
           </label>
         </div>
-        <div className="asm-editor">
-          <div className="asm-gutter mono" ref={gutterRef} aria-hidden>
-            {Array.from({ length: lineCount }, (_, i) => (
-              <div key={i} className={errorLines.has(i + 1) ? 'err' : undefined}>
-                {i + 1}
-              </div>
-            ))}
-          </div>
-          <textarea
-            ref={editorRef}
-            className="mono"
-            aria-label="ซอร์สโค้ด assembly"
-            spellCheck={false}
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-            onScroll={(e) => {
-              if (gutterRef.current) gutterRef.current.scrollTop = e.currentTarget.scrollTop;
-            }}
-            onKeyDown={(e) => {
-              // Tab ใส่ช่องว่างแทนการย้ายโฟกัส (Esc แล้ว Tab เพื่อออกจากช่อง)
-              if (e.key === 'Tab' && !e.shiftKey && !e.altKey) {
-                e.preventDefault();
-                const t = e.currentTarget;
-                const { selectionStart: a, selectionEnd: b } = t;
-                const pad = ' '.repeat(8 - ((a - source.lastIndexOf('\n', a - 1) - 1) % 8));
-                setSource(source.slice(0, a) + pad + source.slice(b));
-                requestAnimationFrame(() => t.setSelectionRange(a + pad.length, a + pad.length));
-              }
-            }}
-          />
-        </div>
-        <div className="asm-status" role="status" aria-live="polite">
-          {asm.ok ? (
-            <span className="muted small">
-              ✓ assemble ผ่าน: {asm.words.length} คำสั่ง จาก 256{dirty ? ' · ยังไม่ได้โหลดลง CPU' : ''}
-            </span>
-          ) : (
-            <ul className="asm-errors" aria-label="ข้อผิดพลาดของโปรแกรม">
-              {asm.diagnostics.slice(0, 8).map((d, i) => (
-                <li key={i}>
-                  <button className="linklike" onClick={() => jumpTo(d.line, d.col)}>
-                    {formatDiagnostic(d)}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <AsmEditor source={source} onChange={setSource} asm={asm} status={dirty ? ' · ยังไม่ได้โหลดลง CPU' : ''} />
         <button className="primary" onClick={loadProgram} disabled={!ok || !asm.ok}>
           ⤓ โหลดลง CPU แล้ว reset
         </button>
@@ -333,6 +289,12 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
           <SevenSegment label="7-segment (0xF2)" value={pins.seg} />
           <LedBar label="LED (0xF1)" value={pins.leds} width={8} />
         </div>
+
+        {explain ? (
+          <p className="explain small" data-testid="explain">
+            📖 คำสั่งถัดไป: <span className="mono">{explain}</span>
+          </p>
+        ) : null}
 
         <table className="truth-table registers" aria-label="register">
           <thead>

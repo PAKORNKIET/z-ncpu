@@ -46,3 +46,4 @@ export type { ReferenceFn } from './references';
 export { checkCondition, evaluateCondition, parseCondition } from './condition';
 export type { CondEnv, CondError, CondNode, CondParse } from './condition';
 export { TimeTravel, type TimeTravelOptions } from './timetravel';
+export { explainWhy, type WhyCause, type WhyDriver, type WhyResult } from './why';

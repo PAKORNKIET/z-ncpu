@@ -1,0 +1,50 @@
+{
+  "id": "prog.countdown",
+  "chapter": 8,
+  "title": {
+    "th": "นับถอยหลัง 5 ถึง 0",
+    "en": "Countdown 5 to 0"
+  },
+  "lesson": "program/countdown",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "5, 4, 3, 2, 1, 0 แล้วหยุด",
+          "en": "5 down to 0, then halt"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "outs": [
+            5,
+            4,
+            3,
+            2,
+            1,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "program/countdown/h1",
+    "program/countdown/h2",
+    "program/countdown/h3"
+  ],
+  "glossary": [
+    "zero-flag",
+    "negative-flag"
+  ]
+}

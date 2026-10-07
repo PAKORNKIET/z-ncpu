@@ -8,6 +8,7 @@ import {
   compile,
   createSimulator,
   evaluateCondition,
+  explainWhy,
   hasErrors,
   parseCondition,
   resetCpu,
@@ -320,19 +321,16 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         return;
       }
 
-      case 'probe':
       case 'why':
-        // probe และ Why? มาใน M3-6
+        post({ rid: msg.rid, type: 'whyResult', result: sim ? explainWhy(sim, msg.scope, msg.key) : null });
+        return;
+
+      case 'probe':
+        // probe แยกยังไม่ใช้ (X-Ray แสดงค่าทุกขาอยู่แล้ว)
         post({
           rid: msg.rid,
           type: 'diagnostics',
-          diagnostics: [
-            {
-              code: 'unsupported',
-              severity: 'warning',
-              message: { th: `คำสั่ง ${msg.type} ยังไม่รองรับ`, en: `${msg.type} is not supported yet` },
-            },
-          ],
+          diagnostics: [{ code: 'unsupported', severity: 'warning', message: { th: 'คำสั่ง probe ยังไม่รองรับ', en: 'probe is not supported yet' } }],
         });
         return;
     }

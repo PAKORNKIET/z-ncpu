@@ -1,0 +1,3 @@
+{
+  "source": "        LOAD A, [SW]\n        LOAD B, [KEY]\n        CMP A, B         ; C = 1 เมื่อ A ≥ B\n        JC show\n        MOV A, B\nshow:   STORE [OUT], A\n        HALT\n"
+}

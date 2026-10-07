@@ -1,0 +1,3 @@
+{
+  "source": "        LOAD A, [SW]\n        PUSH A\n        ADD A, 1\n        PUSH A\n        ADD A, 1\n        PUSH A\n        POP B\n        STORE [OUT], B\n        POP B\n        STORE [OUT], B\n        POP B\n        STORE [OUT], B\n        HALT\n"
+}

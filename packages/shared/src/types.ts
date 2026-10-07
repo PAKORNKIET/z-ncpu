@@ -172,7 +172,35 @@ export interface CpuSuite {
   programs: CpuProgram[];
 }
 
-export type TestSuite = TruthTableSuite | SequenceSuite | ReferenceSuite | RomSuite | CpuSuite;
+/** สิ่งที่โปรแกรมต้องทำให้ได้ในหนึ่งกรณี (ทุกกรณีต้องจบด้วย HALT ภายใน maxCycles) */
+export interface ProgramCase {
+  name: LocalizedText;
+  inputs?: CpuInputs;
+  maxCycles: number;
+  expect: {
+    /** ลำดับตัวเลขที่จอแสดง (นับทุกครั้งที่ค่าบนจอเปลี่ยน) */
+    outs?: number[];
+    /** ค่าบนจอตอนจบ */
+    out?: number;
+    /** ค่าของ LED ตอนจบ */
+    leds?: number;
+    /** รูปแบบไฟ 7 ส่วนตอนจบ */
+    seg?: number;
+  };
+}
+
+/**
+ * ด่านเขียนโปรแกรม (บท 8): รันโปรแกรมของผู้เล่นบน CPU ที่ผู้เล่นต่อเอง (defId ใน cpu)
+ * words คือรหัสเครื่องของผู้เล่น ใส่ตอนสั่งทดสอบ (ไฟล์ด่านไม่มี)
+ */
+export interface ProgramSuite {
+  type: 'program';
+  cpu: string;
+  cases: ProgramCase[];
+  words?: number[];
+}
+
+export type TestSuite = TruthTableSuite | SequenceSuite | ReferenceSuite | RomSuite | CpuSuite | ProgramSuite;
 
 /**
  * ค่าที่ขาของ CPU หลัง tick (ตรงกับขาดีบักของด่าน CPU) flags = Z<<2 | C<<1 | N
@@ -212,6 +240,8 @@ export interface TestCaseResult {
   actual: Record<string, SignalValue>;
   /** ด่าน CPU: ผิดที่โปรแกรมไหน cycle ไหน หลังคำสั่งอะไร */
   cpu?: { program: number; cycle: number; pc?: number; instruction?: string };
+  /** ด่านเขียนโปรแกรม: สิ่งที่จอแสดงจริง และโปรแกรมเดียวกันบน emulator ผ่านไหม */
+  program?: { outs: number[]; halted: boolean; cycles: number; emulatorPassed?: boolean };
 }
 
 export interface TestReport {

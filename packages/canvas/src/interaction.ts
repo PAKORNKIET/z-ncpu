@@ -70,6 +70,8 @@ export interface InteractionOptions {
   onOpen?: (instanceId: string) => void;
   /** ดูอย่างเดียว แก้ไม่ได้ (X-Ray) */
   readOnly?: boolean;
+  /** โหมด Why?: คลิกขาหรือสายเพื่อถามว่าค่ามาจากไหน */
+  onProbe?: (ref: PinRef) => void;
 }
 
 export class Interaction {
@@ -77,6 +79,8 @@ export class Interaction {
   private mode: Mode = { k: 'idle' };
   private cursorWorld: Point | null = null;
   private hover: Hit | null = null;
+  /** โหมด Why?: คลิกขาหรือสายแทนการต่อสาย (ใช้ได้ทั้งตอนแก้และตอน X-Ray) */
+  probeMode = false;
 
   constructor(
     private readonly editor: Editor,
@@ -105,6 +109,7 @@ export class Interaction {
       case 'marquee':
         return 'crosshair';
       default:
+        if (this.probeMode) return this.hover?.kind === 'pin' || this.hover?.kind === 'wire' ? 'help' : 'grab';
         if (this.hover?.kind === 'pin' && !this.options.readOnly) return 'crosshair';
         if (this.hover?.kind === 'node' && this.options.readOnly) return 'pointer';
         if (this.hover?.kind === 'node') return this.hover.node.kind === 'input' ? 'pointer' : 'move';
@@ -116,7 +121,7 @@ export class Interaction {
   overlay(): Overlay {
     const o: Overlay = {};
     const m = this.mode;
-    if (this.hover?.kind === 'pin' && !this.options.readOnly) o.hoverPin = this.hover.pin.ref;
+    if (this.hover?.kind === 'pin' && (!this.options.readOnly || this.probeMode)) o.hoverPin = this.hover.pin.ref;
     if (m.k === 'wire' && this.cursorWorld) {
       // ขาเข้าที่มีสายอยู่แล้วรับเพิ่มไม่ได้
       const driven = new Set((this.editor.def.body?.wires ?? []).map((w) => pinKey(w.to)));
@@ -182,7 +187,13 @@ export class Interaction {
     if (m.k === 'place') return; // วางตอนปล่อยเมาส์
 
     const hit = this.hitAt(world);
-    if (this.options.readOnly) {
+    if (this.probeMode && (hit?.kind === 'pin' || hit?.kind === 'wire')) {
+      // สายถามที่ขาต้นทาง (ตัวขับ) ของมัน
+      this.options.onProbe?.(hit.kind === 'pin' ? hit.pin.ref : hit.wire.from);
+      this.mode = { k: 'idle' };
+      return this.changed();
+    }
+    if (this.options.readOnly || this.probeMode) {
       // ดูอย่างเดียว: คลิกชิ้นเพื่อเลือก ลากที่ไหนก็เลื่อนจอ
       if (hit?.kind === 'node' && hit.node.kind === 'instance') this.editor.select({ instances: [hit.node.id] });
       this.mode = { k: 'pan', start: p, camera: this.camera, moved: hit?.kind === 'node' };

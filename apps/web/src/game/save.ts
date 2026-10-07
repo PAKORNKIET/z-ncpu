@@ -163,7 +163,7 @@ export function parseSave(text: string): ParseResult {
       if (!isObj(p)) bad('โปรแกรมไม่ถูกต้อง');
       const prog = p as Record<string, unknown>;
       if (prog.isa !== 'Z8') bad('โปรแกรมต้องเป็นของ ISA Z8');
-      save.programs.push({ id: name(prog.id, 'ชื่อโปรแกรม', /^[A-Za-z0-9_-]{1,40}$/), isa: 'Z8', source: str(prog.source, 'ซอร์สของโปรแกรม', 64_000) });
+      save.programs.push({ id: name(prog.id, 'ชื่อโปรแกรม', /^[A-Za-z0-9_][A-Za-z0-9_.-]{0,39}$/), isa: 'Z8', source: str(prog.source, 'ซอร์สของโปรแกรม', 64_000) });
     }
     if (raw.progress !== undefined) {
       if (!isObj(raw.progress)) bad('ความคืบหน้าไม่ถูกต้อง');

@@ -30,6 +30,11 @@ export function levelStatus(levels: readonly LevelDef[], index: number, save: Sa
   if (!level || !isUnlocked(levels, index, save)) return 'locked';
   const passed = save.progress[level.id]?.passedHash;
   if (!passed) return 'open';
+  if (level.tests.type === 'program') {
+    // ด่านเขียนโปรแกรม: แก้โปรแกรมหลังผ่านแล้วต้องทดสอบใหม่
+    const source = programOf(save, level.id);
+    return source !== undefined && hashText(source) === passed ? 'passed' : 'retest';
+  }
   if (!componentOf(save, level.target.defId)) return 'retest';
   return hashOf(save.components, level.target.defId) === passed ? 'passed' : 'retest';
 }
@@ -87,4 +92,26 @@ export function recordTest(save: SaveFile, levelId: string, result: { passed: bo
 export function firstUnfinished(levels: readonly LevelDef[], save: SaveFile): number {
   const i = levels.findIndex((l) => !save.progress[l.id]?.passedHash);
   return i === -1 ? Math.max(0, levels.length - 1) : i;
+}
+
+/** โปรแกรมของด่านเขียนโปรแกรม (เก็บใน save.programs ด้วย id ของด่าน) */
+export const programOf = (save: SaveFile, levelId: string): string | undefined => save.programs.find((p) => p.id === levelId)?.source;
+
+/** บันทึกโปรแกรม (แทนที่ตัวเดิมที่ id เดียวกัน) */
+export function putProgram(save: SaveFile, id: string, source: string): SaveFile {
+  return touch({ ...save, programs: [...save.programs.filter((p) => p.id !== id), { id, isa: 'Z8', source }] });
+}
+
+/** hash ของข้อความ (cyrb53) เป็นเลขฐานสิบหก 14 หลัก ใช้รู้ว่าโปรแกรมเปลี่ยนหลังผ่านด่านหรือไม่ */
+export function hashText(text: string): string {
+  let h1 = 0xdeadbeef;
+  let h2 = 0x41c6ce57;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(14, '0');
 }

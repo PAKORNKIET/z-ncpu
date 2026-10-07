@@ -1,0 +1,43 @@
+{
+  "id": "prog.hello",
+  "chapter": 8,
+  "title": {
+    "th": "แสดงเลข 42",
+    "en": "Show 42"
+  },
+  "lesson": "program/hello",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "แสดง 42 แล้วหยุด",
+          "en": "Show 42 and halt"
+        },
+        "maxCycles": 20,
+        "expect": {
+          "outs": [
+            42
+          ]
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "program/hello/h1",
+    "program/hello/h2"
+  ],
+  "glossary": [
+    "memory-mapped-io"
+  ]
+}

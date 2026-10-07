@@ -1,7 +1,7 @@
 // พื้นที่ทำงาน: กล่องชิ้นส่วน + พื้นที่วาด + แผงขาเข้า/ขาออก จำลองสดใน Worker ทุกครั้งที่แก้วงจร
 // ใช้ทั้งในด่าน (GamePage) และสนามทดลอง (SandboxPage) — ส่วนเฉพาะของแต่ละหน้าส่งมาทาง side
 import { ComponentLibrary, cpuHarness, romHarness, romSampleWords, ROM_DUT, ROM_PANEL } from '@z-ncpu/engine';
-import type { ComponentDef, DeviceKind, Diagnostic, SignalValue } from '@z-ncpu/shared';
+import type { ComponentDef, DeviceKind, Diagnostic, SignalValue, WhyAnswer } from '@z-ncpu/shared';
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { EngineClient, EngineClosedError } from '../engine-client';
 import { useEngine } from '../use-engine';
@@ -133,6 +133,11 @@ export function Workbench(props: {
   view.onOpen = openInside;
   model.onOpen = openInside;
   const inXRay = chain.length > 0;
+
+  // ---------- Why?: คลิกขาหรือสายแล้วไล่ว่าค่ามาจากไหน (Spec ส่วน 8) ----------
+  const [whyOn, setWhyOn] = useState(false);
+  const [why, setWhy] = useState<{ scope: string; answer: WhyAnswer | null } | null>(null);
+  view.ui.probeMode = whyOn;
   const exitXRay = (levels = 1): void => setXray(chain.slice(0, Math.max(0, chain.length - levels)).map((c) => c.id));
 
   // ขอค่าของทุกขาในชั้นที่กำลังดูไว้ระบายสีสาย
@@ -141,6 +146,17 @@ export function Workbench(props: {
   useEffect(() => {
     client?.post({ type: 'subscribe', scopePath });
   }, [client, scopePath]);
+  const askWhy = (key: string, scope = scopePath): void => {
+    client
+      ?.send({ type: 'why', scope, key })
+      .then((res) => {
+        if (res.type === 'whyResult') setWhy({ scope, answer: res.result });
+      })
+      .catch((e: unknown) => {
+        if (!(e instanceof EngineClosedError)) console.error(e);
+      });
+  };
+  view.onProbe = (ref) => askWhy(`${ref.inst}.${ref.pin}`);
 
   // compile ใหม่เมื่อโครงวงจรเปลี่ยน แล้วใส่ค่าขาเข้าเดิมกลับ
   const otherDeps = deps.filter((d) => d.id !== def.id);
@@ -273,6 +289,9 @@ export function Workbench(props: {
                 </span>
               ))}
             </nav>
+            <button aria-pressed={whyOn} onClick={() => setWhyOn(!whyOn)} title="คลิกขาหรือสายเพื่อดูว่าค่ามาจากไหน">
+              ❓ Why?
+            </button>
             <span className="muted mono zoom">{Math.round(view.ui.camera.zoom * 100)}%</span>
           </div>
         ) : (
@@ -299,6 +318,9 @@ export function Workbench(props: {
           >
             ⤢ ดูทั้งวงจร
           </button>
+          <button aria-pressed={whyOn} onClick={() => setWhyOn(!whyOn)} title="คลิกขาหรือสายเพื่อดูว่าค่ามาจากไหน">
+            ❓ Why?
+          </button>
           <span className="muted mono zoom">{Math.round(ui.camera.zoom * 100)}%</span>
         </div>
         )}
@@ -314,7 +336,9 @@ export function Workbench(props: {
           {view.editor.lastError ? <span className="error">⚠ {view.editor.lastError.th}</span> : null}
         </div>
         <p className="muted small hint">
-          {inXRay
+          {whyOn
+            ? '❓ โหมด Why?: คลิกขาหรือสายเพื่อดูว่าค่ามาจากไหน (กดปุ่ม Why? อีกครั้งเพื่อกลับไปต่อสาย)'
+            : inXRay
             ? '🔍 X-Ray: ดูข้างในอย่างเดียว ค่าในสายมาจากการจำลองจริง ลองกดสวิตช์ขาเข้าทางขวาแล้วดูไฟวิ่ง · ดับเบิลคลิกชิ้นข้างในเพื่อดูลึกลงไป · Esc ออกทีละชั้น'
             : ui.placing
             ? 'คลิกเพื่อวาง (กด Shift ค้างไว้เพื่อวางหลายชิ้น) · Esc ยกเลิก'
@@ -372,6 +396,35 @@ export function Workbench(props: {
               ))}
             </div>
           </section>
+        ) : null}
+        {why ? (
+          <WhyPanel
+            why={why}
+            titleOf={(id) => {
+              const inst = view.editor.def.body?.instances.find((i) => i.id === id);
+              return inst ? (view.sceneOptions.titleOf?.(inst.defId) ?? inst.defId) : id;
+            }}
+            canOpen={(id) => {
+              const inst = view.editor.def.body?.instances.find((i) => i.id === id);
+              return !!inst && !!model.library.get(inst.defId)?.body;
+            }}
+            onAsk={(key) => askWhy(key)}
+            onOpen={(id) => {
+              openInside(id);
+              setWhy(null);
+            }}
+            onParent={
+              inXRay
+                ? (pin) => {
+                    const child = chain.at(-1)!.id;
+                    const parentScope = scopePath.split('/').slice(0, -1).join('/');
+                    exitXRay(1);
+                    askWhy(`${child}.${pin}`, parentScope);
+                  }
+                : undefined
+            }
+            onClose={() => setWhy(null)}
+          />
         ) : null}
         {!inXRay ? <PartSettings model={model} /> : null}
         <dl className="stats">
@@ -530,6 +583,80 @@ function ProgramView({ listing, words, pc }: { listing: string[]; words: number[
         </tbody>
       </table>
       {pc !== undefined && pc >= words.length ? <p className="muted small mono">PC = 0x{hex(pc, 2)} (NOP)</p> : null}
+    </section>
+  );
+}
+
+const showValue = (v: SignalValue | undefined): string => (typeof v === 'number' ? String(v) : 'X');
+
+/** คำตอบของ Why?: ใครขับขานี้ และขาเข้าไหนของมันทำให้ได้ค่านี้ (กดถามต่อได้ทีละขั้น) */
+function WhyPanel(props: {
+  why: { scope: string; answer: WhyAnswer | null };
+  titleOf: (instanceId: string) => string;
+  canOpen: (instanceId: string) => boolean;
+  onAsk: (key: string) => void;
+  onOpen: (instanceId: string) => void;
+  onParent: ((pin: string) => void) | undefined;
+  onClose: () => void;
+}) {
+  const a = props.why.answer;
+  return (
+    <section className="why-panel" aria-label="Why?" role="region">
+      <div className="why-head">
+        <h3>❓ Why?</h3>
+        <button className="linklike" onClick={props.onClose} aria-label="ปิด Why?">
+          ✕
+        </button>
+      </div>
+      {!a ? (
+        <p className="small muted">ไม่พบขานี้ในวงจรที่จำลองอยู่ (ลองรอให้ compile เสร็จก่อน)</p>
+      ) : (
+        <>
+          <p data-testid="why-target">
+            <code>{a.key}</code> = <strong className="mono">{showValue(a.value)}</strong>
+          </p>
+          {a.driver.kind === 'instance' ? (
+            <>
+              <p className="small">
+                มาจาก <strong>{props.titleOf(a.driver.id)}</strong> (<code>{a.driver.id}</code>)
+                {a.causes.length > 0 ? ' เพราะขาเข้าเหล่านี้:' : ''}
+              </p>
+              <ul className="why-causes">
+                {a.causes.map((c) => (
+                  <li key={c.key}>
+                    <code>{c.key}</code> = <span className="mono">{showValue(c.value)}</span>{' '}
+                    <button className="linklike" onClick={() => props.onAsk(c.key)} aria-label={`Why? ${c.key}`}>
+                      ถามต่อ ❓
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              {a.state ? (
+                <p className="small why-state">
+                  🕘 ค่านี้มาจากสิ่งที่ {a.driver.id} <strong>จำไว้</strong> ตอนขอบขาขึ้นของ clock ครั้งก่อน ไม่ได้มาจากขาเข้าตอนนี้อย่างเดียว
+                  {' '}(ในหน้าคอมพิวเตอร์ใช้ ◀ ย้อน 1 cycle เพื่อดูค่าตอนนั้น)
+                </p>
+              ) : null}
+              {props.canOpen(a.driver.id) ? (
+                <button onClick={() => props.onOpen(a.driver.kind === 'instance' ? a.driver.id : '')}>🔍 ดูข้างใน {a.driver.id}</button>
+              ) : null}
+            </>
+          ) : a.driver.kind === 'self' ? (
+            <>
+              <p className="small">มาจากขาเข้า <code>{a.driver.pins.join(', ')}</code> ของวงจรชั้นนี้</p>
+              {props.onParent && a.driver.pins[0] ? (
+                <button onClick={() => props.onParent!(a.driver.kind === 'self' ? a.driver.pins[0]! : '')}>⬆ ถามต่อในชั้นแม่</button>
+              ) : null}
+            </>
+          ) : a.driver.kind === 'const' ? (
+            <p className="small">มาจากค่าคงที่</p>
+          ) : a.driver.kind === 'panel' ? (
+            <p className="small">มาจากแผงค่าคงที่ (โปรแกรมหรือข้อมูลที่ใส่ไว้)</p>
+          ) : (
+            <p className="small">ไม่มีอะไรขับขานี้ จึงเป็น X (ยังไม่ได้ต่อสาย)</p>
+          )}
+        </>
+      )}
     </section>
   );
 }

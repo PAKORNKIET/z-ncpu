@@ -1,0 +1,102 @@
+{
+  "id": "prog.max",
+  "chapter": 8,
+  "title": {
+    "th": "ค่าที่มากกว่า",
+    "en": "The larger number"
+  },
+  "lesson": "program/max",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "สวิตช์ 10, คีย์ 200",
+          "en": "switches 10, key 200"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "out": 200
+        },
+        "inputs": {
+          "sw": 10,
+          "key": 200
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ 200, คีย์ 10",
+          "en": "switches 200, key 10"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "out": 200
+        },
+        "inputs": {
+          "sw": 200,
+          "key": 10
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ 77, คีย์ 77",
+          "en": "switches 77, key 77"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "out": 77
+        },
+        "inputs": {
+          "sw": 77,
+          "key": 77
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ 0, คีย์ 255",
+          "en": "switches 0, key 255"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "out": 255
+        },
+        "inputs": {
+          "sw": 0,
+          "key": 255
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ 128, คีย์ 127",
+          "en": "switches 128, key 127"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "out": 128
+        },
+        "inputs": {
+          "sw": 128,
+          "key": 127
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "program/max/h1",
+    "program/max/h2",
+    "program/max/h3"
+  ],
+  "glossary": [
+    "carry-flag"
+  ]
+}

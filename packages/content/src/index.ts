@@ -38,6 +38,13 @@ import control_decoderLevel from '../levels/6-control/decoder.json';
 import control_regfileLevel from '../levels/6-control/regfile.json';
 import control_spLevel from '../levels/6-control/sp.json';
 import cpu_z8Level from '../levels/7-cpu/z8.json';
+import prog_helloLevel from '../levels/8-program/hello.json';
+import prog_countdownLevel from '../levels/8-program/countdown.json';
+import prog_sumLevel from '../levels/8-program/sum.json';
+import prog_maxLevel from '../levels/8-program/max.json';
+import prog_reverseLevel from '../levels/8-program/reverse.json';
+import prog_tripleLevel from '../levels/8-program/triple.json';
+import prog_bitsLevel from '../levels/8-program/bits.json';
 import add4Level from '../levels/2-arith/add4.json';
 import add8Level from '../levels/2-arith/add8.json';
 import eq8Level from '../levels/2-arith/eq8.json';
@@ -100,6 +107,13 @@ export const LEVELS: LevelDef[] = [
   control_regfileLevel,
   control_spLevel,
   cpu_z8Level,
+  prog_helloLevel,
+  prog_countdownLevel,
+  prog_sumLevel,
+  prog_maxLevel,
+  prog_reverseLevel,
+  prog_tripleLevel,
+  prog_bitsLevel,
 ] as LevelDef[];
 
 /** ชื่อบท (เลขบทตามหลักสูตรใน Spec ส่วน 12 บทที่ยังไม่มีด่านจะไม่แสดง) */
@@ -111,6 +125,7 @@ export const CHAPTERS: Record<number, { th: string; en: string }> = {
   5: { th: 'หน่วยความจำ', en: 'Memory' },
   6: { th: 'ควบคุมและอุปกรณ์', en: 'Control & I/O' },
   7: { th: 'CPU', en: 'CPU' },
+  8: { th: 'การเขียนโปรแกรม', en: 'Programming' },
 };
 
 export { EXAMPLE_PROGRAMS, type ExampleProgram } from './programs';

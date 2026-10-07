@@ -1,0 +1,3 @@
+{
+  "source": "; แสดง 42 บนจอแล้วหยุด\n        MOV A, 42\n        STORE [OUT], A\n        HALT\n"
+}

@@ -1,0 +1,83 @@
+{
+  "id": "prog.reverse",
+  "chapter": 8,
+  "title": {
+    "th": "กลับลำดับด้วย stack",
+    "en": "Reverse with the stack"
+  },
+  "lesson": "program/reverse",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "สวิตช์ = 1",
+          "en": "switches = 1"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "outs": [
+            3,
+            2,
+            1
+          ]
+        },
+        "inputs": {
+          "sw": 1
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ = 10",
+          "en": "switches = 10"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "outs": [
+            12,
+            11,
+            10
+          ]
+        },
+        "inputs": {
+          "sw": 10
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ = 200",
+          "en": "switches = 200"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "outs": [
+            202,
+            201,
+            200
+          ]
+        },
+        "inputs": {
+          "sw": 200
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "program/reverse/h1",
+    "program/reverse/h2"
+  ],
+  "glossary": [
+    "stack",
+    "stack-pointer"
+  ]
+}

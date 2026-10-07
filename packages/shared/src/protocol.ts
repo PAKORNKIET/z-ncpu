@@ -5,6 +5,20 @@ import type { ComponentDef, Diagnostic, LocalizedText, SignalValue, TestReport, 
 
 export type SimMode = 'visual' | 'fast';
 
+/** คำตอบของ Why? (ตรงกับ WhyResult ของ engine) */
+export interface WhyAnswer {
+  key: string;
+  value: SignalValue;
+  driver:
+    | { kind: 'instance'; id: string; pins: string[] }
+    | { kind: 'self'; pins: string[] }
+    | { kind: 'const' }
+    | { kind: 'panel' }
+    | { kind: 'none' };
+  causes: { key: string; value: SignalValue }[];
+  state: boolean;
+}
+
 export type UiToWorker =
   | { rid: number; type: 'load'; components: ComponentDef[] }
   | { rid: number; type: 'compile'; defId: string; mode: SimMode }
@@ -28,7 +42,8 @@ export type UiToWorker =
   | { rid: number; type: 'trace'; from: number; to: number; pins: string[] }
   | { rid: number; type: 'test'; defId: string; tests: TestSuite; mode: SimMode }
   | { rid: number; type: 'probe'; net: number }
-  | { rid: number; type: 'why'; net: number; cycle: number }
+  /** Why?: ค่าที่ขา key ("ชิ้น.ขา" หรือ "self.ขา") ในชั้น scope มาจากไหน */
+  | { rid: number; type: 'why'; scope: string; key: string }
   /** ขอค่าของทุกขาในชั้นหนึ่งไปกับทุก signals: '' = ชั้นบนสุด, 'g/inv' = X-Ray ข้างใน inv ที่อยู่ใน g */
   | { rid: number; type: 'subscribe'; scopePath: string };
 
@@ -59,5 +74,6 @@ export type WorkerToUi =
   /** ผลการตั้ง breakpoint: error บอกคอลัมน์ที่ผิด */
   | { rid: number; type: 'breakpointSet'; ok: boolean; error?: { col: number; message: LocalizedText } }
   | { rid: number; type: 'traceData'; from: number; to: number; columns: Record<string, (number | null)[]> }
+  | { rid: number; type: 'whyResult'; result: WhyAnswer | null }
   | { rid: number; type: 'testResult'; defId: string; mode: SimMode; report: TestReport | null; diagnostics: Diagnostic[] }
   | { rid: number; type: 'diagnostics'; diagnostics: Diagnostic[] };

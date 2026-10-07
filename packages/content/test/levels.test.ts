@@ -2,7 +2,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ComponentLibrary, compile, contentHash, testComponent } from '@z-ncpu/engine';
-import { Z8_ORACLE } from '@z-ncpu/isa';
+import { assemble, Z8_ORACLE } from '@z-ncpu/isa';
 import type { ComponentDef } from '@z-ncpu/shared';
 import { describe, expect, it } from 'vitest';
 import { GLOSSARY, HINTS_TH, LEVELS, term } from '../src';
@@ -16,6 +16,29 @@ describe('Level CI', () => {
   const lib = new ComponentLibrary();
 
   for (const level of LEVELS) {
+    if (level.tests.type === 'program') {
+      const suite = level.tests;
+      describe(level.id, () => {
+        it('เฉลย (โปรแกรม) ผ่านบน CPU ที่ต่อจาก NAND ทั้ง Visual Mode และ Fast Mode', () => {
+          const { source } = JSON.parse(readFileSync(join(root, 'solutions', `${level.id}.json`), 'utf8')) as { source: string };
+          const asm = assemble(source);
+          expect(asm.diagnostics).toEqual([]);
+          for (const mode of ['visual', 'fast'] as const) {
+            const { report, diagnostics } = testComponent(lib, suite.cpu, { ...suite, words: asm.words }, mode, undefined, Z8_ORACLE);
+            expect(diagnostics).toEqual([]);
+            expect(report?.results.filter((r) => !r.ok)).toEqual([]);
+            expect(report?.passed).toBe(true);
+          }
+        });
+        it('มีบทเรียนทั้งไทยและอังกฤษ และคำใบ้ภาษาไทยครบ', () => {
+          for (const lang of ['th', 'en']) {
+            expect(readFileSync(join(root, 'lessons', lang, `${level.lesson}.md`), 'utf8').length).toBeGreaterThan(50);
+          }
+          for (const h of level.hints) expect(HINTS_TH[h]).toBeTruthy();
+        });
+      });
+      continue;
+    }
     describe(level.id, () => {
       const sol = solution(level.id);
 

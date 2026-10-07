@@ -1,0 +1,3 @@
+{
+  "source": "        MOV A, 0         ; ผลรวม\n        MOV B, 1         ; ตัวนับ\nloop:   ADD A, B\n        ADD B, 1\n        CMP B, 11\n        JNZ loop\n        STORE [OUT], A\n        HALT\n"
+}

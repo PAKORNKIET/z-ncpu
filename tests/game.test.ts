@@ -11,7 +11,10 @@ import {
   firstUnfinished,
   isUnlocked,
   levelStatus,
+  hashText,
+  programOf,
   putComponent,
+  putProgram,
   recordTest,
   type HashOf,
 } from '../apps/web/src/game/progress';
@@ -188,5 +191,28 @@ describe('โปรแกรมในไฟล์บันทึก', () => {
     expect(parseSave(JSON.stringify({ ...base, programs: [{ id: 'main', isa: 'X86', source: '' }] })).ok).toBe(false);
     expect(parseSave(JSON.stringify({ ...base, programs: [{ id: 'main', isa: 'Z8', source: 'x'.repeat(70_000) }] })).ok).toBe(false);
     expect(parseSave(JSON.stringify({ ...base, programs: [{ id: '../x', isa: 'Z8', source: '' }] })).ok).toBe(false);
+  });
+});
+
+describe('ด่านเขียนโปรแกรม (บท 8)', () => {
+  const idx = LEVELS.findIndex((l) => l.id === 'prog.hello');
+  it('สถานะผ่านตาม hash ของโปรแกรม แก้โปรแกรมแล้วต้องทดสอบใหม่', () => {
+    const passedAll = LEVELS.slice(0, idx).reduce((s, l) => ({ ...s, progress: { ...s.progress, [l.id]: { attempts: 1, passedHash: '0' } } }), emptySave());
+    expect(levelStatus(LEVELS, idx, passedAll, hashOf)).toBe('open');
+    const src = 'MOV A, 42\nSTORE [OUT], A\nHALT\n';
+    let s = recordTest(putProgram(passedAll, 'prog.hello', src), 'prog.hello', { passed: true, hash: hashText(src), nand: 3 });
+    expect(levelStatus(LEVELS, idx, s, hashOf)).toBe('passed');
+    expect(programOf(s, 'prog.hello')).toBe(src);
+    expect(isUnlocked(LEVELS, idx + 1, s)).toBe(true);
+    s = putProgram(s, 'prog.hello', src + '; แก้\n');
+    expect(levelStatus(LEVELS, idx, s, hashOf)).toBe('retest');
+    // บันทึกแล้วเปิดใหม่ โปรแกรมของด่านยังอยู่
+    const r = parseSave(serializeSave(s));
+    expect(r.ok && programOf(r.save, 'prog.hello')).toBe(src + '; แก้\n');
+  });
+  it('hashText ให้ค่าเดิมทุกครั้งและต่างกันเมื่อข้อความต่าง', () => {
+    expect(hashText('HALT')).toBe(hashText('HALT'));
+    expect(hashText('HALT')).not.toBe(hashText('HALT '));
+    expect(hashText('x')).toMatch(/^[0-9a-f]{14}$/);
   });
 });

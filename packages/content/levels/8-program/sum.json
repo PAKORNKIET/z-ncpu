@@ -1,0 +1,41 @@
+{
+  "id": "prog.sum",
+  "chapter": 8,
+  "title": {
+    "th": "ผลบวก 1 ถึง 10",
+    "en": "Sum of 1 to 10"
+  },
+  "lesson": "program/sum",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "จอแสดง 55 ตอนจบ",
+          "en": "Display 55 at the end"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 55
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "program/sum/h1",
+    "program/sum/h2"
+  ],
+  "glossary": [
+    "register"
+  ]
+}

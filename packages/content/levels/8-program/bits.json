@@ -1,0 +1,103 @@
+{
+  "id": "prog.bits",
+  "chapter": 8,
+  "title": {
+    "th": "นับบิตที่เป็น 1",
+    "en": "Count the 1 bits"
+  },
+  "lesson": "program/bits",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "สวิตช์ = 0x00",
+          "en": "switches = 0x00"
+        },
+        "maxCycles": 400,
+        "expect": {
+          "out": 0,
+          "leds": 0
+        },
+        "inputs": {
+          "sw": 0
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ = 0xFF",
+          "en": "switches = 0xFF"
+        },
+        "maxCycles": 400,
+        "expect": {
+          "out": 8,
+          "leds": 255
+        },
+        "inputs": {
+          "sw": 255
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ = 0xA5",
+          "en": "switches = 0xA5"
+        },
+        "maxCycles": 400,
+        "expect": {
+          "out": 4,
+          "leds": 165
+        },
+        "inputs": {
+          "sw": 165
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ = 0x80",
+          "en": "switches = 0x80"
+        },
+        "maxCycles": 400,
+        "expect": {
+          "out": 1,
+          "leds": 128
+        },
+        "inputs": {
+          "sw": 128
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ = 0x01",
+          "en": "switches = 0x01"
+        },
+        "maxCycles": 400,
+        "expect": {
+          "out": 1,
+          "leds": 1
+        },
+        "inputs": {
+          "sw": 1
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "program/bits/h1",
+    "program/bits/h2",
+    "program/bits/h3"
+  ],
+  "glossary": [
+    "carry-flag",
+    "memory-mapped-io"
+  ]
+}

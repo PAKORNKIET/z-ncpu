@@ -1061,3 +1061,64 @@ svg.la {
   stroke: var(--signal-high);
   stroke-width: 1;
 }
+
+/* Why? */
+.why-panel {
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 10px 0;
+}
+.why-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.why-head h3 {
+  margin: 0;
+  font-size: 14px;
+}
+.why-causes {
+  margin: 4px 0 8px;
+  padding-left: 18px;
+  font-size: 13px;
+}
+.why-state {
+  color: var(--warning);
+}
+.toolbar button[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.explain {
+  border-left: 3px solid var(--accent);
+  padding: 4px 8px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* ด่านเขียนโปรแกรม */
+.program-level {
+  display: grid;
+  grid-template-columns: minmax(320px, 1.2fr) minmax(300px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.program-level > section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  min-width: 0;
+}
+.program-level h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+@media (max-width: 1000px) {
+  .program-level {
+    grid-template-columns: 1fr;
+  }
+}
+.program-level .table-scroll {
+  max-height: none;
+}

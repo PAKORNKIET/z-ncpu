@@ -1,0 +1,3 @@
+{
+  "source": "        LOAD A, [SW]\n        CALL triple\n        STORE [OUT], A\n        CALL triple\n        STORE [LEDS], A\n        HALT\n; A = A × 3 (ใช้ B ช่วย เก็บไว้บน stack)\ntriple: PUSH B\n        MOV B, A\n        ADD A, B\n        ADD A, B\n        POP B\n        RET\n"
+}

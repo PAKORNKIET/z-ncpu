@@ -8,6 +8,7 @@ import { EngineClosedError } from '../engine-client';
 import { PRIMITIVE_PALETTE, Workbench, type PaletteItem, type WorkbenchContext } from '../editor/Workbench';
 import { Markdown } from '../ui/Markdown';
 import { Diagnostics } from '../ui/widgets';
+import { ProgramLevel } from './ProgramLevel';
 import { lessonText } from './lessons';
 import {
   availableParts,
@@ -95,36 +96,47 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
             </ol>
           </section>
         ))}
-        <p className="muted small">บทถัดไป (การเขียนโปรแกรม) กำลังมา</p>
+        <p className="muted small">บทถัดไป (ภารกิจขั้นสูง) มาใน M5</p>
       </nav>
 
       <div className="level-main">
         <Lesson key={level.id} level={level} startOpen={statuses[index] !== 'passed'} />
-        <Workbench
-          key={`${level.id}#${props.generation}`}
-          initial={draftFor(level, save)}
-          deps={save.components.filter((c) => c.id !== level.target.defId)}
-          palette={paletteFor(availableParts(level, LEVELS, save), busWidthOf(level))}
-          onChange={(def) => setSave((s) => putComponent(s, def))}
-          {...(level.devices ? { devices: level.devices } : {})}
-          {...(level.tests.type === 'rom' ? { romPanel: { words: level.tests.words, width: level.tests.width } } : {})}
-          {...(level.tests.type === 'cpu' ? { cpuProgram: samplePrograms(level) } : {})}
-          side={(ctx) => (
-            <TestPanel
-              level={level}
-              status={statuses[index]!}
-              save={save}
-              ctx={ctx}
-              onResult={(def, passed, nand) =>
-                setSave((s) => {
-                  const withDef = putComponent(s, def);
-                  return recordTest(withDef, level.id, { passed, nand, hash: hashOf(withDef.components, def.id) });
-                })
-              }
-              next={index + 1 < LEVELS.length ? () => setIndex(index + 1) : undefined}
-            />
-          )}
-        />
+        {level.tests.type === 'program' ? (
+          <ProgramLevel
+            key={`${level.id}#${props.generation}`}
+            level={level}
+            save={save}
+            setSave={setSave}
+            status={statuses[index]!}
+            next={index + 1 < LEVELS.length ? () => setIndex(index + 1) : undefined}
+          />
+        ) : (
+          <Workbench
+            key={`${level.id}#${props.generation}`}
+            initial={draftFor(level, save)}
+            deps={save.components.filter((c) => c.id !== level.target.defId)}
+            palette={paletteFor(availableParts(level, LEVELS, save), busWidthOf(level))}
+            onChange={(def) => setSave((s) => putComponent(s, def))}
+            {...(level.devices ? { devices: level.devices } : {})}
+            {...(level.tests.type === 'rom' ? { romPanel: { words: level.tests.words, width: level.tests.width } } : {})}
+            {...(level.tests.type === 'cpu' ? { cpuProgram: samplePrograms(level) } : {})}
+            side={(ctx) => (
+              <TestPanel
+                level={level}
+                status={statuses[index]!}
+                save={save}
+                ctx={ctx}
+                onResult={(def, passed, nand) =>
+                  setSave((s) => {
+                    const withDef = putComponent(s, def);
+                    return recordTest(withDef, level.id, { passed, nand, hash: hashOf(withDef.components, def.id) });
+                  })
+                }
+                next={index + 1 < LEVELS.length ? () => setIndex(index + 1) : undefined}
+              />
+            )}
+          />
+        )}
       </div>
     </div>
   );

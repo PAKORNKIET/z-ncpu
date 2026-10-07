@@ -1,0 +1,88 @@
+{
+  "id": "prog.triple",
+  "chapter": 8,
+  "title": {
+    "th": "ฟังก์ชัน: คูณ 3 ด้วย CALL",
+    "en": "Function: times 3 with CALL"
+  },
+  "lesson": "program/triple",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "สวิตช์ = 0",
+          "en": "switches = 0"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 0,
+          "leds": 0
+        },
+        "inputs": {
+          "sw": 0
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ = 7",
+          "en": "switches = 7"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 21,
+          "leds": 63
+        },
+        "inputs": {
+          "sw": 7
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ = 85",
+          "en": "switches = 85"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 255,
+          "leds": 253
+        },
+        "inputs": {
+          "sw": 85
+        }
+      },
+      {
+        "name": {
+          "th": "สวิตช์ = 100",
+          "en": "switches = 100"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 44,
+          "leds": 132
+        },
+        "inputs": {
+          "sw": 100
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "program/triple/h1",
+    "program/triple/h2",
+    "program/triple/h3"
+  ],
+  "glossary": [
+    "stack"
+  ]
+}

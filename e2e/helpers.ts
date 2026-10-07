@@ -29,7 +29,7 @@ export async function openWithSave(page: Page, passed: string[], drafts: (string
     format: 'zncpu',
     schemaVersion: 1,
     project: { id: 'local', name: 'e2e' },
-    components: [...passed.map(solution), ...drafts.map((d) => (typeof d === 'string' ? solution(d) : d))],
+    components: [...passed.filter((id) => !id.startsWith('prog.')).map(solution), ...drafts.map((d) => (typeof d === 'string' ? solution(d) : d))],
     progress: Object.fromEntries(passed.map((id) => [id, { attempts: 1, passedHash: '0' }])),
   };
   // ใส่ก่อนแอปเริ่ม (แอปบันทึกตอนปิดหน้า ถ้าใส่แล้วรีโหลด ข้อมูลในแอปจะเขียนทับ)
@@ -39,7 +39,8 @@ export async function openWithSave(page: Page, passed: string[], drafts: (string
     sessionStorage.setItem('e2e-seeded', '1');
   }, JSON.stringify(save));
   await page.goto('/?test');
-  await expect(canvas(page)).toBeVisible();
+  // ด่านเขียนโปรแกรมไม่มีพื้นที่ต่อวงจร ให้รอช่องเขียนโปรแกรมแทน
+  await expect(page.locator('canvas[role="application"], .program-editor').first()).toBeVisible();
 }
 
 export async function pinAt(page: Page, inst: string, pin: string) {
@@ -111,5 +112,12 @@ export const ORDER = [
   'control.regfile',
   'control.sp',
   'cpu.z8',
+  'prog.hello',
+  'prog.countdown',
+  'prog.sum',
+  'prog.max',
+  'prog.reverse',
+  'prog.triple',
+  'prog.bits',
 ];
 export const before = (id: string): string[] => ORDER.slice(0, ORDER.indexOf(id));

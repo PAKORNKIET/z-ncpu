@@ -3,6 +3,8 @@ import type {
   CpuOracle,
   CpuSnapshot,
   CpuSuite,
+  ProgramCase,
+  ProgramSuite,
   Diagnostic,
   RomSuite,
   SequenceSuite,
@@ -26,6 +28,7 @@ export { MAX_EXHAUSTIVE_BITS, exhaustiveRows } from './rows';
 export function runTests(sim: Simulator, suite: TestSuite, oracle?: CpuOracle): TestReport {
   if (suite.type === 'rom') return runRom(sim, suite);
   if (suite.type === 'cpu') return runCpu(sim, suite, oracle);
+  if (suite.type === 'program') return runProgram(sim, suite, oracle);
   if (suite.type === 'truth-table') return runTruthTable(sim, suite);
   if (suite.type === 'sequence') return runSequence(sim, suite);
   let rows: TruthTableRow[];
@@ -80,8 +83,11 @@ export function testComponent(
   options?: CompileOptions,
   oracle?: CpuOracle,
 ): ComponentTestResult {
-  if (suite.type === 'rom' || suite.type === 'cpu') {
-    const harness = suite.type === 'rom' ? romHarness(lib, defId, suite.words, suite.width) : cpuHarness(lib, defId);
+  if (suite.type === 'rom' || suite.type === 'cpu' || suite.type === 'program') {
+    const harness =
+      suite.type === 'rom'
+        ? romHarness(lib, defId, suite.words, suite.width)
+        : cpuHarness(lib, suite.type === 'program' ? suite.cpu : defId);
     if ('code' in harness) return { diagnostics: [harness], report: null };
     const { netlist, diagnostics } = compile(new ComponentLibrary([...lib.all(), harness]), harness.id, options);
     if (!netlist || hasErrors(diagnostics)) return { diagnostics, report: null };
@@ -237,6 +243,78 @@ function runCpu(sim: Simulator, suite: CpuSuite, oracle?: CpuOracle): TestReport
     }
     // โปรแกรมแรกที่ผิดพอแล้ว ที่เหลือไม่ต้องรัน
     if (results.at(-1)?.ok === false) break;
+  }
+  return finish(results);
+}
+
+/** ผลของโปรแกรมหนึ่งกรณี: ลำดับที่จอแสดง และค่าสุดท้ายของขาออก */
+interface ProgramRun {
+  outs: number[];
+  halted: boolean;
+  cycles: number;
+  final: Record<string, SignalValue>;
+}
+
+/** เทียบผลกับที่ด่านต้องการ คืนรายการที่ไม่ตรง (ว่าง = ผ่าน) */
+function programMismatch(run: ProgramRun, c: ProgramCase): string[] {
+  const bad: string[] = [];
+  if (!run.halted) bad.push('halt');
+  const e = c.expect;
+  if (e.outs && (e.outs.length !== run.outs.length || e.outs.some((v, i) => v !== run.outs[i]))) bad.push('outs');
+  for (const pin of ['out', 'leds', 'seg'] as const) if (e[pin] !== undefined && run.final[pin] !== e[pin]) bad.push(pin);
+  return bad;
+}
+
+/**
+ * ด่านเขียนโปรแกรม: ใส่โปรแกรมของผู้เล่นลงแผง reset แล้วเดินนาฬิกาจนถึง HALT บน CPU ของผู้เล่น
+ * ถ้าไม่ผ่านและมี emulator จะลองโปรแกรมเดียวกันบน emulator ด้วย เพื่อบอกว่าผิดที่โปรแกรมหรือที่ CPU
+ */
+function runProgram(sim: Simulator, suite: ProgramSuite, oracle?: CpuOracle): TestReport {
+  const words = suite.words;
+  if (!words) return finish([], err('unsupported', 'ยังไม่มีโปรแกรมให้ทดสอบ', 'no program to test'));
+  const results: TestCaseResult[] = [];
+  // ทุกกรณีเริ่มจากเครื่องที่เพิ่งเปิด (จอยังไม่มีค่า) ไม่ให้ค่าบนจอจากกรณีก่อนติดมา
+  const first = sim.settle();
+  if (!first.ok) return finish(results, oscillation(first, sim, 'ตอนเปิดเครื่อง', 'at power-up'));
+  const fresh = sim.saveState();
+  const freshCycle = sim.cycle;
+  for (let i = 0; i < suite.cases.length; i++) {
+    const c = suite.cases[i]!;
+    sim.restoreState(fresh, freshCycle);
+    sim.loadPanel(words, ROM_PANEL);
+    let settled = resetCpu(sim, { sw: 0, btn: 0, key: 0, ...c.inputs });
+    const run: ProgramRun = { outs: [], halted: false, cycles: 0, final: {} };
+    const watch = (): void => {
+      const v = sim.read('out');
+      if (typeof v === 'number' && run.outs.at(-1) !== v) run.outs.push(v);
+    };
+    watch();
+    while (settled.ok && sim.read('halt') !== 1 && run.cycles < c.maxCycles) {
+      settled = sim.tick('clk');
+      run.cycles++;
+      watch();
+    }
+    if (!settled.ok) return finish(results, oscillation(settled, sim, `กรณี "${c.name.th}"`, `case "${c.name.en}"`));
+    run.halted = sim.read('halt') === 1;
+    for (const pin of ['out', 'leds', 'seg']) if (sim.netlist.outputs.has(pin)) run.final[pin] = sim.read(pin);
+    const bad = programMismatch(run, c);
+    const result: TestCaseResult = {
+      index: i,
+      ok: bad.length === 0,
+      inputs: { ...(c.inputs ?? {}) },
+      expected: Object.fromEntries((['out', 'leds', 'seg'] as const).filter((p) => c.expect[p] !== undefined).map((p) => [p, c.expect[p]!])),
+      actual: run.final,
+      program: { outs: run.outs, halted: run.halted, cycles: run.cycles },
+    };
+    if (!result.ok && oracle) {
+      const trace = oracle.run(words, c.maxCycles, c.inputs ?? {});
+      const emu: ProgramRun = { outs: [], halted: trace.at(-1)?.halt === 1, cycles: trace.length - 1, final: {} };
+      for (const s of trace) if (s.out !== undefined && emu.outs.at(-1) !== s.out) emu.outs.push(s.out);
+      const last = trace.at(-1)!;
+      for (const pin of ['out', 'leds', 'seg'] as const) emu.final[pin] = last[pin] ?? 'X';
+      result.program!.emulatorPassed = programMismatch(emu, c).length === 0;
+    }
+    results.push(result);
   }
   return finish(results);
 }

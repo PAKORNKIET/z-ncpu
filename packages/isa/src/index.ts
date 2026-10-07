@@ -110,3 +110,4 @@ export const hex16 = (w: number): string => w.toString(16).toUpperCase().padStar
 
 export * from './asm';
 export * from './machine';
+export * from './explain';

@@ -10,7 +10,7 @@ import {
   type SceneOptions,
 } from '@z-ncpu/canvas';
 import { ComponentLibrary, PRIMITIVES } from '@z-ncpu/engine';
-import type { ComponentDef } from '@z-ncpu/shared';
+import type { ComponentDef, PinRef } from '@z-ncpu/shared';
 import { useState, useSyncExternalStore } from 'react';
 
 const SHORT_TITLE: Record<string, string> = {
@@ -31,6 +31,8 @@ export class EditorModel {
   onToggleInput: (pin: string) => void = () => {};
   /** host ตั้งค่า: ดับเบิลคลิกชิ้นส่วนเพื่อดูข้างใน */
   onOpen: (instanceId: string) => void = () => {};
+  /** host ตั้งค่า: โหมด Why? คลิกขา/สายเพื่อถามว่าค่ามาจากไหน */
+  onProbe: (ref: PinRef) => void = () => {};
   private cache: { def: ComponentDef; scene: Scene } | null = null;
   private readonly listeners = new Set<() => void>();
   private version = 0;
@@ -50,6 +52,7 @@ export class EditorModel {
       scene: () => this.scene(),
       onToggleInput: (pin) => this.onToggleInput(pin),
       onOpen: (id) => this.onOpen(id),
+      onProbe: (ref) => this.onProbe(ref),
       onChange: () => this.emit(),
       readOnly: !!options.readOnly,
     });

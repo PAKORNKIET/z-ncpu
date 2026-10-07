@@ -1,0 +1,3 @@
+{
+  "source": "        MOV A, 5\nloop:   STORE [OUT], A\n        SUB A, 1\n        JN done          ; 0 − 1 ติดลบ = จบ\n        JMP loop\ndone:   HALT\n"
+}
