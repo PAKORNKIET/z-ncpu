@@ -114,6 +114,11 @@ test('คำใบ้เปิดทีละข้อ', async ({ page }) => {
 });
 
 test('บันทึกเป็นไฟล์ เริ่มใหม่ แล้วเปิดไฟล์กลับมา', async ({ page }) => {
+  // เบราว์เซอร์ที่ไม่มีหน้าต่างบันทึกไฟล์ของระบบ (Firefox, Safari): ดาวน์โหลดไฟล์แทน
+  await page.addInitScript(() => {
+    delete (window as { showSaveFilePicker?: unknown }).showSaveFilePicker;
+  });
+  await page.reload();
   await buildNot(page);
   await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(level(page, 2)).toBeEnabled();
@@ -177,4 +182,29 @@ test('X-Ray: ดับเบิลคลิก NOT ที่อยู่ใน A
   const ny = await pinAt(page, 'nand1', 'y');
   await page.mouse.dblclick((na.x + ny.x) / 2, (na.y + ny.y) / 2 - 10);
   await expect(page.getByRole('alert')).toContainText('เป็นเกตพื้นฐาน');
+});
+
+test('Chrome/Edge และแอป Windows: บันทึกผ่านหน้าต่างบันทึกไฟล์ของระบบ', async ({ page }) => {
+  await page.addInitScript(() => {
+    const w = window as unknown as { showSaveFilePicker: (o: { suggestedName: string }) => Promise<unknown>; __saved?: { name: string; text: string } };
+    w.showSaveFilePicker = async (o) => {
+      let text = '';
+      return {
+        name: o.suggestedName,
+        createWritable: async () => ({
+          write: async (t: string) => {
+            text += t;
+          },
+          close: async () => {
+            w.__saved = { name: o.suggestedName, text };
+          },
+        }),
+      };
+    };
+  });
+  await page.reload();
+  await page.getByRole('button', { name: 'บันทึกเป็นไฟล์' }).click();
+  await expect(page.locator('.notice')).toContainText(/บันทึกแล้ว: z-ncpu-.*\.zncpu/);
+  const saved = await page.evaluate(() => (window as { __saved?: { text: string } }).__saved);
+  expect(JSON.parse(saved!.text)).toMatchObject({ format: 'zncpu', schemaVersion: 1 });
 });

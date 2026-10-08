@@ -64,12 +64,31 @@ export function App() {
     }
   };
 
-  const exportFile = (): void => {
-    const blob = new Blob([serializeSave(save)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+  const exportFile = async (): Promise<void> => {
+    const text = serializeSave(save);
+    const name = `z-ncpu-${new Date().toISOString().slice(0, 10)}.zncpu`;
+    // Chrome/Edge และแอป Windows (WebView2) มีหน้าต่างบันทึกไฟล์ของระบบ ให้เลือกที่เก็บเองได้
+    const picker = (window as { showSaveFilePicker?: (o: object) => Promise<FileSystemFileHandle> }).showSaveFilePicker;
+    if (picker) {
+      try {
+        const handle = await picker({
+          suggestedName: name,
+          types: [{ description: 'ไฟล์ Z-NCPU', accept: { 'application/json': ['.zncpu'] } }],
+        });
+        const w = await handle.createWritable();
+        await w.write(text);
+        await w.close();
+        setNotice(`บันทึกแล้ว: ${handle.name}`);
+        return;
+      } catch (e) {
+        if (e instanceof DOMException && e.name === 'AbortError') return;
+        // เบราว์เซอร์ไม่ยอม (เช่นใน iframe) ใช้วิธีดาวน์โหลดแทน
+      }
+    }
+    const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = `z-ncpu-${new Date().toISOString().slice(0, 10)}.zncpu`;
+    a.download = name;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
@@ -98,7 +117,7 @@ export function App() {
             </div>
           </div>
           <div className="file-actions">
-            <button onClick={exportFile} aria-label="บันทึกเป็นไฟล์" title="บันทึกความคืบหน้าเป็นไฟล์ .zncpu">
+            <button onClick={() => void exportFile()} aria-label="บันทึกเป็นไฟล์" title="บันทึกความคืบหน้าเป็นไฟล์ .zncpu">
               <Download size={16} aria-hidden />
               <span className="btn-label">บันทึกเป็นไฟล์</span>
             </button>

@@ -14,10 +14,12 @@
       {
         "label": "main",
         "title": "Z-NCPU — สร้าง CPU จากเกต NAND",
-        "width": 1280,
-        "height": 800,
-        "minWidth": 900,
-        "minHeight": 600
+        "width": 1366,
+        "height": 860,
+        "minWidth": 800,
+        "minHeight": 560,
+        "center": true,
+        "dragDropEnabled": false
       }
     ],
     "security": {
@@ -27,8 +29,7 @@
   "bundle": {
     "active": true,
     "targets": [
-      "nsis",
-      "msi"
+      "nsis"
     ],
     "icon": [
       "icons/32x32.png",
@@ -40,9 +41,25 @@
     "windows": {
       "nsis": {
         "languages": [
+          "Thai",
           "English"
-        ]
+        ],
+        "customLanguageFiles": {
+          "Thai": "installer/Thai.nsh"
+        },
+        "displayLanguageSelector": true,
+        "installMode": "currentUser",
+        "installerIcon": "icons/icon.ico"
+      },
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
       }
-    }
+    },
+    "publisher": "Pakornkiet Puanpanwong",
+    "copyright": "© 2026 Pakornkiet Puanpanwong · MIT License",
+    "category": "Education",
+    "shortDescription": "สร้าง CPU จากเกต NAND",
+    "longDescription": "Z-NCPU (Zero-NandCPU): เกมสร้าง CPU 8 บิตจากเกต NAND ตั้งแต่ศูนย์ แล้วเขียนโปรแกรม assembly ให้ CPU ที่ต่อเองรันได้จริง",
+    "licenseFile": "../../../LICENSE"
   }
 }
