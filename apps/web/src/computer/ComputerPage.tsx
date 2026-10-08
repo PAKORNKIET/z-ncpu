@@ -5,6 +5,7 @@ import { EXAMPLE_PROGRAMS } from '@z-ncpu/content';
 import { ComponentLibrary, contentHash, cpuHarness, ROM_DUT, ROM_PANEL } from '@z-ncpu/engine';
 import { assemble, explainInstruction, hex16, type AsmResult } from '@z-ncpu/isa';
 import type { SignalValue } from '@z-ncpu/shared';
+import { AlertTriangle, BookOpen, Upload, CircleDot, Cpu, FileCode2, ListOrdered, Pause, Play, RotateCcw, StepForward, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { EngineClosedError } from '../engine-client';
 import type { SaveFile } from '../game/save';
@@ -42,7 +43,8 @@ export function ComputerPage({ save, setSave }: { save: SaveFile; setSave: Dispa
   if (!cpu) {
     return (
       <section className="computer empty" aria-label="คอมพิวเตอร์">
-        <h2>💻 คอมพิวเตอร์ของฉัน</h2>
+        <Cpu size={48} aria-hidden className="empty-icon" />
+        <h2>คอมพิวเตอร์ของฉัน</h2>
         <p>ยังไม่มี CPU ให้รันโปรแกรม: ผ่านด่าน “ประกอบ CPU Z8” ในบทที่ 7 ก่อน แล้วกลับมาเขียนโปรแกรมให้ CPU ที่ต่อเองได้ที่นี่</p>
       </section>
     );
@@ -218,7 +220,9 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
     <div className="computer">
       <section className="computer-editor" aria-labelledby="asm-title">
         <div className="computer-head">
-          <h2 id="asm-title">📝 โปรแกรม (assembly)</h2>
+          <h2 id="asm-title" className="with-icon">
+            <FileCode2 size={18} aria-hidden /> โปรแกรม (assembly)
+          </h2>
           <label className="small">
             ตัวอย่าง{' '}
             <select
@@ -243,30 +247,47 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
         </div>
         <AsmEditor source={source} onChange={setSource} asm={asm} status={dirty ? ' · ยังไม่ได้โหลดลง CPU' : ''} />
         <button className="primary" onClick={loadProgram} disabled={!ok || !asm.ok}>
-          ⤓ โหลดลง CPU แล้ว reset
+          <Upload size={16} aria-hidden />
+          โหลดลง CPU แล้ว reset
         </button>
       </section>
 
       <section className="computer-run" aria-labelledby="run-title">
-        <h2 id="run-title">⚙ CPU ของฉัน</h2>
+        <h2 id="run-title" className="with-icon">
+          <Cpu size={18} aria-hidden /> CPU ของฉัน
+        </h2>
         {ready === null ? <p className="muted">กำลังเตรียม CPU (compile วงจร NAND)…</p> : null}
-        {ready && 'error' in ready ? <p className="error">⚠ CPU ยังรันไม่ได้: {ready.error}</p> : null}
+        {ready && 'error' in ready ? <p className="error with-icon">
+            <AlertTriangle size={16} aria-hidden /> CPU ยังรันไม่ได้: {ready.error}
+          </p> : null}
         {ok ? (
           <p className="muted small">
             <span data-testid="cpu-gates">{ready.gates.toLocaleString()}</span> NAND
-            {levelPassed ? ' · ผ่านการทดสอบแล้ว' : ' · ⚠ ยังไม่ผ่านด่าน CPU ผลอาจไม่ตรงกับที่โปรแกรมควรทำ'}
+            {levelPassed ? ' · ผ่านการทดสอบแล้ว' : ' · ยังไม่ผ่านด่าน CPU ผลอาจไม่ตรงกับที่โปรแกรมควรทำ'}
           </p>
         ) : null}
 
         <div className="run-controls" role="toolbar" aria-label="ควบคุม CPU">
           <button onClick={() => client?.post({ type: 'resetCpu' })} disabled={!ok}>
-            ⟲ Reset
+            <RotateCcw size={16} aria-hidden />
+            Reset
           </button>
           <button className="primary" onClick={run} disabled={!ok || (halted && !running)}>
-            {running ? '⏸ หยุด' : '▶ รัน'}
+            {running ? (
+              <>
+                <Pause size={16} aria-hidden />
+                หยุด
+              </>
+            ) : (
+              <>
+                <Play size={16} aria-hidden />
+                รัน
+              </>
+            )}
           </button>
           <button onClick={() => client?.post({ type: 'step', count: 1 })} disabled={!ok || running}>
-            ⏭ ทีละคำสั่ง
+            <StepForward size={16} aria-hidden />
+            ทีละคำสั่ง
           </button>
           <label className="small">
             ความเร็ว{' '}
@@ -292,7 +313,7 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
 
         {explain ? (
           <p className="explain small" data-testid="explain">
-            📖 คำสั่งถัดไป: <span className="mono">{explain}</span>
+            <BookOpen size={14} aria-hidden /> คำสั่งถัดไป: <span className="mono">{explain}</span>
           </p>
         ) : null}
 
@@ -367,7 +388,9 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
       </section>
 
       <section className="computer-listing" aria-labelledby="listing-title">
-        <h2 id="listing-title">📜 ในแผงโปรแกรม</h2>
+        <h2 id="listing-title" className="with-icon">
+          <ListOrdered size={18} aria-hidden /> ในแผงโปรแกรม
+        </h2>
         <p className="muted small">คลิกจุดหน้าบรรทัดเพื่อตั้ง breakpoint · แถวที่ไฮไลต์คือคำสั่งที่ PC ชี้ (จะทำในจังหวะถัดไป)</p>
         <div className="listing-scroll" ref={listingRef}>
           <table className="truth-table program" aria-label="คำสั่งในแผงโปรแกรม">
@@ -396,7 +419,9 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
         </div>
 
         <div className="breakpoints">
-          <h3>🔴 Breakpoint</h3>
+          <h3 className="with-icon">
+            <CircleDot size={16} aria-hidden className="bp-icon" /> Breakpoint
+          </h3>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -425,7 +450,7 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
               <li key={b}>
                 <code>{b}</code>{' '}
                 <button className="linklike" aria-label={`ลบ breakpoint ${b}`} onClick={() => setBreakpoints((l) => l.filter((x) => x !== b))}>
-                  ✕
+                  <X size={14} aria-hidden />
                 </button>
               </li>
             ))}

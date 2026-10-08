@@ -59,7 +59,8 @@ function collect(rootDir: string): PkgInfo[] {
 }
 
 /** license ที่อนุญาตให้ติดไปกับแอปได้โดยไม่ต้องเปลี่ยน license ของโปรเจกต์ */
-const ALLOWED = new Set(['MIT', 'ISC', 'BSD-2-Clause', 'BSD-3-Clause', 'Apache-2.0', '0BSD', 'Apache-2.0 OR MIT', 'MIT OR Apache-2.0']);
+// OFL-1.1 (ฟอนต์ Noto Sans Thai, JetBrains Mono): ฝังไปกับแอปและแจกฟรีได้ ต้องแนบข้อความ license และห้ามขายตัวฟอนต์แยก
+const ALLOWED = new Set(['MIT', 'ISC', 'BSD-2-Clause', 'BSD-3-Clause', 'Apache-2.0', '0BSD', 'Apache-2.0 OR MIT', 'MIT OR Apache-2.0', 'OFL-1.1']);
 
 export function thirdPartyLicenses(rootDir: string): Plugin {
   return {

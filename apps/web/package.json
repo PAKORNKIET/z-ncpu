@@ -11,11 +11,14 @@
     "typecheck": "tsc -p . && tsc -p tsconfig.node.json"
   },
   "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/noto-sans-thai": "^5.3.0",
     "@z-ncpu/canvas": "workspace:*",
     "@z-ncpu/content": "workspace:*",
     "@z-ncpu/engine": "workspace:*",
     "@z-ncpu/isa": "workspace:*",
     "@z-ncpu/shared": "workspace:*",
+    "lucide-react": "^1.52.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

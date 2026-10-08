@@ -1,6 +1,7 @@
 // M0: ตัวอย่าง engine ผ่าน Worker (เกต NAND และตัวนับ 4 บิตที่ต่อจาก NAND 85 ตัว)
 import { referenceLibrary } from '@z-ncpu/engine/fixtures';
 import type { CompileStats, SignalValue, SimMode } from '@z-ncpu/shared';
+import { ArrowRight, Pause, Play, RotateCcw, StepForward } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Diagnostics, Led, Switch } from '../ui/widgets';
 import { useEngine, useEngineSetup } from '../use-engine';
@@ -40,9 +41,7 @@ function NandPanel() {
       <div className="row">
         <Switch label="A" value={pins.a} onClick={() => toggle('a')} disabled={!ready} />
         <Switch label="B" value={pins.b} onClick={() => toggle('b')} disabled={!ready} />
-        <span className="arrow" aria-hidden>
-          →
-        </span>
+        <ArrowRight size={20} aria-hidden className="arrow" />
         <Led label="Y" value={pins.y} />
       </div>
     </section>
@@ -95,12 +94,19 @@ function CounterPanel() {
 
       <div className="controls">
         {running ? (
-          <button onClick={() => client?.post({ type: 'pause' })}>⏸ หยุด</button>
+          <button onClick={() => client?.post({ type: 'pause' })}>
+            <Pause size={16} aria-hidden />
+            หยุด
+          </button>
         ) : (
-          <button onClick={() => client?.post({ type: 'run', hz })}>▶ รัน</button>
+          <button onClick={() => client?.post({ type: 'run', hz })}>
+            <Play size={16} aria-hidden />
+            รัน
+          </button>
         )}
         <button onClick={() => client?.post({ type: 'step', count: 1 })} disabled={running}>
-          ⏭ ทีละจังหวะ
+          <StepForward size={16} aria-hidden />
+          ทีละจังหวะ
         </button>
         <button
           onClick={() => {
@@ -110,7 +116,8 @@ function CounterPanel() {
           }}
           disabled={running}
         >
-          ↺ รีเซ็ต
+          <RotateCcw size={16} aria-hidden />
+          รีเซ็ต
         </button>
         <label>
           ความเร็ว

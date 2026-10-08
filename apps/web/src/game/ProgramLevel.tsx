@@ -2,7 +2,9 @@
 import { HINTS_TH } from '@z-ncpu/content';
 import { assemble } from '@z-ncpu/isa';
 import type { LevelDef, ProgramCase, TestCaseResult, TestReport } from '@z-ncpu/shared';
+import { AlertTriangle, ArrowRight, CheckCircle2, Copy, FileCode2, Lightbulb, PartyPopper, Play, XCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { OkMark } from '../ui/icons';
 import { AsmEditor } from '../computer/AsmEditor';
 import { EngineClosedError } from '../engine-client';
 import { useEngine } from '../use-engine';
@@ -93,11 +95,20 @@ export function ProgramLevel(props: {
   return (
     <div className="program-level">
       <section className="program-editor" aria-labelledby="prog-title">
-        <h2 id="prog-title">📝 โปรแกรมของคุณ</h2>
+        <h2 id="prog-title" className="with-icon">
+          <FileCode2 size={18} aria-hidden /> โปรแกรมของคุณ
+        </h2>
         <AsmEditor source={source} onChange={setSource} asm={asm} height={360} />
         <div className="row">
           <button className="primary" onClick={() => void run()} disabled={!client || !cpu || !asm.ok || state.k === 'running'}>
-            {state.k === 'running' ? 'กำลังรันบน CPU ของคุณ…' : '▶ ทดสอบบน CPU ของฉัน'}
+            {state.k === 'running' ? (
+              'กำลังรันบน CPU ของคุณ…'
+            ) : (
+              <>
+                <Play size={16} aria-hidden />
+                ทดสอบบน CPU ของฉัน
+              </>
+            )}
           </button>
           <button
             onClick={() => {
@@ -105,7 +116,8 @@ export function ProgramLevel(props: {
               setCopied(true);
             }}
           >
-            ⧉ คัดลอกไปหน้าคอมพิวเตอร์
+            <Copy size={16} aria-hidden />
+            คัดลอกไปหน้าคอมพิวเตอร์
           </button>
         </div>
         {copied ? <p className="small muted">คัดลอกแล้ว: เปิดแท็บ “คอมพิวเตอร์” เพื่อรันทีละคำสั่ง ดู register และย้อนเวลาได้</p> : null}
@@ -139,7 +151,11 @@ export function ProgramLevel(props: {
                     <td className="left">{c.name.th}</td>
                     <td className="left">{expectText(c)}</td>
                     {report ? <td className="left">{r ? gotText(c, r) : ''}</td> : null}
-                    {report ? <td aria-label={r?.ok ? 'ถูก' : 'ผิด'}>{r?.ok ? '✓' : '✗'}</td> : null}
+                    {report ? (
+                      <td aria-label={r?.ok ? 'ถูก' : 'ผิด'}>
+                        <OkMark ok={!!r?.ok} />
+                      </td>
+                    ) : null}
                   </tr>
                 );
               })}
@@ -149,20 +165,23 @@ export function ProgramLevel(props: {
 
         <div role="status" aria-live="polite" className="test-result">
           {stale ? <p className="muted">โปรแกรมเปลี่ยนแล้ว กดทดสอบอีกครั้ง</p> : null}
-          {result && !stale && result.error ? <p className="error">⚠ {result.error}</p> : null}
+          {result && !stale && result.error ? <p className="error with-icon">
+              <AlertTriangle size={18} aria-hidden /> {result.error}
+            </p> : null}
           {report && !passed
             ? report.results
                 .filter((r) => !r.ok)
                 .slice(0, 1)
                 .map((r) => (
                   <div key={r.index} className="error">
-                    <p>✗ ยังไม่ผ่าน: กรณี “{suite.cases[r.index]?.name.th}”</p>
+                    <p className="with-icon">
+                      <XCircle size={18} aria-hidden /> ยังไม่ผ่าน: กรณี “{suite.cases[r.index]?.name.th}”</p>
                     {!r.program?.halted ? (
                       <p className="small">ไม่ถึง HALT ภายใน {suite.cases[r.index]?.maxCycles} cycle (วนไม่จบ หรือลืม HALT หรือเปล่า?)</p>
                     ) : null}
                     {r.program?.emulatorPassed ? (
                       <p className="small">
-                        💡 โปรแกรมนี้ถูกต้องบน emulator แต่ CPU ที่คุณต่อให้ผลต่างออกไป ลองกลับไปทดสอบด่าน “ประกอบ CPU Z8” อีกครั้ง
+                        <Lightbulb size={14} aria-hidden /> โปรแกรมนี้ถูกต้องบน emulator แต่ CPU ที่คุณต่อให้ผลต่างออกไป ลองกลับไปทดสอบด่าน “ประกอบ CPU Z8” อีกครั้ง
                       </p>
                     ) : null}
                   </div>
@@ -171,14 +190,15 @@ export function ProgramLevel(props: {
           {passed ? (
             <div className="pass">
               <p>
-                <strong>✓ ผ่านด่านแล้ว!</strong> โปรแกรม {asm.words.length} คำสั่ง รันบน CPU ที่คุณต่อเองจาก NAND
+                <CheckCircle2 size={18} aria-hidden className="pass-icon" /> <strong>ผ่านด่านแล้ว!</strong> โปรแกรม {asm.words.length} คำสั่ง รันบน CPU ที่คุณต่อเองจาก NAND
               </p>
               {props.next ? (
                 <button className="primary" onClick={props.next}>
-                  ด่านถัดไป →
+                  ด่านถัดไป <ArrowRight size={16} aria-hidden />
                 </button>
               ) : (
-                <p className="small muted">ผ่านครบทุกด่านที่มีตอนนี้แล้ว 🎉</p>
+                <p className="small muted">ผ่านครบทุกด่านที่มีตอนนี้แล้ว <PartyPopper size={14} aria-hidden />
+                </p>
               )}
             </div>
           ) : null}
@@ -187,7 +207,7 @@ export function ProgramLevel(props: {
         <div className="hints">
           {level.hints.slice(0, hints).map((h, i) => (
             <p key={h} className="hint-text">
-              💡 คำใบ้ {i + 1}: {HINTS_TH[h]}
+              <Lightbulb size={16} aria-hidden className="hint-icon" /> <span>คำใบ้ {i + 1}: {HINTS_TH[h]}</span>
             </p>
           ))}
           {hints < level.hints.length ? (

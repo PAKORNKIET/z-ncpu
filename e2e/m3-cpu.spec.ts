@@ -17,7 +17,7 @@ test('CPU: reset แล้วเดินนาฬิกา จอนับข�
   await expect(program.locator('tbody tr')).toHaveCount(6);
   await expect(program).toContainText('CMP A, 0x0A');
 
-  await page.getByRole('button', { name: '⟲ reset CPU' }).click();
+  await page.getByRole('button', { name: 'reset CPU' }).click();
   await expect(page.getByRole('status', { name: /^pc = / })).toHaveAttribute('aria-label', /^pc = 0 /);
   await expect(program.locator('tbody tr[aria-current]')).toContainText('MOV A, 0x00');
   const tick = page.getByRole('button', { name: /เดินนาฬิกา/ });
@@ -27,7 +27,7 @@ test('CPU: reset แล้วเดินนาฬิกา จอนับข�
   await expect(page.getByRole('status', { name: /^a = / })).toHaveAttribute('aria-label', /^a = 1 /);
   await expect(program.locator('tbody tr[aria-current]')).toContainText('ADD A, 0x01');
 
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว', { timeout: 60_000 });
   await expect(page.getByRole('list', { name: 'โปรแกรมทดสอบ' }).locator('li.ok')).toHaveCount(5);
 });
@@ -39,7 +39,7 @@ test('CPU ที่ต่อ flag C ผิด: บอก cycle คำสั่�
   await openWithSave(page, before('cpu.z8'), [broken]);
   await levelNamed(page, /ประกอบ CPU Z8/).click();
   await expect(page.getByTestId('nand-count')).toHaveText('55189', { timeout: 30_000 });
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   const fail = page.getByTestId('cpu-failure');
   await expect(fail).toContainText('ALU และ flags ผิดที่ cycle 3 หลังทำคำสั่ง ADD A, B', { timeout: 60_000 });
   const wrong = fail.getByRole('table', { name: 'ขาที่ได้ค่าผิด' });

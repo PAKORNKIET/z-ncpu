@@ -3,7 +3,25 @@ import { ComponentLibrary, contentHash } from '@z-ncpu/engine';
 import { CHAPTERS, GLOSSARY, HINTS_TH, LEVELS } from '@z-ncpu/content';
 import { assemble, disassemble } from '@z-ncpu/isa';
 import type { ComponentDef, Diagnostic, LevelDef, SignalValue, TestCaseResult, TestReport } from '@z-ncpu/shared';
+import {
+  AlertTriangle,
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  ChevronDown,
+  Circle,
+  Cpu,
+  Lightbulb,
+  ListOrdered,
+  Lock,
+  Play,
+  RotateCw,
+  Timer,
+  XCircle,
+  type LucideIcon,
+} from 'lucide-react';
 import { useState } from 'react';
+import { OkMark } from '../ui/icons';
 import { EngineClosedError } from '../engine-client';
 import { PRIMITIVE_PALETTE, Workbench, type PaletteItem, type WorkbenchContext } from '../editor/Workbench';
 import { Markdown } from '../ui/Markdown';
@@ -31,7 +49,7 @@ const STATUS_TEXT: Record<LevelStatus, string> = {
   passed: 'ผ่านแล้ว',
   retest: 'แก้วงจรแล้ว ต้องทดสอบใหม่',
 };
-const STATUS_ICON: Record<LevelStatus, string> = { locked: '🔒', open: '○', passed: '✓', retest: '↻' };
+const STATUS_ICON: Record<LevelStatus, LucideIcon> = { locked: Lock, open: Circle, passed: CheckCircle2, retest: RotateCw };
 
 /** ชิ้นของผู้เล่นในกล่องเครื่องมือ: บอกว่ามาจากด่านไหน */
 export function paletteFor(ids: readonly string[], busWidth = 4): PaletteItem[] {
@@ -63,10 +81,21 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
   const [index, setIndex] = useState(() => firstUnfinished(LEVELS, save));
   const level = LEVELS[index]!;
   const statuses = LEVELS.map((_, i) => levelStatus(LEVELS, i, save, hashOf));
+  /** จอแคบ: รายการด่านพับเก็บไว้ เปิดด้วยปุ่มด้านบน */
+  const [levelsOpen, setLevelsOpen] = useState(false);
+  const passedCount = statuses.filter((st) => st === 'passed').length;
 
   return (
     <div className="game">
-      <nav className="levels" aria-label="ด่าน">
+      <button className="levels-toggle" aria-expanded={levelsOpen} aria-controls="level-list" onClick={() => setLevelsOpen(!levelsOpen)}>
+        <ListOrdered size={18} aria-hidden />
+        <span>
+          ด่าน {index + 1}/{LEVELS.length}: <strong>{level.title.th}</strong>
+        </span>
+        <span className="muted small">ผ่าน {passedCount}</span>
+        <ChevronDown size={18} aria-hidden className="chevron" />
+      </button>
+      <nav id="level-list" className={`levels ${levelsOpen ? 'open' : ''}`} aria-label="ด่าน">
         {Object.entries(CHAPTERS).map(([ch, title]) => (
           <section key={ch} className="chapter">
             <h2>
@@ -80,11 +109,17 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
                       className={`level-item ${statuses[i]} ${i === index ? 'current' : ''}`}
                       disabled={statuses[i] === 'locked'}
                       aria-current={i === index ? 'step' : undefined}
-                      onClick={() => setIndex(i)}
+                      onClick={() => {
+                        setIndex(i);
+                        setLevelsOpen(false);
+                      }}
                       aria-label={`ด่าน ${i + 1} ${l.title.th}: ${STATUS_TEXT[statuses[i]!]}`}
                     >
                       <span className="level-icon" aria-hidden>
-                        {STATUS_ICON[statuses[i]!]}
+                        {(() => {
+                          const Icon = STATUS_ICON[statuses[i]!];
+                          return <Icon size={16} />;
+                        })()}
                       </span>
                       <span>
                         {i + 1}. {l.title.th}
@@ -151,6 +186,8 @@ function Lesson({ level, startOpen }: { level: LevelDef; startOpen: boolean }) {
   return (
     <details className="lesson" open={open}>
       <summary>
+        <ChevronDown size={18} aria-hidden className="chevron" />
+        <BookOpen size={18} aria-hidden />
         บทเรียน: <strong>{level.title.th}</strong>
       </summary>
       <div className="lesson-body">
@@ -221,7 +258,14 @@ function TestPanel(props: {
         {progress?.bestNand !== undefined ? ` · ดีที่สุด ${progress.bestNand} NAND` : ''}
       </p>
       <button className="primary" onClick={() => void run()} disabled={!ctx.client || state.k === 'running'}>
-        {state.k === 'running' ? 'กำลังทดสอบ…' : '▶ ทดสอบ'}
+        {state.k === 'running' ? (
+          'กำลังทดสอบ…'
+        ) : (
+          <>
+            <Play size={16} aria-hidden />
+            ทดสอบ
+          </>
+        )}
       </button>
 
       {level.tests.type === 'truth-table' ? (
@@ -237,10 +281,11 @@ function TestPanel(props: {
       <div role="status" aria-live="polite" className="test-result">
         {stale ? <p className="muted">วงจรเปลี่ยนแล้ว กดทดสอบอีกครั้ง</p> : null}
         {result && !stale && result.report && !result.report.passed ? (
-          <p className="error">
+          <p className="error with-icon">
+            <XCircle size={18} aria-hidden />
             {level.tests.type === 'cpu'
-              ? '✗ ยังไม่ผ่าน: CPU ทำงานไม่ตรงกับ emulator (ดูรายละเอียดด้านบน)'
-              : `✗ ยังไม่ผ่าน: ถูก ${result.report.total - result.report.failed} จาก ${result.report.total} แถว`}
+              ? 'ยังไม่ผ่าน: CPU ทำงานไม่ตรงกับ emulator (ดูรายละเอียดด้านบน)'
+              : `ยังไม่ผ่าน: ถูก ${result.report.total - result.report.failed} จาก ${result.report.total} แถว`}
             {result.report.firstFailure && level.tests.type !== 'cpu'
               ? level.tests.type === 'reference'
                 ? ''
@@ -248,20 +293,26 @@ function TestPanel(props: {
               : ''}
           </p>
         ) : null}
-        {result && !stale && result.report?.error ? <p className="error">⚠ {result.report.error.message.th}</p> : null}
+        {result && !stale && result.report?.error ? <p className="error with-icon">
+            <AlertTriangle size={18} aria-hidden /> {result.report.error.message.th}
+          </p> : null}
         {result && !stale && !result.report ? (
           <>
-            <p className="error">✗ วงจรนี้ยังจำลองไม่ได้</p>
+            <p className="error with-icon">
+              <XCircle size={18} aria-hidden /> วงจรนี้ยังจำลองไม่ได้
+            </p>
             <Diagnostics items={result.diagnostics.filter((d) => d.severity === 'error')} />
           </>
         ) : null}
         {passed ? (
           <div className="pass">
             <p>
-              <strong>✓ ผ่านด่านแล้ว!</strong> {level.unlocks.map((id) => partName(id, LEVELS)).join(', ')} อยู่ในกล่องชิ้นส่วนของด่านถัดไปแล้ว
+              <CheckCircle2 size={18} aria-hidden className="pass-icon" /> <strong>ผ่านด่านแล้ว!</strong> {level.unlocks.map((id) => partName(id, LEVELS)).join(', ')} อยู่ในกล่องชิ้นส่วนของด่านถัดไปแล้ว
             </p>
             {level.tests.type === 'cpu' ? (
-              <p className="small">💻 CPU ของคุณพร้อมแล้ว: ไปที่แท็บ “คอมพิวเตอร์” เพื่อเขียนโปรแกรม assembly แล้วรันบน CPU ที่ต่อเองจาก NAND</p>
+              <p className="small with-icon">
+                <Cpu size={16} aria-hidden /> CPU ของคุณพร้อมแล้ว: ไปที่แท็บ “คอมพิวเตอร์” เพื่อเขียนโปรแกรม assembly แล้วรันบน CPU ที่ต่อเองจาก NAND
+              </p>
             ) : null}
             {result.nand !== null ? (
               <p className="small">
@@ -275,7 +326,7 @@ function TestPanel(props: {
             ) : null}
             {props.next ? (
               <button className="primary" onClick={props.next}>
-                ด่านถัดไป →
+                ด่านถัดไป <ArrowRight size={16} aria-hidden />
               </button>
             ) : (
               <p className="small muted">ผ่านครบทุกด่านที่มีตอนนี้แล้ว</p>
@@ -287,7 +338,7 @@ function TestPanel(props: {
       <div className="hints">
         {level.hints.slice(0, hints).map((h, i) => (
           <p key={h} className="hint-text">
-            💡 คำใบ้ {i + 1}: {HINTS_TH[h]}
+            <Lightbulb size={16} aria-hidden className="hint-icon" /> <span>คำใบ้ {i + 1}: {HINTS_TH[h]}</span>
           </p>
         ))}
         {hints < level.hints.length ? (
@@ -347,7 +398,11 @@ function TruthTable({ level, report }: { level: LevelDef; report: TestReport | n
                 <td key={n}>{show(row.out[n])}</td>
               ))}
               {report ? outs.map((n) => <td key={`a${n}`}>{show(r?.actual[n])}</td>) : null}
-              {report ? <td aria-label={r?.ok ? 'ถูก' : 'ผิด'}>{r?.ok ? '✓' : '✗'}</td> : null}
+              {report ? (
+                <td aria-label={r?.ok ? 'ถูก' : 'ผิด'}>
+                  <OkMark ok={!!r?.ok} />
+                </td>
+              ) : null}
             </tr>
           );
         })}
@@ -394,12 +449,24 @@ function SequenceTable({ level, report }: { level: LevelDef; report: TestReport 
               <tr key={i} className={r ? (r.ok ? 'ok' : 'fail') : undefined}>
                 <td>{i + 1}</td>
                 <td className="left">{setText(step.set)}</td>
-                {level.tests.type === 'sequence' && level.tests.clock ? <td>{step.tick ? `⏱×${step.tick}` : '–'}</td> : null}
+                {level.tests.type === 'sequence' && level.tests.clock ? <td>
+                    {step.tick ? (
+                      <span className="with-icon" aria-label={`เดินนาฬิกา ${step.tick} จังหวะ`}>
+                        <Timer size={14} aria-hidden />×{step.tick}
+                      </span>
+                    ) : (
+                      '–'
+                    )}
+                  </td> : null}
                 {outs.map((n) => (
                   <td key={n}>{show(step.expect?.[n])}</td>
                 ))}
                 {report ? outs.map((n) => <td key={`a${n}`}>{show(r?.actual[n])}</td>) : null}
-                {report ? <td aria-label={r ? (r.ok ? 'ถูก' : 'ผิด') : 'ไม่ได้ตรวจ'}>{r ? (r.ok ? '✓' : '✗') : ''}</td> : null}
+                {report ? (
+                  <td aria-label={r ? (r.ok ? 'ถูก' : 'ผิด') : 'ไม่ได้ตรวจ'}>
+                    <OkMark ok={r?.ok} />
+                  </td>
+                ) : null}
               </tr>
             );
           })}
@@ -479,7 +546,9 @@ function ReferenceTable({ level, report }: { level: LevelDef; report: TestReport
                 {outs.map((n) => (
                   <td key={`a${n}`}>{show(r.actual[n])}</td>
                 ))}
-                <td aria-label={r.ok ? 'ถูก' : 'ผิด'}>{r.ok ? '✓' : '✗'}</td>
+                <td aria-label={r.ok ? 'ถูก' : 'ผิด'}>
+                  <OkMark ok={r.ok} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -518,7 +587,7 @@ function PinCompare({ rows, fail, label }: { rows: string[]; fail: TestCaseResul
               <td>{CPU_PIN_TH[pin] ?? pin}</td>
               <td className="mono">{hex2(fail.expected[pin])}</td>
               <td className="mono">
-                {hex2(fail.actual[pin])} {ok ? '' : '✗'}
+                {hex2(fail.actual[pin])} {ok ? null : <OkMark ok={false} />}
               </td>
             </tr>
           );
@@ -544,10 +613,15 @@ function CpuTable({ level, report }: { level: LevelDef; report: TestReport | nul
       <ol className="cpu-programs" aria-label="โปรแกรมทดสอบ">
         {programs.map((p, i) => {
           const r = report?.results.find((x) => x.cpu?.program === i);
-          const mark = !report ? '' : r ? (r.ok ? '✓' : '✗') : '–';
           return (
             <li key={i} className={r ? (r.ok ? 'ok' : 'fail') : undefined}>
-              {mark ? <span aria-label={r ? (r.ok ? 'ผ่าน' : 'ไม่ผ่าน') : 'ไม่ได้รัน'}>{mark} </span> : null}
+              {report ? (
+                <span className="with-icon" aria-label={r ? (r.ok ? 'ผ่าน' : 'ไม่ผ่าน') : 'ไม่ได้รัน'}>
+                  {r ? <OkMark ok={r.ok} /> : '–'}{' '}
+                </span>
+              ) : (
+                <ListOrdered size={14} aria-hidden className="muted-icon" />
+              )}{' '}
               {p.name.th}
               {r?.ok && r.cpu ? <span className="muted small"> · {r.cpu.cycle} cycle</span> : null}
             </li>

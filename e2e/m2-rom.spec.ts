@@ -32,7 +32,7 @@ test('ROM8: แผงค่าคงที่ตัวอย่างต่อ�
     await expect(page.getByRole('status', { name: /^out = / })).toHaveAttribute('aria-label', new RegExp(`^out = ${word} `));
     await expect(panel.locator('tbody tr[aria-current]')).toHaveText(new RegExp(`^${a}`));
   }
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
   await expect(page.getByText(/ทดสอบ 16 แบบ/)).toBeVisible();
 });
@@ -43,14 +43,14 @@ test('ROM256 (~16,000 NAND) ผ่านการทดสอบ และ X-Ray
   await expect(page.getByTestId('nand-count')).toHaveText('16320', { timeout: 15_000 });
   await setBus(page, 'addr', 8, 200);
   await expect(page.getByRole('region', { name: 'แผงค่าคงที่' })).toContainText('ช่อง 200 =');
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว', { timeout: 20_000 });
 
   await page.getByRole('application').scrollIntoViewIfNeeded();
   const a = await pinAt(page, 'rom641', 'addr');
   const b = await pinAt(page, 'rom641', 'out');
   await page.mouse.dblclick((a.x + b.x) / 2, b.y);
-  await expect(page.getByRole('button', { name: '← ออกจาก X-Ray' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ออกจาก X-Ray' })).toBeVisible();
   // ค่าข้างในยังมาจากการจำลองวงจรห่อ (แผง → ROM ของผู้เล่น)
   await expect(page.getByRole('status', { name: /^rom641\.out = \d/ })).toBeVisible();
 });
@@ -72,7 +72,7 @@ test('Program Counter: inc นับขึ้น load กระโดด แล�
   await page.getByRole('button', { name: /^สวิตช์ load / }).click();
   await tick.click();
   await expect(display).toHaveAttribute('aria-label', 'out = 100');
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
 });
 
@@ -84,7 +84,7 @@ test('จอ 7 ส่วน: เลข 1 ติดขีด b c, เลข 8 ต
   await expect(seg).toHaveAttribute('aria-label', 'seg = ขีดที่ติด b c');
   await setBus(page, 'in', 4, 8);
   await expect(seg).toHaveAttribute('aria-label', 'seg = ขีดที่ติด a b c d e f g');
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
 });
 

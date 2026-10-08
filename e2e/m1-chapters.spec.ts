@@ -125,7 +125,7 @@ test('บวกเลข 4 บิต: บัส ตัวแยก/รวมบ�
   await expect(page.getByRole('status', { name: /^sum = / })).toHaveAttribute('aria-label', 'sum = 1 (0001)');
   await expect(page.getByRole('status', { name: /^cout = / })).toHaveAttribute('aria-label', 'cout = 1 HIGH');
 
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
   await expect(page.locator('.test-result')).toContainText('น้อยที่สุดที่ทำได้แล้ว');
   await expect(page.locator('.truth-table tbody tr')).toHaveCount(512);
@@ -172,7 +172,7 @@ test('D Flip-Flop: ต่อจาก D Latch สองตัว ใช้ปุ
   await tick.click();
   await expect(q).toHaveAttribute('aria-label', 'q = 0 LOW');
 
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
 });
 
@@ -184,7 +184,7 @@ test('SR Latch ที่ต่อผิด: ตารางลำดับเว
   await wire(page, ['self', 's'], ['nand1', 'a']);
   await wire(page, ['self', 'r'], ['nand1', 'b']);
   await wire(page, ['nand1', 'y'], ['self', 'q']);
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ยังไม่ผ่าน');
   await expect(page.locator('.test-result')).toContainText('ดูขั้นที่');
   await expect(page.locator('.truth-table tr.fail').first()).toBeVisible();

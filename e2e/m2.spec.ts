@@ -33,7 +33,7 @@ test('ด่าน MUX: ต่อ 4 NAND แล้วผ่าน และเ�
   await page.getByRole('button', { name: /^สวิตช์ sel / }).click(); // sel=1 → b = 1
   await expect(y).toHaveAttribute('aria-label', 'y = 1 HIGH');
 
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
   await expect(page.locator('.test-result')).toContainText('น้อยที่สุดที่ทำได้แล้ว');
 });
@@ -84,7 +84,7 @@ test('ลบเลข 8 บิต: a + NOT b + 1 ด้วยเมาส์ แ
   await page.getByRole('button', { name: 'b บิต 2' }).click();
   await expect(page.getByRole('status', { name: /^diff = / })).toHaveAttribute('aria-label', 'diff = 254 (11111110) · มีเครื่องหมาย −2');
 
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
   await expect(page.getByText(/ทดสอบ 65,536 แบบ/)).toBeVisible();
 });
@@ -94,7 +94,7 @@ test('บวกเลข 8 บิต: ขาเข้า 17 บิตทดส�
   await levelNamed(page, /บวกเลข 8 บิต/).click();
   await expect(page.getByTestId('reference-info')).toContainText('สุ่มอีก 2,000 แบบ');
   // วงจรเปล่า → ผิดเกือบทุกแถว และแสดงแถวที่ผิดไม่เกิน 30 แถว
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ยังไม่ผ่าน');
   await expect(page.getByRole('table', { name: 'ผลการทดสอบ' }).locator('tbody tr')).toHaveCount(30);
 });
@@ -125,6 +125,6 @@ test('ALU 8 บิต: ADD, SUB, CMP และ flags เปลี่ยนตา
   await expect(flag('z')).toHaveAttribute('aria-label', 'z = 1 HIGH');
   await expect(flag('n')).toHaveAttribute('aria-label', 'n = 0 LOW');
 
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
 });

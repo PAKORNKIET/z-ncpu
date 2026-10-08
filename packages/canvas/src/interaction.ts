@@ -351,6 +351,12 @@ export class Interaction {
   }
 
   /** deltaY > 0 = ซูมออก */
+  /** ซูมรอบจุด p ด้วยอัตรา factor (ปุ่ม +/− และการบีบสองนิ้วบนจอสัมผัส) */
+  zoomBy(p: Point, factor: number): void {
+    this.camera = zoomAt(this.camera, p, Math.max(0.2, Math.min(5, factor)));
+    this.changed();
+  }
+
   wheel(p: Point, deltaY: number): void {
     const factor = Math.pow(1.0015, -Math.max(-300, Math.min(300, deltaY)));
     this.camera = zoomAt(this.camera, p, factor);

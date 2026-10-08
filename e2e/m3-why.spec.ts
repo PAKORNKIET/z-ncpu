@@ -13,13 +13,13 @@ test('Why? ใน CPU: ALU ได้ 1 เพราะ a = 0, b = 1, op = ADD �
   await openWithSave(page, before('cpu.z8'), ['cpu.z8']);
   await levelNamed(page, /ประกอบ CPU Z8/).click();
   await expect(page.getByTestId('nand-count')).toHaveText('55189', { timeout: 30_000 });
-  await page.getByRole('button', { name: '⟲ reset CPU' }).click();
+  await page.getByRole('button', { name: 'reset CPU' }).click();
   const tick = page.getByRole('button', { name: /เดินนาฬิกา/ });
   await tick.click();
   await tick.click();
   await expect(page.getByRole('status', { name: /^pc = / })).toHaveAttribute('aria-label', /^pc = 2 /);
 
-  await page.getByRole('button', { name: '❓ Why?' }).click();
+  await page.getByRole('button', { name: 'Why?', exact: true }).click();
   await page.getByRole('application').scrollIntoViewIfNeeded();
   const y = await pinAt(page, 'alu81', 'y');
   await page.mouse.click(y.x, y.y);
@@ -38,7 +38,7 @@ test('Why? ใน CPU: ALU ได้ 1 เพราะ a = 0, b = 1, op = ADD �
   await page.mouse.click(q.x, q.y);
   await expect(panel).toContainText('จำไว้');
   await panel.getByRole('button', { name: /ดูข้างใน bit1/ }).click();
-  await expect(page.getByRole('button', { name: '← ออกจาก X-Ray' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ออกจาก X-Ray' })).toBeVisible();
 });
 
 test('หน้าคอมพิวเตอร์อธิบายคำสั่งถัดไปด้วยค่า register จริง', async ({ page }) => {
@@ -47,7 +47,7 @@ test('หน้าคอมพิวเตอร์อธิบายคำส�
   await page.getByRole('tab', { name: /คอมพิวเตอร์/ }).click();
   await expect(page.getByTestId('cpu-gates')).toHaveText('55,189', { timeout: 30_000 });
   await expect(page.getByTestId('explain')).toContainText('MOV A, 0x00: A ← 0');
-  const step = page.getByRole('button', { name: '⏭ ทีละคำสั่ง' });
+  const step = page.getByRole('button', { name: 'ทีละคำสั่ง' });
   await step.click();
   await step.click();
   await expect(page.getByTestId('explain')).toContainText('ADD A, 0x01: A ← 0 + 1 = 1 (Z=0 C=0 N=0)');

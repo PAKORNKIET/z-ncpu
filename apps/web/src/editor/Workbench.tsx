@@ -2,6 +2,27 @@
 // ใช้ทั้งในด่าน (GamePage) และสนามทดลอง (SandboxPage) — ส่วนเฉพาะของแต่ละหน้าส่งมาทาง side
 import { ComponentLibrary, cpuHarness, romHarness, romSampleWords, ROM_DUT, ROM_PANEL } from '@z-ncpu/engine';
 import type { ComponentDef, DeviceKind, Diagnostic, SignalValue, WhyAnswer } from '@z-ncpu/shared';
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowUp,
+  Cpu,
+  HelpCircle,
+  History,
+  Maximize2,
+  Redo2,
+  RotateCcw,
+  RotateCw,
+  ScanSearch,
+  Settings2,
+  SlidersHorizontal,
+  Timer,
+  Trash2,
+  Undo2,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { EngineClient, EngineClosedError } from '../engine-client';
 import { useEngine } from '../use-engine';
@@ -233,6 +254,11 @@ export function Workbench(props: {
     setInputs((s) => ({ ...s, clk: 0 }));
   };
   model.onToggleInput = toggle;
+  /** ซูมรอบกลางพื้นที่วาด (ปุ่ม +/− สำหรับจอสัมผัสและคนที่ไม่มีล้อเมาส์) */
+  const zoom = (factor: number): void => {
+    const c = document.querySelector('.canvas-wrap')?.getBoundingClientRect();
+    if (c) view.ui.zoomBy({ x: c.width / 2, y: c.height / 2 }, factor);
+  };
   /** reset CPU: reset = 1 เดินนาฬิกาหนึ่งจังหวะ แล้วปล่อย reset */
   const resetCpu = (): void => {
     if (!client) return;
@@ -277,7 +303,10 @@ export function Workbench(props: {
       <section className="workspace" aria-label="พื้นที่ทำงาน">
         {inXRay ? (
           <div className="toolbar xray-bar" role="toolbar" aria-label="X-Ray">
-            <button onClick={() => exitXRay(chain.length)}>← ออกจาก X-Ray</button>
+            <button onClick={() => exitXRay(chain.length)}>
+              <ArrowLeft size={16} aria-hidden />
+              ออกจาก X-Ray
+            </button>
             <nav className="crumbs" aria-label="ตำแหน่งที่กำลังดู">
               <button onClick={() => exitXRay(chain.length)}>{def.name.th}</button>
               {chain.map((c, i) => (
@@ -290,24 +319,29 @@ export function Workbench(props: {
               ))}
             </nav>
             <button aria-pressed={whyOn} onClick={() => setWhyOn(!whyOn)} title="คลิกขาหรือสายเพื่อดูว่าค่ามาจากไหน">
-              ❓ Why?
+              <HelpCircle size={16} aria-hidden />
+              Why?
             </button>
             <span className="muted mono zoom">{Math.round(view.ui.camera.zoom * 100)}%</span>
           </div>
         ) : (
           <div className="toolbar" role="toolbar" aria-label="เครื่องมือ">
-          <button onClick={() => ui.key({ key: 'z', ctrl: true })} disabled={!h.canUndo} title="Ctrl+Z">
-            ↶ ย้อน{h.undoLabel ? `: ${h.undoLabel}` : ''}
+          <button onClick={() => ui.key({ key: 'z', ctrl: true })} disabled={!h.canUndo} title="Ctrl+Z" aria-label={`ย้อน${h.undoLabel ? `: ${h.undoLabel}` : ''}`}>
+            <Undo2 size={16} aria-hidden />
+            <span className="btn-label">ย้อน{h.undoLabel ? `: ${h.undoLabel}` : ''}</span>
           </button>
-          <button onClick={() => ui.key({ key: 'y', ctrl: true })} disabled={!h.canRedo} title="Ctrl+Y">
-            ↷ ทำซ้ำ
+          <button onClick={() => ui.key({ key: 'y', ctrl: true })} disabled={!h.canRedo} title="Ctrl+Y" aria-label="ทำซ้ำ">
+            <Redo2 size={16} aria-hidden />
+            <span className="btn-label">ทำซ้ำ</span>
           </button>
           <span className="sep" />
-          <button onClick={() => ui.key({ key: 'r' })} disabled={editor.selection.instances.length === 0} title="R">
-            ⟳ หมุน
+          <button onClick={() => ui.key({ key: 'r' })} disabled={editor.selection.instances.length === 0} title="R" aria-label="หมุน">
+            <RotateCw size={16} aria-hidden />
+            <span className="btn-label">หมุน</span>
           </button>
-          <button onClick={() => ui.key({ key: 'Delete' })} disabled={selected === 0} title="Delete">
-            ✕ ลบ
+          <button onClick={() => ui.key({ key: 'Delete' })} disabled={selected === 0} title="Delete" aria-label="ลบ">
+            <Trash2 size={16} aria-hidden />
+            <span className="btn-label">ลบ</span>
           </button>
           <span className="sep" />
           <button
@@ -315,11 +349,21 @@ export function Workbench(props: {
               const c = document.querySelector('.canvas-wrap')?.getBoundingClientRect();
               if (c) model.fit(c.width, c.height);
             }}
+            aria-label="ดูทั้งวงจร"
+            title="ดูทั้งวงจร"
           >
-            ⤢ ดูทั้งวงจร
+            <Maximize2 size={16} aria-hidden />
+            <span className="btn-label">ดูทั้งวงจร</span>
+          </button>
+          <button aria-label="ซูมเข้า" title="ซูมเข้า" onClick={() => zoom(1.25)}>
+            <ZoomIn size={16} aria-hidden />
+          </button>
+          <button aria-label="ซูมออก" title="ซูมออก" onClick={() => zoom(0.8)}>
+            <ZoomOut size={16} aria-hidden />
           </button>
           <button aria-pressed={whyOn} onClick={() => setWhyOn(!whyOn)} title="คลิกขาหรือสายเพื่อดูว่าค่ามาจากไหน">
-            ❓ Why?
+            <HelpCircle size={16} aria-hidden />
+            Why?
           </button>
           <span className="muted mono zoom">{Math.round(ui.camera.zoom * 100)}%</span>
         </div>
@@ -333,18 +377,29 @@ export function Workbench(props: {
         />
 
         <div className="status-line" role="alert" aria-live="assertive">
-          {view.editor.lastError ? <span className="error">⚠ {view.editor.lastError.th}</span> : null}
+          {view.editor.lastError ? <span className="error with-icon">
+              <AlertTriangle size={16} aria-hidden /> {view.editor.lastError.th}
+            </span> : null}
         </div>
         <p className="muted small hint">
           {whyOn
-            ? '❓ โหมด Why?: คลิกขาหรือสายเพื่อดูว่าค่ามาจากไหน (กดปุ่ม Why? อีกครั้งเพื่อกลับไปต่อสาย)'
+            ? 'โหมด Why?: คลิกขาหรือสายเพื่อดูว่าค่ามาจากไหน (กดปุ่ม Why? อีกครั้งเพื่อกลับไปต่อสาย)'
             : inXRay
-            ? '🔍 X-Ray: ดูข้างในอย่างเดียว ค่าในสายมาจากการจำลองจริง ลองกดสวิตช์ขาเข้าทางขวาแล้วดูไฟวิ่ง · ดับเบิลคลิกชิ้นข้างในเพื่อดูลึกลงไป · Esc ออกทีละชั้น'
+            ? 'X-Ray: ดูข้างในอย่างเดียว ค่าในสายมาจากการจำลองจริง ลองกดสวิตช์ขาเข้าทางขวาแล้วดูไฟวิ่ง · ดับเบิลคลิกชิ้นข้างในเพื่อดูลึกลงไป · Esc ออกทีละชั้น'
             : ui.placing
             ? 'คลิกเพื่อวาง (กด Shift ค้างไว้เพื่อวางหลายชิ้น) · Esc ยกเลิก'
             : ui.wiring
               ? 'คลิกขาปลายทางเพื่อต่อสาย · คลิกที่ว่างหรือ Esc เพื่อยกเลิก'
-              : 'ลากจากขาหนึ่งไปอีกขาเพื่อต่อสาย · ลากที่ว่างเพื่อเลื่อนจอ · Shift+ลาก เลือกหลายชิ้น · ล้อเมาส์ซูม · R หมุน · Delete ลบ · ดับเบิลคลิกชิ้นเพื่อดูข้างใน'}
+              : (
+                <>
+                  <span className="mouse-only">
+                    ลากจากขาหนึ่งไปอีกขาเพื่อต่อสาย · ลากที่ว่างเพื่อเลื่อนจอ · Shift+ลาก เลือกหลายชิ้น · ล้อเมาส์ซูม · R หมุน · Delete ลบ · ดับเบิลคลิกชิ้นเพื่อดูข้างใน
+                  </span>
+                  <span className="touch-only">
+                    ลากจากขาหนึ่งไปอีกขาเพื่อต่อสาย · ลากที่ว่างเพื่อเลื่อนจอ · ใช้สองนิ้วถ่าง/บีบเพื่อซูม · แตะชิ้นแล้วกดปุ่มหมุนหรือลบด้านบน · แตะสองครั้งเพื่อดูข้างใน
+                  </span>
+                </>
+              )}
         </p>
       </section>
 
@@ -366,12 +421,14 @@ export function Workbench(props: {
         {cpu ? <ProgramView listing={cpu.listing} words={cpu.words} pc={typeof top.pc === 'number' ? top.pc : undefined} /> : null}
         {cpu ? (
           <button className="tick" onClick={resetCpu} disabled={!client}>
-            ⟲ reset CPU
+            <RotateCcw size={16} aria-hidden />
+            reset CPU
           </button>
         ) : null}
         {hasClock ? (
           <button className="tick" onClick={tick} disabled={!client}>
-            ⏱ เดินนาฬิกา 1 จังหวะ
+            <Timer size={16} aria-hidden />
+            เดินนาฬิกา 1 จังหวะ
           </button>
         ) : null}
         <div className="row">
@@ -388,7 +445,7 @@ export function Workbench(props: {
         {inner ? (
           <section className="xray-pins" aria-label={`ขาของ ${viewKey}`}>
             <h3>
-              🔍 ขาของ {chain.at(-1)!.id} ({inner.def.name.th})
+              <ScanSearch size={16} aria-hidden /> ขาของ {chain.at(-1)!.id} ({inner.def.name.th})
             </h3>
             <div className="row">
               {inner.def.pins.map((p) => (
@@ -479,7 +536,7 @@ function PartSettings({ model }: { model: EditorModel }) {
   return (
     <section className="part-settings" aria-label={`ตั้งค่า ${inst.id}`}>
       <h3>
-        ⚙ {label} <span className="muted mono">{inst.id}</span>
+        <Settings2 size={16} aria-hidden /> {label} <span className="muted mono">{inst.id}</span>
       </h3>
       <label>
         ความกว้าง (บิต)
@@ -525,7 +582,9 @@ function PanelView({ words, width, addr }: { words: number[]; width: number; add
   const hex = (n: number): string => n.toString(16).toUpperCase().padStart(digits, '0');
   return (
     <section className="panel-view" aria-label="แผงค่าคงที่">
-      <h3>🎛 แผงค่าคงที่ → data</h3>
+      <h3 className="with-icon">
+        <SlidersHorizontal size={16} aria-hidden /> แผงค่าคงที่ → data
+      </h3>
       <p className="muted small">
         ข้อมูลตัวอย่าง {words.length} คำ คำละ {width} บิต (ตอนทดสอบใช้ข้อมูลสุ่มชุดอื่น)
       </p>
@@ -560,7 +619,9 @@ function ProgramView({ listing, words, pc }: { listing: string[]; words: number[
   const hex = (n: number, d: number): string => n.toString(16).toUpperCase().padStart(d, '0');
   return (
     <section className="panel-view" aria-label="แผงโปรแกรม">
-      <h3>🎛 แผงโปรแกรม → prog</h3>
+      <h3 className="with-icon">
+        <Cpu size={16} aria-hidden /> แผงโปรแกรม → prog
+      </h3>
       <p className="muted small">
         โปรแกรมตัวอย่าง {words.length} คำสั่ง ที่เหลือเป็น 0 (NOP) · กด reset CPU แล้วเดินนาฬิกาทีละจังหวะ
       </p>
@@ -603,9 +664,11 @@ function WhyPanel(props: {
   return (
     <section className="why-panel" aria-label="Why?" role="region">
       <div className="why-head">
-        <h3>❓ Why?</h3>
+        <h3 className="with-icon">
+          <HelpCircle size={16} aria-hidden /> Why?
+        </h3>
         <button className="linklike" onClick={props.onClose} aria-label="ปิด Why?">
-          ✕
+          <X size={16} aria-hidden />
         </button>
       </div>
       {!a ? (
@@ -626,26 +689,30 @@ function WhyPanel(props: {
                   <li key={c.key}>
                     <code>{c.key}</code> = <span className="mono">{showValue(c.value)}</span>{' '}
                     <button className="linklike" onClick={() => props.onAsk(c.key)} aria-label={`Why? ${c.key}`}>
-                      ถามต่อ ❓
+                      ถามต่อ <HelpCircle size={14} aria-hidden />
                     </button>
                   </li>
                 ))}
               </ul>
               {a.state ? (
                 <p className="small why-state">
-                  🕘 ค่านี้มาจากสิ่งที่ {a.driver.id} <strong>จำไว้</strong> ตอนขอบขาขึ้นของ clock ครั้งก่อน ไม่ได้มาจากขาเข้าตอนนี้อย่างเดียว
-                  {' '}(ในหน้าคอมพิวเตอร์ใช้ ◀ ย้อน 1 cycle เพื่อดูค่าตอนนั้น)
+                  <History size={14} aria-hidden /> ค่านี้มาจากสิ่งที่ {a.driver.id} <strong>จำไว้</strong> ตอนขอบขาขึ้นของ clock ครั้งก่อน ไม่ได้มาจากขาเข้าตอนนี้อย่างเดียว
+                  {' '}(ในหน้าคอมพิวเตอร์กด “ย้อน 1 cycle” เพื่อดูค่าตอนนั้น)
                 </p>
               ) : null}
               {props.canOpen(a.driver.id) ? (
-                <button onClick={() => props.onOpen(a.driver.kind === 'instance' ? a.driver.id : '')}>🔍 ดูข้างใน {a.driver.id}</button>
+                <button onClick={() => props.onOpen(a.driver.kind === 'instance' ? a.driver.id : '')}>
+                  <ScanSearch size={16} aria-hidden /> ดูข้างใน {a.driver.id}
+                </button>
               ) : null}
             </>
           ) : a.driver.kind === 'self' ? (
             <>
               <p className="small">มาจากขาเข้า <code>{a.driver.pins.join(', ')}</code> ของวงจรชั้นนี้</p>
               {props.onParent && a.driver.pins[0] ? (
-                <button onClick={() => props.onParent!(a.driver.kind === 'self' ? a.driver.pins[0]! : '')}>⬆ ถามต่อในชั้นแม่</button>
+                <button onClick={() => props.onParent!(a.driver.kind === 'self' ? a.driver.pins[0]! : '')}>
+                  <ArrowUp size={16} aria-hidden /> ถามต่อในชั้นแม่
+                </button>
               ) : null}
             </>
           ) : a.driver.kind === 'const' ? (

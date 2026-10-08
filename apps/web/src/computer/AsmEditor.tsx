@@ -1,6 +1,7 @@
 // ช่องเขียน assembly: เลขบรรทัด, Tab ใส่ช่องว่าง, และรายการ error ภาษาไทยที่คลิกแล้วกระโดดไปบรรทัดนั้น
 // ใช้ทั้งหน้าคอมพิวเตอร์และด่านเขียนโปรแกรม
 import { formatDiagnostic, type AsmResult } from '@z-ncpu/isa';
+import { CheckCircle2 } from 'lucide-react';
 import { useRef, type ReactNode } from 'react';
 
 export function AsmEditor(props: { source: string; onChange: (s: string) => void; asm: AsmResult; status?: ReactNode; height?: number }) {
@@ -51,8 +52,8 @@ export function AsmEditor(props: { source: string; onChange: (s: string) => void
       </div>
       <div className="asm-status" role="status" aria-live="polite">
         {asm.ok ? (
-          <span className="muted small">
-            ✓ assemble ผ่าน: {asm.words.length} คำสั่ง จาก 256{props.status}
+          <span className="muted small with-icon">
+            <CheckCircle2 size={14} aria-hidden /> assemble ผ่าน: {asm.words.length} คำสั่ง จาก 256{props.status}
           </span>
         ) : (
           <ul className="asm-errors" aria-label="ข้อผิดพลาดของโปรแกรม">

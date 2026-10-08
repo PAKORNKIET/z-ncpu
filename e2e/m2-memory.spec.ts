@@ -30,7 +30,7 @@ test('ตัวนับ 8 บิต: กดเดินนาฬิกาแล
     await tick.click();
     await expect(q).toHaveAttribute('aria-label', new RegExp(`^q = ${i} `));
   }
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
 });
 
@@ -80,7 +80,7 @@ test('RAM256 (~36,000 NAND): เขียนแล้วอ่านกลับ
   expect(Math.max(...timings)).toBeLessThan(500);
 
   const t1 = Date.now();
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว', { timeout: 20_000 });
   console.log(`[ram256] ทดสอบ ${Date.now() - t1} ms`);
 
@@ -89,6 +89,6 @@ test('RAM256 (~36,000 NAND): เขียนแล้วอ่านกลับ
   const a = await pinAt(page, 'ram641', 'in');
   const b = await pinAt(page, 'ram641', 'out');
   await page.mouse.dblclick((a.x + b.x) / 2, b.y);
-  await expect(page.getByRole('button', { name: '← ออกจาก X-Ray' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ออกจาก X-Ray' })).toBeVisible();
   await expect(page.getByRole('status', { name: /^ram641\.addr = / })).toBeVisible();
 });

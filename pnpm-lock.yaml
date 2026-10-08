@@ -53,6 +53,12 @@ importers:
 
   apps/web:
     dependencies:
+      '@fontsource/jetbrains-mono':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/noto-sans-thai':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@z-ncpu/canvas':
         specifier: workspace:*
         version: link:../../packages/canvas
@@ -68,6 +74,9 @@ importers:
       '@z-ncpu/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      lucide-react:
+        specifier: ^1.52.0
+        version: 1.52.0(@types/react@19.3.0)(react@19.3.0)
       react:
         specifier: ^19.3.0
         version: 19.3.0
@@ -171,6 +180,12 @@ packages:
   '@eslint/plugin-kit@0.7.3':
     resolution: {integrity: sha512-IkO+/KEUvwbVpiURZg+P7zF74z5Jxe0UgJxVni+RtoHQ6IZieXaO02kmadomap/q+l6bc/jdPGGqTjhuZnuz1Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+
+  '@fontsource/jetbrains-mono@5.3.0':
+    resolution: {integrity: sha512-fqDfB5I9f1p1TV486aUgB9t8zP84P0O1FtQR5Ol9vjwPy+S+EIGlVYm1cvj2W5shcZMTg2nZFdVMoH5wFu8a1A==}
+
+  '@fontsource/noto-sans-thai@5.3.0':
+    resolution: {integrity: sha512-ngqUyvDukkZUHypQbUJvUdAeYa2aYZsyeDTsdqMudf7GK2F2TK19OZ5kbo+37qsBtkNpmAMhEObQnWnzPqzKUw==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -773,6 +788,15 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
+  lucide-react@1.52.0:
+    resolution: {integrity: sha512-TUgPtl5ZI9WgxOcbu4ckaC5B3l1qxPQrCMgb6OfUB9owx/OvSJfcf93SMgUWAxRw5/1XDfh9uI5F5iNGXCcGDQ==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
   magic-string@1.4.3:
     resolution: {integrity: sha512-z12OxmaPGE0F4xlpGdjuAUckipLpQlTAuAmyGhNoD7ODpYUzvDfvtxUbjM/jwznyP178oju/KDdyi220wNJ0RQ==}
 
@@ -1077,6 +1101,10 @@ snapshots:
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
+
+  '@fontsource/jetbrains-mono@5.3.0': {}
+
+  '@fontsource/noto-sans-thai@5.3.0': {}
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -1589,6 +1617,12 @@ snapshots:
   locate-path@6.0.0:
     dependencies:
       p-locate: 5.0.0
+
+  lucide-react@1.52.0(@types/react@19.3.0)(react@19.3.0):
+    dependencies:
+      react: 19.3.0
+    optionalDependencies:
+      '@types/react': 19.3.0
 
   magic-string@1.4.3:
     dependencies:

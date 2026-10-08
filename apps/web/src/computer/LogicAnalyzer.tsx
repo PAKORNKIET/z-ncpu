@@ -1,5 +1,6 @@
 // Time travel + Logic Analyzer (Spec ส่วน 9)
 // แถบเวลาย้อนไปดู cycle ใดก็ได้ที่บันทึกไว้ และ timing diagram ของขาที่เลือก (บิตเดี่ยวเป็นคลื่น บัสเป็นช่องพร้อมค่าฐานสิบหก)
+import { Activity, ChevronLeft, ChevronRight, SkipBack, SkipForward } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { EngineClient } from '../engine-client';
 import { EngineClosedError } from '../engine-client';
@@ -64,19 +65,24 @@ export function LogicAnalyzer(props: {
 
   return (
     <section className="analyzer" aria-labelledby="la-title">
-      <h2 id="la-title">⏱ Time travel และ Logic Analyzer</h2>
+      <h2 id="la-title" className="with-icon">
+        <Activity size={18} aria-hidden /> Time travel และ Logic Analyzer
+      </h2>
       <div className="tt-controls" role="toolbar" aria-label="time travel">
         <button onClick={() => seek(first)} disabled={!history || running || cycle <= first} aria-label="ไป cycle แรกที่บันทึกไว้">
-          ⏮
+          <SkipBack size={16} aria-hidden />
         </button>
         <button onClick={() => seek(cycle - 1)} disabled={!history || running || cycle <= first}>
-          ◀ ย้อน 1 cycle
+          <ChevronLeft size={16} aria-hidden />
+          ย้อน 1 cycle
         </button>
         <button onClick={() => (inPast ? seek(cycle + 1) : props.onStep())} disabled={!history || running}>
-          เดินหน้า 1 cycle ▶
+          เดินหน้า 1 cycle
+          <ChevronRight size={16} aria-hidden />
         </button>
         <button onClick={() => seek(last)} disabled={!history || running || !inPast}>
-          ⏭ ปัจจุบัน
+          <SkipForward size={16} aria-hidden />
+          ปัจจุบัน
         </button>
         <input
           type="range"

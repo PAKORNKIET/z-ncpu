@@ -1,4 +1,4 @@
-/* M0: สไตล์พื้นฐานเท่านั้น ธีมเต็มมาใน M4 */
+/* สไตล์ของแอป: ธีมมืดเป็นค่าเริ่มต้น สลับเป็นธีมสว่างได้ที่ปุ่มบนหัวหน้า (เก็บใน localStorage) */
 :root {
   --bg: #0f1115;
   --surface: #171a21;
@@ -12,6 +12,8 @@
   --signal-unknown: #7d8594;
   --error: #ff7a7a;
   --warning: #e8c46a;
+  --ok: #4ade80;
+  --radius: 10px;
   color-scheme: dark;
 }
 
@@ -28,6 +30,7 @@
   --signal-unknown: #8a92a0;
   --error: #c62828;
   --warning: #9a6b00;
+  --ok: #15803d;
   color-scheme: light;
 }
 
@@ -1121,4 +1124,327 @@ svg.la {
 }
 .program-level .table-scroll {
   max-height: none;
+}
+
+
+/* ---------- ไอคอน การจัดวาง และรองรับจอทุกขนาด ---------- */
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  line-height: 1.3;
+  transition: border-color 0.12s, background-color 0.12s;
+}
+
+button:not(:disabled):hover {
+  border-color: var(--accent);
+}
+
+button svg,
+.with-icon svg {
+  flex-shrink: 0;
+}
+
+.with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+h2.with-icon,
+h3.with-icon,
+p.with-icon {
+  display: flex;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand .subtitle {
+  margin: 0;
+}
+
+.file-actions button {
+  min-height: 36px;
+}
+
+.tabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs [role='tab'] {
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 8px 14px;
+}
+
+.tabs [role='tab'][aria-selected='true'] {
+  color: var(--accent);
+}
+
+.level-item {
+  align-items: center;
+}
+
+.level-icon {
+  display: inline-flex;
+  color: var(--muted);
+}
+
+.level-item.passed .level-icon {
+  color: var(--ok);
+}
+
+.lesson summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lesson summary::-webkit-details-marker {
+  display: none;
+}
+
+.chevron {
+  transition: transform 0.15s;
+  transform: rotate(-90deg);
+}
+
+details[open] > summary .chevron,
+[aria-expanded='true'] > .chevron {
+  transform: rotate(0);
+}
+
+.mark.ok,
+.pass-icon {
+  color: var(--ok);
+  vertical-align: middle;
+}
+
+.mark.fail {
+  color: var(--error);
+  vertical-align: middle;
+}
+
+.pass {
+  border-color: var(--ok);
+}
+
+.hint-text {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.hint-icon {
+  color: var(--warning);
+  margin-top: 3px;
+}
+
+.diagnostics li {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.diagnostics svg {
+  margin-top: 4px;
+}
+
+.bp-icon {
+  color: var(--error);
+}
+
+.muted-icon {
+  color: var(--muted);
+}
+
+.arrow {
+  color: var(--muted);
+}
+
+.computer.empty {
+  text-align: center;
+  padding: 48px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.computer.empty p {
+  max-width: 560px;
+  margin: 8px auto 0;
+}
+
+.empty-icon {
+  color: var(--muted);
+}
+
+.level-item {
+  justify-content: flex-start;
+}
+
+.touch-only {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .touch-only {
+    display: inline;
+  }
+
+  .mouse-only {
+    display: none;
+  }
+}
+
+/* รายการด่านบนจอแคบ: พับเก็บ เปิดด้วยปุ่ม */
+.levels-toggle {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .levels-toggle {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--surface);
+    text-align: left;
+  }
+
+  .levels-toggle > span:first-of-type {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .levels {
+    display: none;
+  }
+
+  .levels.open {
+    display: block;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}
+
+/* แท็บเล็ต: กล่องชิ้นส่วนเป็นแถบเลื่อนแนวนอนอยู่บนพื้นที่วาด */
+@media (max-width: 900px) {
+  .palette {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    align-items: stretch;
+    padding: 8px;
+  }
+
+  .palette h2,
+  .palette > p {
+    display: none;
+  }
+
+  .palette-item {
+    margin-top: 0;
+    width: auto;
+    min-width: 132px;
+    flex-shrink: 0;
+  }
+
+  .canvas-wrap {
+    height: 56vh;
+    min-height: 300px;
+  }
+
+  .program-level .asm-editor,
+  .computer .asm-editor {
+    height: 300px;
+  }
+}
+
+/* มือถือ: ปุ่มบนหัวหน้าและแถบเครื่องมือเหลือแค่ไอคอน (ชื่อยังอยู่ใน aria-label และ title) */
+@media (max-width: 640px) {
+  .page {
+    padding: 12px max(10px, env(safe-area-inset-right)) 32px max(10px, env(safe-area-inset-left));
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .brand img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .file-actions .btn-label,
+  .toolbar .btn-label {
+    display: none;
+  }
+
+  .tabs [role='tab'] {
+    padding: 8px 10px;
+  }
+
+  .computer > section,
+  .program-level > section,
+  .analyzer,
+  .lesson,
+  .inspector {
+    padding: 10px;
+  }
+
+  .lesson-body {
+    max-height: 30vh;
+  }
+
+  .truth-table td,
+  .truth-table th {
+    padding: 3px 6px;
+  }
+
+  .footer {
+    font-size: 12px;
+  }
+}
+
+/* จอสัมผัส: ปุ่มใหญ่พอให้นิ้วกด */
+@media (pointer: coarse) {
+  button,
+  select {
+    min-height: 40px;
+  }
+
+  .bus-bits .bit {
+    min-width: 34px;
+  }
+
+  .bp-dot {
+    width: 22px;
+    height: 22px;
+    min-height: 0;
+  }
+
+  .linklike {
+    min-height: 0;
+  }
 }

@@ -121,6 +121,17 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
     requestRef.current();
   }, [values]);
 
+  // จอสัมผัส: สองนิ้วบีบ/ถ่างเพื่อซูม (นิ้วเดียวยังลากต่อสายหรือเลื่อนจอได้ตามปกติ)
+  const touches = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<number | null>(null);
+  /** แตะครั้งก่อน (ใช้จับการแตะสองครั้ง = ดับเบิลคลิก บนจอสัมผัส) */
+  const lastTap = useRef<{ t: number; x: number; y: number } | null>(null);
+  const spread = (): { d: number; c: { x: number; y: number } } | null => {
+    const [a, b] = [...touches.current.values()];
+    if (!a || !b) return null;
+    return { d: Math.hypot(a.x - b.x, a.y - b.y), c: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } };
+  };
+
   const pos = (e: PointerEvent<HTMLCanvasElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top, button: e.button, shift: e.shiftKey };
@@ -155,14 +166,57 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
         onPointerDown={(e) => {
           e.currentTarget.focus({ preventScroll: true });
           e.currentTarget.setPointerCapture(e.pointerId);
+          if (e.pointerType === 'touch') {
+            touches.current.set(e.pointerId, pos(e));
+            if (touches.current.size === 2) {
+              // นิ้วที่สองลง: ยกเลิกสิ่งที่นิ้วแรกเริ่มไว้ แล้วเข้าโหมดซูม
+              model.ui.cancel();
+              pinch.current = spread()?.d ?? null;
+              return;
+            }
+            if (touches.current.size > 2) return;
+          }
           model.ui.pointerDown(pos(e));
         }}
-        onPointerMove={(e) => model.ui.pointerMove(pos(e))}
+        onPointerMove={(e) => {
+          if (e.pointerType === 'touch' && touches.current.has(e.pointerId)) {
+            touches.current.set(e.pointerId, pos(e));
+            if (pinch.current !== null) {
+              const now = spread();
+              if (now && pinch.current > 0) {
+                model.ui.zoomBy(now.c, now.d / pinch.current);
+                pinch.current = now.d;
+              }
+              return;
+            }
+          }
+          model.ui.pointerMove(pos(e));
+        }}
         onPointerUp={(e) => {
           if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
-          model.ui.pointerUp(pos(e));
+          touches.current.delete(e.pointerId);
+          if (pinch.current !== null) {
+            if (touches.current.size === 0) pinch.current = null;
+            return;
+          }
+          const p = pos(e);
+          model.ui.pointerUp(p);
+          if (e.pointerType === 'touch') {
+            const prev = lastTap.current;
+            const now = performance.now();
+            if (prev && now - prev.t < 350 && Math.hypot(prev.x - p.x, prev.y - p.y) < 24) {
+              model.ui.doubleClick(p);
+              lastTap.current = null;
+            } else {
+              lastTap.current = { t: now, x: p.x, y: p.y };
+            }
+          }
         }}
-        onPointerCancel={() => model.ui.cancel()}
+        onPointerCancel={(e) => {
+          touches.current.delete(e.pointerId);
+          if (touches.current.size === 0) pinch.current = null;
+          model.ui.cancel();
+        }}
         onPointerLeave={() => model.ui.pointerLeave()}
         onDoubleClick={(e) => {
           const r = e.currentTarget.getBoundingClientRect();

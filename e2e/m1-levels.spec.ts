@@ -59,18 +59,18 @@ test('เล่นด่าน NOT แล้วด่าน AND ใช้ NOT �
   await expect(page.locator('.palette').getByRole('button')).toHaveCount(1);
 
   // ทดสอบวงจรเปล่า: ไม่ผ่าน และตารางบอกแถวที่ผิด
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ยังไม่ผ่าน');
   await expect(page.locator('.truth-table tr.fail')).toHaveCount(2);
 
   await buildNot(page);
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
   await expect(page.locator('.test-result')).toContainText('น้อยที่สุดที่ทำได้แล้ว');
   await expect(level(page, 1)).toHaveAttribute('aria-label', /ผ่านแล้ว/);
   await expect(level(page, 2)).toBeEnabled();
 
-  await page.getByRole('button', { name: 'ด่านถัดไป →' }).click();
+  await page.getByRole('button', { name: 'ด่านถัดไป' }).click();
   await expect(page.locator('.lesson')).toContainText('สร้าง AND');
   await expect(page.locator('.palette').getByRole('button', { name: /^NOT/ })).toBeVisible();
 
@@ -82,7 +82,7 @@ test('เล่นด่าน NOT แล้วด่าน AND ใช้ NOT �
   await wire(page, ['nand1', 'y'], ['not1', 'a']);
   await wire(page, ['not1', 'y'], ['self', 'y']);
   await expect(page.getByTestId('nand-count')).toHaveText('2');
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
 
   // รีโหลดแล้วทุกอย่างยังอยู่
@@ -95,7 +95,7 @@ test('เล่นด่าน NOT แล้วด่าน AND ใช้ NOT �
 
 test('แก้วงจรที่ผ่านแล้ว → ต้องทดสอบใหม่ ทั้งด่านนั้น', async ({ page }) => {
   await buildNot(page);
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(level(page, 1)).toHaveAttribute('aria-label', /ผ่านแล้ว/);
   await page.keyboard.press('Control+z'); // เอาสายเส้นสุดท้ายออก
   await expect(level(page, 1)).toHaveAttribute('aria-label', /ต้องทดสอบใหม่/);
@@ -115,7 +115,7 @@ test('คำใบ้เปิดทีละข้อ', async ({ page }) => {
 
 test('บันทึกเป็นไฟล์ เริ่มใหม่ แล้วเปิดไฟล์กลับมา', async ({ page }) => {
   await buildNot(page);
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(level(page, 2)).toBeEnabled();
 
   const download = page.waitForEvent('download');
@@ -139,8 +139,8 @@ test('บันทึกเป็นไฟล์ เริ่มใหม่ แ
 
 test('X-Ray: ดับเบิลคลิก NOT ที่อยู่ใน AND แล้วเห็นค่าข้างในเปลี่ยนตามสวิตช์', async ({ page }) => {
   await buildNot(page);
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
-  await page.getByRole('button', { name: 'ด่านถัดไป →' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
+  await page.getByRole('button', { name: 'ด่านถัดไป' }).click();
   await place(page, /^NAND/, 0.4, 0.5);
   await place(page, /^NOT/, 0.6, 0.5);
   await wire(page, ['self', 'a'], ['nand1', 'a']);
@@ -152,7 +152,7 @@ test('X-Ray: ดับเบิลคลิก NOT ที่อยู่ใน A
   const a = await pinAt(page, 'not1', 'a');
   const y = await pinAt(page, 'not1', 'y');
   await page.mouse.dblclick((a.x + y.x) / 2, (a.y + y.y) / 2);
-  await expect(page.getByRole('button', { name: '← ออกจาก X-Ray' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ออกจาก X-Ray' })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'ตำแหน่งที่กำลังดู' })).toContainText('not1 (NOT)');
   await expect(page.locator('.palette-item').first()).toBeDisabled();
 
@@ -168,7 +168,7 @@ test('X-Ray: ดับเบิลคลิก NOT ที่อยู่ใน A
   // ข้างในแก้ไม่ได้: กด Delete ไม่เกิดอะไร แล้ว Esc ออก
   await page.keyboard.press('Delete');
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('button', { name: '← ออกจาก X-Ray' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'ออกจาก X-Ray' })).toHaveCount(0);
   await expect(page.getByTestId('nand-count')).toHaveText('2');
   await expect(page.locator('.palette-item').first()).toBeEnabled();
 

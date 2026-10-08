@@ -1,4 +1,5 @@
 // หน้าหลัก: ด่าน · คอมพิวเตอร์ (รันโปรแกรมบน CPU ของผู้เล่น) · สนามทดลอง · ตัวอย่าง engine จาก M0
+import { Cpu, Download, FlaskConical, FolderOpen, GraduationCap, Moon, RotateCcw, Sun, Zap, type LucideIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { ComputerPage } from './computer/ComputerPage';
 import { Demo } from './demo/Demo';
@@ -9,12 +10,31 @@ import { useSave } from './game/use-save';
 
 type Tab = 'game' | 'computer' | 'sandbox' | 'demo';
 
-const TABS: [Tab, string][] = [
-  ['game', 'ด่าน'],
-  ['computer', '💻 คอมพิวเตอร์'],
-  ['sandbox', 'สนามทดลอง'],
-  ['demo', 'ตัวอย่าง engine'],
+const TABS: [Tab, string, LucideIcon][] = [
+  ['game', 'ด่าน', GraduationCap],
+  ['computer', 'คอมพิวเตอร์', Cpu],
+  ['sandbox', 'สนามทดลอง', FlaskConical],
+  ['demo', 'ตัวอย่าง engine', Zap],
 ];
+
+const THEME_KEY = 'zncpu.theme';
+type Theme = 'dark' | 'light';
+
+/** ธีมที่เลือกไว้ (เก็บในเบราว์เซอร์นี้) ถ้าไม่เคยเลือกใช้ตามระบบ */
+export function initialTheme(): Theme {
+  try {
+    const t = localStorage.getItem(THEME_KEY);
+    if (t === 'dark' || t === 'light') return t;
+  } catch {
+    // เบราว์เซอร์ไม่ให้ใช้ storage
+  }
+  return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+}
+
+export function applyTheme(theme: Theme): void {
+  document.documentElement.dataset.theme = theme;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f6f7f9' : '#0f1115');
+}
 
 export function App() {
   const [tab, setTab] = useState<Tab>('game');
@@ -23,6 +43,17 @@ export function App() {
   const [generation, setGeneration] = useState(0);
   const [notice, setNotice] = useState<string | undefined>();
   const fileInput = useRef<HTMLInputElement>(null);
+  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'));
+  const toggleTheme = (): void => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    applyTheme(next);
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch {
+      // ไม่เป็นไร
+    }
+  };
 
   const exportFile = (): void => {
     const blob = new Blob([serializeSave(save)], { type: 'application/json' });
@@ -50,13 +81,22 @@ export function App() {
     <div className="page">
       <header className="header">
         <div className="header-row">
-          <div>
-            <h1>Z-NCPU</h1>
-            <p className="subtitle">สร้าง CPU จากเกต NAND · M3</p>
+          <div className="brand">
+            <img src="./favicon.svg" alt="" width={36} height={36} />
+            <div>
+              <h1>Z-NCPU</h1>
+              <p className="subtitle">สร้าง CPU จากเกต NAND</p>
+            </div>
           </div>
           <div className="file-actions">
-            <button onClick={exportFile}>⭳ บันทึกเป็นไฟล์</button>
-            <button onClick={() => fileInput.current?.click()}>⭱ เปิดไฟล์</button>
+            <button onClick={exportFile} aria-label="บันทึกเป็นไฟล์" title="บันทึกความคืบหน้าเป็นไฟล์ .zncpu">
+              <Download size={16} aria-hidden />
+              <span className="btn-label">บันทึกเป็นไฟล์</span>
+            </button>
+            <button onClick={() => fileInput.current?.click()} aria-label="เปิดไฟล์" title="เปิดไฟล์ .zncpu">
+              <FolderOpen size={16} aria-hidden />
+              <span className="btn-label">เปิดไฟล์</span>
+            </button>
             <input
               ref={fileInput}
               type="file"
@@ -76,8 +116,18 @@ export function App() {
                 setGeneration((g) => g + 1);
                 setNotice('เริ่มใหม่แล้ว');
               }}
+              aria-label="เริ่มใหม่"
+              title="ลบความคืบหน้าแล้วเริ่มใหม่"
             >
-              เริ่มใหม่
+              <RotateCcw size={16} aria-hidden />
+              <span className="btn-label">เริ่มใหม่</span>
+            </button>
+            <button
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง' : 'เปลี่ยนเป็นธีมมืด'}
+              title={theme === 'dark' ? 'ธีมสว่าง' : 'ธีมมืด'}
+            >
+              {theme === 'dark' ? <Sun size={16} aria-hidden /> : <Moon size={16} aria-hidden />}
             </button>
           </div>
         </div>
@@ -87,8 +137,9 @@ export function App() {
           </p>
         ) : null}
         <nav className="tabs" role="tablist" aria-label="หน้า">
-          {TABS.map(([id, label]) => (
+          {TABS.map(([id, label, Icon]) => (
             <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>
+              <Icon size={16} aria-hidden />
               {label}
             </button>
           ))}
@@ -106,7 +157,7 @@ export function App() {
         )}
       </main>
       <footer className="footer">
-        ทุกวงจรจำลองจากเกต NAND จริงใน Web Worker · ความคืบหน้าบันทึกในเบราว์เซอร์นี้ · หน้าตาจะปรับใน M4
+        ทุกวงจรจำลองจากเกต NAND จริงใน Web Worker · ความคืบหน้าบันทึกในเบราว์เซอร์นี้
         <br />
         Z-NCPU · MIT License ·{' '}
         <a href="./third-party-licenses.txt" target="_blank" rel="noreferrer">

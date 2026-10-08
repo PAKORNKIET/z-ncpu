@@ -13,7 +13,7 @@ test('แสดงเลข 42: โปรแกรมผิดบอกสิ่
   await openWithSave(page, before('prog.hello'));
   await levelNamed(page, /แสดงเลข 42/).click();
   const editor = page.getByRole('textbox', { name: 'ซอร์สโค้ด assembly' });
-  const run = page.getByRole('button', { name: '▶ ทดสอบบน CPU ของฉัน' });
+  const run = page.getByRole('button', { name: 'ทดสอบบน CPU ของฉัน' });
   const cases = page.getByRole('table', { name: 'กรณีทดสอบ' });
 
   await editor.fill('MOV A, 41\nSTORE [OUT], A\nHALT\n');
@@ -42,12 +42,12 @@ test('ค่าที่มากกว่า: ทดสอบหลายกร
   const editor = page.getByRole('textbox', { name: 'ซอร์สโค้ด assembly' });
   // ลืมกรณีที่ key มากกว่า: ผ่านบางกรณี
   await editor.fill('LOAD A, [SW]\nSTORE [OUT], A\nHALT\n');
-  await page.getByRole('button', { name: '▶ ทดสอบบน CPU ของฉัน' }).click();
+  await page.getByRole('button', { name: 'ทดสอบบน CPU ของฉัน' }).click();
   const cases = page.getByRole('table', { name: 'กรณีทดสอบ' });
   await expect(cases.locator('tr.fail').first()).toBeVisible({ timeout: 30_000 });
   await expect(cases.locator('tr.ok')).toHaveCount(3);
   await editor.fill('LOAD A, [SW]\nLOAD B, [KEY]\nCMP A, B\nJC show\nMOV A, B\nshow: STORE [OUT], A\nHALT\n');
-  await page.getByRole('button', { name: '▶ ทดสอบบน CPU ของฉัน' }).click();
+  await page.getByRole('button', { name: 'ทดสอบบน CPU ของฉัน' }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว', { timeout: 30_000 });
   await expect(cases.locator('tr.ok')).toHaveCount(5);
 });

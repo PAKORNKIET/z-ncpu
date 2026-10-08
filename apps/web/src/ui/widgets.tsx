@@ -1,5 +1,6 @@
 // ชิ้น UI เล็กๆ ที่ใช้หลายหน้า
 import type { Diagnostic, SignalValue } from '@z-ncpu/shared';
+import { AlertTriangle, Info } from 'lucide-react';
 
 export function Switch(props: { label: string; value: SignalValue | undefined; onClick: () => void; disabled?: boolean }) {
   const on = props.value === 1;
@@ -81,7 +82,7 @@ export function Diagnostics({ items }: { items: Diagnostic[] }) {
     <ul className="diagnostics">
       {items.map((d, i) => (
         <li key={i} className={d.severity}>
-          {d.severity === 'error' ? '⚠ ' : 'ℹ '}
+          {d.severity === 'error' ? <AlertTriangle size={16} aria-hidden /> : <Info size={16} aria-hidden />}
           {d.message.th}
         </li>
       ))}

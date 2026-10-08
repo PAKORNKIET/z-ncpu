@@ -29,7 +29,7 @@ test('Decoder: JZ กระโดดเฉพาะเมื่อ z = 1, RET �
   await setBus(page, 'func', 3, 6);
   await expect(out(page, 'pc_sel')).toHaveAttribute('aria-label', /^pc_sel = 2/);
   await expect(out(page, 'sp_op')).toHaveAttribute('aria-label', /^sp_op = 2/);
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
   await expect(page.getByText(/512/).first()).toBeVisible();
 });
@@ -49,7 +49,7 @@ test('Register file: เขียน B แล้วอ่านออกทา�
   await expect(out(page, 'b')).toHaveAttribute('aria-label', /^b = 42/);
   await setBus(page, 'rs', 2, 1);
   await expect(out(page, 'y')).toHaveAttribute('aria-label', /^y = 42/);
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
 });
 
@@ -66,6 +66,6 @@ test('Stack Pointer: reset ได้ 0xF0, op = 1 ลดลง และผ่�
   await tick.click();
   await expect(out(page, 'out')).toHaveAttribute('aria-label', 'out = 238');
   await expect(out(page, 'down')).toHaveAttribute('aria-label', /^down = 237/);
-  await page.getByRole('button', { name: '▶ ทดสอบ' }).click();
+  await page.getByRole('button', { name: 'ทดสอบ', exact: true }).click();
   await expect(page.locator('.test-result')).toContainText('ผ่านด่านแล้ว');
 });
