@@ -1448,3 +1448,20 @@ details[open] > summary .chevron,
     min-height: 0;
   }
 }
+
+/* PWA: แจ้งเวอร์ชันใหม่และพร้อมใช้ออฟไลน์ ลอยมุมจอ ไม่ดันเนื้อหา (กำลังลากสายอยู่จะได้ไม่พลาด) */
+.toast {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+}

@@ -1,6 +1,7 @@
 // หน้าหลัก: ด่าน · คอมพิวเตอร์ (รันโปรแกรมบน CPU ของผู้เล่น) · สนามทดลอง · ตัวอย่าง engine จาก M0
-import { Cpu, Download, FlaskConical, FolderOpen, GraduationCap, Moon, RotateCcw, Sun, Zap, type LucideIcon } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { Cpu, Download, FlaskConical, FolderOpen, GraduationCap, MonitorDown, Moon, RefreshCw, RotateCcw, Sun, WifiOff, X, Zap, type LucideIcon } from 'lucide-react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { applyUpdate, installApp, pwaState, subscribePwa } from './pwa';
 import { ComputerPage } from './computer/ComputerPage';
 import { Demo } from './demo/Demo';
 import { SandboxPage } from './editor/SandboxPage';
@@ -43,6 +44,14 @@ export function App() {
   const [generation, setGeneration] = useState(0);
   const [notice, setNotice] = useState<string | undefined>();
   const fileInput = useRef<HTMLInputElement>(null);
+  const pwa = useSyncExternalStore(subscribePwa, pwaState);
+  const [offlineSeen, setOfflineSeen] = useState(false);
+  // ข้อความพร้อมใช้ออฟไลน์แสดงแป๊บเดียวพอ
+  useEffect(() => {
+    if (!pwa.offlineReady) return;
+    const t = setTimeout(() => setOfflineSeen(true), 8000);
+    return () => clearTimeout(t);
+  }, [pwa.offlineReady]);
   const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'));
   const toggleTheme = (): void => {
     const next = theme === 'dark' ? 'light' : 'dark';
@@ -122,6 +131,12 @@ export function App() {
               <RotateCcw size={16} aria-hidden />
               <span className="btn-label">เริ่มใหม่</span>
             </button>
+            {pwa.canInstall ? (
+              <button onClick={() => void installApp()} aria-label="ติดตั้งเป็นแอป" title="ติดตั้ง Z-NCPU เป็นแอปในเครื่องนี้">
+                <MonitorDown size={16} aria-hidden />
+                <span className="btn-label">ติดตั้งแอป</span>
+              </button>
+            ) : null}
             <button
               onClick={toggleTheme}
               aria-label={theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง' : 'เปลี่ยนเป็นธีมมืด'}
@@ -156,6 +171,21 @@ export function App() {
           <Demo />
         )}
       </main>
+      {pwa.updateReady ? (
+        <div className="toast" role="status">
+          <RefreshCw size={16} aria-hidden /> มี Z-NCPU เวอร์ชันใหม่แล้ว
+          <button className="primary" onClick={applyUpdate}>
+            อัปเดตเลย
+          </button>
+        </div>
+      ) : pwa.offlineReady && !offlineSeen ? (
+        <div className="toast" role="status">
+          <WifiOff size={16} aria-hidden /> พร้อมใช้แบบออฟไลน์แล้ว
+          <button className="linklike" aria-label="ปิดข้อความ" onClick={() => setOfflineSeen(true)}>
+            <X size={16} aria-hidden />
+          </button>
+        </div>
+      ) : null}
       <footer className="footer">
         ทุกวงจรจำลองจากเกต NAND จริงใน Web Worker · ความคืบหน้าบันทึกในเบราว์เซอร์นี้
         <br />

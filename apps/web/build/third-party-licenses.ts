@@ -24,12 +24,12 @@ function packageDir(name: string, fromDir: string): string | null {
   }
 }
 
-function collect(rootDir: string): PkgInfo[] {
+function collect(rootDir: string, extra: [string, string][] = []): PkgInfo[] {
   const rootPkg = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8')) as {
     dependencies?: Record<string, string>;
   };
   const seen = new Map<string, PkgInfo>();
-  const queue: [string, string][] = Object.keys(rootPkg.dependencies ?? {}).map((n) => [n, rootDir]);
+  const queue: [string, string][] = [...Object.keys(rootPkg.dependencies ?? {}).map((n): [string, string] => [n, rootDir]), ...extra];
   while (queue.length > 0) {
     const [name, from] = queue.shift() as [string, string];
     const dir = packageDir(name, from);
@@ -67,7 +67,10 @@ export function thirdPartyLicenses(rootDir: string): Plugin {
     name: 'z-ncpu-third-party-licenses',
     apply: 'build',
     generateBundle() {
-      const pkgs = collect(rootDir);
+      // service worker ของ PWA ฝังโค้ด workbox (MIT) ไปกับแอปด้วย แม้จะเป็น devDependency ตอน build
+      const wb = packageDir('workbox-build', rootDir);
+      const runtime = ['workbox-core', 'workbox-precaching', 'workbox-routing', 'workbox-strategies'];
+      const pkgs = collect(rootDir, wb ? runtime.map((n): [string, string] => [n, wb]) : []);
       const bad = pkgs.filter((p) => !ALLOWED.has(p.license));
       if (bad.length > 0) {
         this.error(`dependency ที่ license ยังไม่ได้ตรวจ: ${bad.map((p) => `${p.name} (${p.license})`).join(', ')}`);
