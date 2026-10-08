@@ -43,7 +43,12 @@ let history: TimeTravel | null = null;
 /** เดินนาฬิกาหนึ่งจังหวะผ่าน time travel (บันทึก input และ keyframe) */
 const tickOnce = () => (history ? history.tick() : sim!.tick(clockPin));
 
-const post = (msg: WorkerToUi): void => self.postMessage(msg);
+/** ส่งค่า NAND ทุกตัวให้มุมมอง 3D ไปกับ signals */
+let watchGates = false;
+
+// ค่าของ NAND ส่งแบบ transfer ไม่ต้องคัดลอกซ้ำ
+const post = (msg: WorkerToUi): void =>
+  msg.type === 'signals' && msg.gates ? self.postMessage(msg, [msg.gates.buffer]) : self.postMessage(msg);
 const cycleNow = (): number => (sim ? sim.cycle - cycleBase : 0);
 
 /**
@@ -108,6 +113,12 @@ function signals(rid: number): WorkerToUi {
   if (scopePath !== null && sim) {
     msg.scope = sim.readScope(scopePath);
     msg.scopePath = scopePath;
+  }
+  if (watchGates && sim) {
+    const { gateY, gateCount } = sim.netlist;
+    const gates = new Uint8Array(gateCount);
+    for (let g = 0; g < gateCount; g++) gates[g] = sim.values[gateY[g]!]!;
+    msg.gates = gates;
   }
   return msg;
 }
@@ -299,6 +310,15 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
       case 'subscribe':
         scopePath = msg.scopePath;
         post({ rid: msg.rid, type: 'status', cycle: cycleNow(), running: timer !== null });
+        if (sim) post(signals(msg.rid));
+        return;
+
+      case 'gateMap':
+        post({ rid: msg.rid, type: 'gateMap', paths: sim ? sim.netlist.gatePath : [] });
+        return;
+
+      case 'watchGates':
+        watchGates = msg.on;
         if (sim) post(signals(msg.rid));
         return;
 

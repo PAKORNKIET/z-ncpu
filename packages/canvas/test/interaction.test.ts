@@ -272,6 +272,37 @@ describe('Interaction', () => {
     expect(toggled).toEqual(['a']);
   });
 
+  it('ลากขาเข้า/ขาออกของวงจรไปไว้ที่อื่นได้ (ไม่สลับค่า) undo ได้ และสายยังต่ออยู่', () => {
+    const { editor, ui, toggled, drag } = setup();
+    const scene0 = buildScene(editor.def, { pinsOf });
+    const a0 = scene0.nodes.find((n) => n.id === 'self.a')!.center;
+    const y0 = scene0.nodes.find((n) => n.id === 'self.y')!.center;
+    const wires = editor.def.body!.wires.length;
+    drag(toScreen(ui.camera, { x: a0.x - 10, y: a0.y }), toScreen(ui.camera, { x: a0.x - 10 + 100, y: a0.y + 60 }));
+    expect(toggled).toEqual([]);
+    expect(editor.def.body!.terminals!.a).toEqual({ x: a0.x + 100, y: a0.y + 60 });
+    drag(toScreen(ui.camera, y0), toScreen(ui.camera, { x: y0.x - 200, y: y0.y }));
+    const scene1 = buildScene(editor.def, { pinsOf });
+    expect(scene1.nodes.find((n) => n.id === 'self.y')!.center).toEqual({ x: y0.x - 200, y: y0.y });
+    expect(editor.def.body!.wires.length).toBe(wires);
+    // ขาที่ย้ายไม่เข้าไปอยู่ในชิ้นที่เลือก (กดลบแล้วไม่หาย)
+    expect(editor.selection.instances).not.toContain('self.y');
+    ui.key({ key: 'z', ctrl: true });
+    expect(buildScene(editor.def, { pinsOf }).nodes.find((n) => n.id === 'self.y')!.center).toEqual(y0);
+  });
+
+  it('ขอบเหลือง: ขึ้นเฉพาะตอนกำลังลากย้าย แตะเฉยๆ ไม่ขึ้น และหายเมื่อปล่อย', () => {
+    const { editor, ui } = setup();
+    const a = buildScene(editor.def, { pinsOf }).nodes.find((n) => n.id === 'self.a')!.center;
+    const p = toScreen(ui.camera, { x: a.x - 10, y: a.y });
+    ui.pointerDown({ ...p, button: 0 });
+    expect(ui.overlay().dragging).toBeUndefined();
+    ui.pointerMove({ x: p.x + 60, y: p.y + 40, button: 0 });
+    expect(ui.overlay().dragging).toEqual(['self.a']);
+    ui.pointerUp({ x: p.x + 60, y: p.y + 40, button: 0 });
+    expect(ui.overlay().dragging).toBeUndefined();
+  });
+
   it('คีย์ลัด: R หมุน, Ctrl+Y redo, Esc ยกเลิก, ปุ่มอื่นไม่ยุ่ง', () => {
     const { editor, ui } = setup();
     editor.add({ defId: 'prim.nand', x: 300, y: 0 });
@@ -293,6 +324,24 @@ describe('Interaction', () => {
     expect(ui.camera.zoom).toBe(4);
     for (let i = 0; i < 50; i++) ui.wheel({ x: 100, y: 100 }, 300);
     expect(ui.camera.zoom).toBe(0.25);
+  });
+
+  it('สองนิ้ว: ซูมและเลื่อนพร้อมกัน จุดใต้นิ้วตามนิ้วไป', () => {
+    const { ui } = setup();
+    const from = { x: 200, y: 150 };
+    const under = toWorld(ui.camera, from);
+    const zoom = ui.camera.zoom;
+    ui.pinch(from, { x: 120, y: 90 }, 1.5);
+    expect(ui.camera.zoom).toBeCloseTo(zoom * 1.5);
+    const now = toScreen(ui.camera, under);
+    expect(now.x).toBeCloseTo(120);
+    expect(now.y).toBeCloseTo(90);
+    // เลื่อนอย่างเดียว (ระยะนิ้วเท่าเดิม) เลื่อนเท่ากับที่นิ้วเลื่อนพอดี
+    const before = toScreen(ui.camera, under);
+    ui.pinch({ x: 120, y: 90 }, { x: 170, y: 60 }, 1);
+    const after = toScreen(ui.camera, under);
+    expect(after.x - before.x).toBeCloseTo(50);
+    expect(after.y - before.y).toBeCloseTo(-30);
   });
 
   it('วางจากการลากปล่อย (drag & drop) ลงตำแหน่งที่ติดกริด', () => {

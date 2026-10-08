@@ -79,7 +79,8 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
       renderer.resize(box.width, box.height, window.devicePixelRatio || 1);
       if (!fitted && box.width > 0 && box.height > 0) {
         fitted = true;
-        model.fit(box.width, box.height);
+        // จอมือถือ: ไม่ย่อเกิน 50% ตัวหนังสือจะได้ยังอ่านออก ลากหรือกด "ดูทั้งวงจร" เพื่อดูส่วนที่เหลือ
+        model.fit(box.width, box.height, window.innerWidth < 640 ? 0.5 : 0);
       }
       request();
     });
@@ -93,6 +94,12 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
       model.ui.wheel({ x: e.clientX - r.left, y: e.clientY - r.top }, e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY);
     };
     canvas.addEventListener('wheel', wheel, { passive: false });
+    // iOS: กดค้างบนจอวงจรแล้ว Safari จะเลือกตัวหนังสือแถวนั้นและขึ้นเมนู "คัดลอก" กันไว้ตั้งแต่นิ้วแตะ
+    // (การลาก ซูม และแตะยังมาทาง pointer event ตามปกติ)
+    const noCallout = (e: TouchEvent): void => {
+      if (e.cancelable) e.preventDefault();
+    };
+    canvas.addEventListener('touchstart', noCallout, { passive: false });
     // ฟอนต์ไทยโหลดเสร็จแล้ววาดใหม่ให้ตัวหนังสือถูกฟอนต์
     void document.fonts?.ready.then(request);
 
@@ -110,6 +117,7 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
       ro.disconnect();
       off();
       canvas.removeEventListener('wheel', wheel);
+      canvas.removeEventListener('touchstart', noCallout);
       if (frame) cancelAnimationFrame(frame);
       renderer.destroy();
       delete window.__zncpuTest;
@@ -121,9 +129,9 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
     requestRef.current();
   }, [values]);
 
-  // จอสัมผัส: สองนิ้วบีบ/ถ่างเพื่อซูม (นิ้วเดียวยังลากต่อสายหรือเลื่อนจอได้ตามปกติ)
+  // จอสัมผัส: สองนิ้วบีบ/ถ่างเพื่อซูมและลากเพื่อเลื่อนได้พร้อมกัน (นิ้วเดียวยังลากต่อสายหรือเลื่อนจอได้ตามปกติ)
   const touches = useRef(new Map<number, { x: number; y: number }>());
-  const pinch = useRef<number | null>(null);
+  const pinch = useRef<{ d: number; c: { x: number; y: number } } | null>(null);
   /** แตะครั้งก่อน (ใช้จับการแตะสองครั้ง = ดับเบิลคลิก บนจอสัมผัส) */
   const lastTap = useRef<{ t: number; x: number; y: number } | null>(null);
   const spread = (): { d: number; c: { x: number; y: number } } | null => {
@@ -171,7 +179,7 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
             if (touches.current.size === 2) {
               // นิ้วที่สองลง: ยกเลิกสิ่งที่นิ้วแรกเริ่มไว้ แล้วเข้าโหมดซูม
               model.ui.cancel();
-              pinch.current = spread()?.d ?? null;
+              pinch.current = spread();
               return;
             }
             if (touches.current.size > 2) return;
@@ -183,9 +191,10 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
             touches.current.set(e.pointerId, pos(e));
             if (pinch.current !== null) {
               const now = spread();
-              if (now && pinch.current > 0) {
-                model.ui.zoomBy(now.c, now.d / pinch.current);
-                pinch.current = now.d;
+              const before = pinch.current;
+              if (now && before.d > 0) {
+                model.ui.pinch(before.c, now.c, now.d / before.d);
+                pinch.current = now;
               }
               return;
             }

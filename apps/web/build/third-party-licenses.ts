@@ -24,6 +24,15 @@ function packageDir(name: string, fromDir: string): string | null {
   }
 }
 
+/**
+ * package ที่ npm ไม่ได้แนบไฟล์ LICENSE มา แต่ตรวจแล้วว่า license ตรงกับ package.json
+ * ข้อความ license เก็บไว้ใน build/licenses/ (คัดลอกจาก repo ต้นทาง) ใช้เฉพาะเมื่อ license ใน package.json ตรงกัน
+ */
+const REVIEWED: Record<string, { license: string; file: string }> = {
+  // https://github.com/pmndrs/react-three-fiber/blob/master/LICENSE
+  '@react-three/fiber': { license: 'MIT', file: 'react-three-fiber.txt' },
+};
+
 function collect(rootDir: string, extra: [string, string][] = []): PkgInfo[] {
   const rootPkg = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8')) as {
     dependencies?: Record<string, string>;
@@ -47,12 +56,18 @@ function collect(rootDir: string, extra: [string, string][] = []): PkgInfo[] {
     // package ใน workspace ของเราเอง (private) อยู่ภายใต้ license ของโปรเจกต์อยู่แล้ว
     if (pkg.private) continue;
     const file = readdirSync(dir).find((f) => /^(license|licence|copying)(\..*)?$/i.test(f));
-    if (!file) throw new Error(`package ${pkg.name} ไม่มีไฟล์ LICENSE ต้องตรวจเองก่อนแจกแอป`);
+    const reviewed = REVIEWED[pkg.name];
+    const path = file
+      ? join(dir, file)
+      : reviewed && reviewed.license === pkg.license
+        ? join(rootDir, 'build', 'licenses', reviewed.file)
+        : null;
+    if (!path) throw new Error(`package ${pkg.name} ไม่มีไฟล์ LICENSE ต้องตรวจเองก่อนแจกแอป`);
     seen.set(pkg.name, {
       name: pkg.name,
       version: pkg.version,
       license: pkg.license ?? 'UNKNOWN',
-      text: readFileSync(join(dir, file), 'utf8').trim(),
+      text: readFileSync(path, 'utf8').trim(),
     });
   }
   return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));

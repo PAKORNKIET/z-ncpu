@@ -50,6 +50,8 @@ export interface Wire {
 export interface CircuitBody {
   instances: Instance[];
   wires: Wire[];
+  /** ตำแหน่งกึ่งกลางของขาวงจรเอง (ขาเข้า/ขาออก) ที่ผู้เล่นลากย้าย key = ชื่อขา ไม่มี = ตำแหน่งตั้งต้น ไม่นับใน content hash */
+  terminals?: Record<string, { x: number; y: number }>;
 }
 
 export interface ComponentMeta {

@@ -76,9 +76,10 @@ export class Canvas2DRenderer implements CircuitRenderer {
     }
 
     const selected = new Set(f.selection.instances);
+    const dragging = new Set(f.overlay.dragging ?? []);
     const targets = new Set((f.overlay.targets ?? []).map(pinKey));
     const hover = f.overlay.hoverPin ? pinKey(f.overlay.hoverPin) : undefined;
-    for (const n of f.scene.nodes) this.node(n, f, selected.has(n.id), targets, hover);
+    for (const n of f.scene.nodes) this.node(n, f, selected.has(n.id), targets, hover, dragging.has(n.id));
 
     const g = f.overlay.ghostWire;
     if (g) {
@@ -157,7 +158,7 @@ export class Canvas2DRenderer implements CircuitRenderer {
     ctx.fillText(text, cx, cy);
   }
 
-  private node(n: SceneNode, f: Frame, selected: boolean, targets: Set<string>, hover: string | undefined): void {
+  private node(n: SceneNode, f: Frame, selected: boolean, targets: Set<string>, hover: string | undefined, dragging = false): void {
     const { ctx } = this;
     const r = n.rect;
     const terminal = n.kind !== 'instance';
@@ -168,8 +169,8 @@ export class Canvas2DRenderer implements CircuitRenderer {
     ctx.roundRect(r.x, r.y, r.w, r.h, terminal ? r.h / 2 : 6);
     ctx.fillStyle = terminal && bit === 1 ? f.color('--signal-high') : f.color('--surface');
     ctx.fill();
-    ctx.lineWidth = selected ? 2.5 : 1.5;
-    ctx.strokeStyle = n.broken ? f.color('--error') : selected ? f.color('--accent') : f.color('--border');
+    ctx.lineWidth = dragging ? 3 : selected ? 2.5 : 1.5;
+    ctx.strokeStyle = n.broken ? f.color('--error') : dragging ? f.color('--signal-high') : selected ? f.color('--accent') : f.color('--border');
     ctx.stroke();
 
     ctx.textAlign = 'center';

@@ -15,3 +15,5 @@ export { History } from './editor/history';
 export type { HistoryEntry } from './editor/history';
 export { Editor } from './editor/editor';
 export type { Selection } from './editor/editor';
+export { buildLayout3D, findNode, prefixCounts, GATE_PITCH, GATE_SIZE, LEVEL_H, SLAB_H } from './layout3d';
+export type { Layout3D, Node3D } from './layout3d';

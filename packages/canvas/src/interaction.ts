@@ -43,15 +43,17 @@ export interface Overlay {
   hoverPin?: PinRef;
   /** ขาที่ต่อกับขาที่กำลังลากได้ (ไฮไลต์ให้เห็น) */
   targets?: PinRef[];
+  /** ชิ้นที่กำลังลากย้ายอยู่ (ขอบสีเหลือง) */
+  dragging?: string[];
 }
 
 type Mode =
   | { k: 'idle' }
   | { k: 'pan'; start: Point; camera: Camera; moved: boolean }
-  | { k: 'drag'; ids: string[]; start: Point; applied: Point; clickedId: string; wasSelected: boolean; shift: boolean }
+  /** toggle: แตะ (ไม่ลาก) ขาเข้าของวงจร = สลับค่า ลาก = ย้ายตำแหน่ง */
+  | { k: 'drag'; ids: string[]; start: Point; applied: Point; clickedId: string; wasSelected: boolean; shift: boolean; toggle?: string }
   | { k: 'wire'; from: ScenePin; start: Point; sticky: boolean }
   | { k: 'marquee'; start: Point; end: Point }
-  | { k: 'toggle'; pin: string; start: Point }
   | { k: 'place'; spec: PlaceSpec };
 
 /** ขยับเกินกี่ px ถึงนับว่าลาก ไม่ใช่คลิก */
@@ -132,6 +134,8 @@ export class Interaction {
     }
     if (m.k === 'place' && this.cursorWorld) o.placing = { ...m.spec, center: snapPoint(this.cursorWorld) };
     if (m.k === 'marquee') o.marquee = { x: m.start.x, y: m.start.y, w: m.end.x - m.start.x, h: m.end.y - m.start.y };
+    // ขอบเหลืองตอนลากจริงเท่านั้น (แตะเฉยๆ เพื่อเลือกหรือสลับค่าไม่ขึ้น)
+    if (m.k === 'drag' && (m.applied.x !== 0 || m.applied.y !== 0)) o.dragging = m.ids;
     return o;
   }
 
@@ -208,8 +212,19 @@ export class Interaction {
 
     if (hit?.kind === 'pin') {
       this.mode = { k: 'wire', from: hit.pin, start: p, sticky: false };
-    } else if (hit?.kind === 'node' && hit.node.kind === 'input') {
-      this.mode = { k: 'toggle', pin: hit.node.id.slice('self.'.length), start: p };
+    } else if (hit?.kind === 'node' && (hit.node.kind === 'input' || hit.node.kind === 'output')) {
+      // ขาของวงจรเอง: ลากเพื่อย้าย (ไม่เข้าไปอยู่ในชิ้นที่เลือก จะได้ไม่โดนหมุนหรือลบ)
+      const id = hit.node.id;
+      this.mode = {
+        k: 'drag',
+        ids: [id],
+        start: world,
+        applied: { x: 0, y: 0 },
+        clickedId: id,
+        wasSelected: false,
+        shift: false,
+        ...(hit.node.kind === 'input' ? { toggle: id.slice('self.'.length) } : {}),
+      };
     } else if (hit?.kind === 'node' && hit.node.kind === 'instance') {
       const id = hit.node.id;
       const sel = this.editor.selection.instances;
@@ -292,6 +307,7 @@ export class Interaction {
         break;
       case 'drag':
         this.editor.endDrag();
+        if (m.toggle !== undefined && m.applied.x === 0 && m.applied.y === 0) this.options.onToggleInput?.(m.toggle);
         // คลิก (ไม่ลาก) ชิ้นที่เลือกอยู่แล้ว: Shift = เอาออกจากที่เลือก, ไม่กด Shift = เลือกชิ้นนี้ชิ้นเดียว
         if (m.applied.x === 0 && m.applied.y === 0 && m.wasSelected) {
           const sel = this.editor.selection;
@@ -322,10 +338,6 @@ export class Interaction {
         this.mode = { k: 'idle' };
         break;
       }
-      case 'toggle':
-        if (!moved(m.start)) this.options.onToggleInput?.(m.pin);
-        this.mode = { k: 'idle' };
-        break;
       case 'idle':
         break;
     }
@@ -354,6 +366,17 @@ export class Interaction {
   /** ซูมรอบจุด p ด้วยอัตรา factor (ปุ่ม +/− และการบีบสองนิ้วบนจอสัมผัส) */
   zoomBy(p: Point, factor: number): void {
     this.camera = zoomAt(this.camera, p, Math.max(0.2, Math.min(5, factor)));
+    this.changed();
+  }
+
+  /**
+   * สองนิ้วบนจอสัมผัส: ซูมและเลื่อนไปพร้อมกัน
+   * จุดในวงจรที่อยู่ใต้กึ่งกลางสองนิ้ว (from) จะตามนิ้วไปอยู่ที่ to และซูมตามอัตรา factor (ระยะห่างนิ้วใหม่ / เก่า)
+   */
+  pinch(from: Point, to: Point, factor: number): void {
+    const z = this.camera.zoom;
+    const moved = { ...this.camera, x: this.camera.x - (to.x - from.x) / z, y: this.camera.y - (to.y - from.y) / z };
+    this.camera = zoomAt(moved, to, Math.max(0.2, Math.min(5, factor)));
     this.changed();
   }
 

@@ -82,7 +82,7 @@ export function buildScene(def: ComponentDef, options: SceneOptions): Scene {
   for (const dir of ['in', 'out'] as const) {
     const list = def.pins.filter((p) => p.dir === dir);
     list.forEach((p, i) => {
-      const center = terminalCenter(dir, i, list.length);
+      const center = def.body?.terminals?.[p.name] ?? terminalCenter(dir, i, list.length);
       const ref = { inst: 'self', pin: p.name };
       const pin: ScenePin = {
         ref,

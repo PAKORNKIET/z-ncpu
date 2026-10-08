@@ -119,6 +119,20 @@ describe('ไฟล์บันทึก', () => {
     if (!r.ok) expect(r.reason).toMatch(reason);
   });
 
+  it('ตำแหน่งขาวงจรที่ผู้เล่นย้ายไว้: บันทึกแล้วเปิดกลับได้ และไม่ทำให้ต้องทดสอบใหม่', () => {
+    const def = solution('logic.not');
+    const moved = { ...def, body: { ...def.body!, terminals: { a: { x: 40, y: 80 }, y: { x: 300, y: -20 } } } };
+    expect(hashOf([moved], moved.id)).toBe(hashOf([def], def.id));
+    const save = putComponent(emptySave(), moved);
+    const r = parseSave(serializeSave(save));
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.save.components[0]!.body!.terminals).toEqual({ a: { x: 40, y: 80 }, y: { x: 300, y: -20 } });
+    const evil = serializeSave(save).replace('"terminals":{', '"terminals":{"__proto__":{"x":1,"y":2},');
+    const r2 = parseSave(evil);
+    expect(r2.ok).toBe(true);
+    if (r2.ok) expect(Object.getPrototypeOf(r2.save.components[0]!.body!.terminals)).toBe(Object.prototype);
+  });
+
   it('ตัดช่องที่ไม่รู้จักทิ้ง และกันการแก้ prototype', () => {
     const text =
       '{"format":"zncpu","schemaVersion":1,"evil":1,"progress":{"__proto__":{"attempts":1}},"components":[]}';

@@ -68,12 +68,22 @@ export class EditorModel {
     return this.cache.scene;
   }
 
-  /** ปรับกล้องให้เห็นวงจรทั้งหมด */
-  fit(width: number, height: number): void {
+  /**
+   * ปรับกล้องให้เห็นวงจรทั้งหมด
+   * minZoom: ไม่ซูมออกเกินนี้ (จอมือถือแคบ ถ้าย่อให้เห็นทั้งวงจรตัวหนังสือจะเล็กจนอ่านไม่ออก) แล้วจัดกลางวงจรแทน
+   */
+  fit(width: number, height: number, minZoom = 0): void {
     const b = this.scene().bounds;
     const pad = 60;
     const cam = fitCamera({ x: b.x - pad, y: b.y - pad, w: b.w + pad * 2, h: b.h + pad * 2 }, width, height);
-    this.ui.setCamera({ ...cam, zoom: Math.min(cam.zoom, 1.25) });
+    const zoom = Math.min(Math.max(cam.zoom, minZoom), 1.25);
+    if (zoom === cam.zoom || zoom > 1.25 - 1e-9) {
+      this.ui.setCamera({ ...cam, zoom });
+      return;
+    }
+    const cx = b.x + b.w / 2;
+    const cy = b.y + b.h / 2;
+    this.ui.setCamera({ zoom, x: cx - width / 2 / zoom, y: cy - height / 2 / zoom });
   }
 
   /** แจ้งเตือนเมื่อมีอะไรเปลี่ยน (ทั้งที่ต้องวาดใหม่และที่ React ต้องรู้) */

@@ -1414,7 +1414,7 @@ details[open] > summary .chevron,
   }
 
   .lesson-body {
-    max-height: 30vh;
+    max-height: 20vh;
   }
 
   .truth-table td,
@@ -1464,4 +1464,155 @@ details[open] > summary .chevron,
   border: 1px solid var(--accent);
   border-radius: var(--radius);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+}
+
+/* มุมมอง 3D (M4-3) */
+.computer-3d {
+  grid-column: 1 / -1;
+}
+.view3d {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 12px;
+  margin-top: 8px;
+}
+.view3d-stage {
+  position: relative;
+  height: min(70vh, 640px);
+  min-height: 340px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  touch-action: none;
+}
+.view3d-stage canvas {
+  display: block;
+}
+.view3d-fallback {
+  padding: 16px;
+}
+.view3d-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.view3d-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  border: 1px solid var(--border);
+}
+.view3d-tools {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+}
+.view3d-side {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.view3d-side h3 {
+  margin: 4px 0 0;
+}
+.view3d-side h4 {
+  margin: 6px 0 0;
+}
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+}
+.crumbs span {
+  display: inline-flex;
+  align-items: center;
+}
+.crumbs button[aria-current] {
+  font-weight: 600;
+  color: var(--text);
+}
+.view3d-parts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.view3d-parts .part {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 8px;
+  text-align: left;
+  padding: 6px 8px;
+}
+.part-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.part-meter {
+  grid-column: 1 / -1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.part-meter span {
+  display: block;
+  height: 100%;
+  background: var(--signal-high);
+}
+.view3d-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+}
+.view3d-legend .sw {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.sw.high {
+  background: var(--signal-high);
+}
+.sw.low {
+  background: var(--signal-low);
+}
+.sw.flash {
+  background: color-mix(in srgb, var(--signal-high) 55%, white);
+}
+@media (max-width: 900px) {
+  .view3d {
+    grid-template-columns: 1fr;
+  }
+  .view3d-stage {
+    height: 60vh;
+  }
+}
+
+/* จอสัมผัส: กดค้างบนพื้นที่วาดวงจรหรือภาพ 3D ไม่ให้ iOS เลือกตัวหนังสือหรือขึ้นเมนูคัดลอก */
+.canvas-wrap,
+.view3d-stage,
+.zoom {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }

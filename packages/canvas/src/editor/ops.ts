@@ -2,6 +2,7 @@
 // ใช้คู่กับ History เพื่อ undo/redo ได้แน่นอนทุกครั้ง
 
 import type { CircuitBody, ComponentDef, Instance, LocalizedText, PinDef, PinRef, Rotation, Wire } from '@z-ncpu/shared';
+import { terminalCenter } from '../scene';
 
 /** หา pin ของชิ้นส่วน (app ส่ง ComponentLibrary.pinsOf มาให้) */
 export type PinResolver = (defId: string, params?: Record<string, number>) => PinDef[] | undefined;
@@ -51,18 +52,40 @@ export function removeInstances(def: ComponentDef, ids: readonly string[]): Comp
   const gone = new Set(ids);
   const b = body(def);
   return withBody(def, {
+    ...b,
     instances: b.instances.filter((i) => !gone.has(i.id)),
     wires: b.wires.filter((w) => !gone.has(w.from.inst) && !gone.has(w.to.inst)),
   });
 }
 
+/** ตำแหน่งปัจจุบันของขาวงจรเอง (ที่ผู้เล่นย้ายไว้ หรือตำแหน่งตั้งต้น) */
+export function terminalPos(def: ComponentDef, pin: string): { x: number; y: number } | undefined {
+  const p = def.pins.find((q) => q.name === pin);
+  if (!p) return undefined;
+  const saved = def.body?.terminals?.[pin];
+  if (saved) return saved;
+  const same = def.pins.filter((q) => q.dir === p.dir);
+  return terminalCenter(p.dir, same.indexOf(p), same.length);
+}
+
+/** ย้ายชิ้นส่วน และขาวงจรเอง (id "self.<ชื่อขา>") */
 export function moveInstances(def: ComponentDef, ids: readonly string[], dx: number, dy: number): ComponentDef {
   const moving = new Set(ids);
   const b = body(def);
-  return withBody(def, {
+  const next: CircuitBody = {
     ...b,
     instances: b.instances.map((i) => (moving.has(i.id) ? { ...i, x: i.x + dx, y: i.y + dy } : i)),
-  });
+  };
+  const selfPins = ids.filter((id) => id.startsWith('self.')).map((id) => id.slice('self.'.length));
+  if (selfPins.length > 0) {
+    const terminals = { ...b.terminals };
+    for (const pin of selfPins) {
+      const at = terminalPos(def, pin);
+      if (at) terminals[pin] = { x: at.x + dx, y: at.y + dy };
+    }
+    next.terminals = terminals;
+  }
+  return withBody(def, next);
 }
 
 export function rotateInstances(def: ComponentDef, ids: readonly string[]): ComponentDef {
@@ -184,6 +207,7 @@ export function setParams(
   return {
     ok: true,
     def: withBody(def, {
+      ...bd,
       instances: bd.instances.map((i) => (i.id === id ? { ...i, params: { ...params } } : i)),
       wires: bd.wires.filter((w) => !gone.has(w.id)),
     }),

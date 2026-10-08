@@ -5,8 +5,8 @@ import { EXAMPLE_PROGRAMS } from '@z-ncpu/content';
 import { ComponentLibrary, contentHash, cpuHarness, ROM_DUT, ROM_PANEL } from '@z-ncpu/engine';
 import { assemble, explainInstruction, hex16, type AsmResult } from '@z-ncpu/isa';
 import type { SignalValue } from '@z-ncpu/shared';
-import { AlertTriangle, BookOpen, Upload, CircleDot, Cpu, FileCode2, ListOrdered, Pause, Play, RotateCcw, StepForward, X } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import { AlertTriangle, Box, BookOpen, Upload, CircleDot, Cpu, FileCode2, ListOrdered, Pause, Play, RotateCcw, StepForward, X } from 'lucide-react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { EngineClosedError } from '../engine-client';
 import type { SaveFile } from '../game/save';
 import { useEngine } from '../use-engine';
@@ -14,6 +14,9 @@ import { LedBar, NumberDisplay, SevenSegment } from '../ui/devices';
 import { BusInput } from '../ui/widgets';
 import { AsmEditor } from './AsmEditor';
 import { LogicAnalyzer } from './LogicAnalyzer';
+
+// three.js ใหญ่ โหลดเฉพาะตอนเปิดมุมมอง 3D
+const View3D = lazy(() => import('./View3D'));
 
 const CPU_ID = 'user.cpu';
 const PROGRAM_ID = 'main';
@@ -66,6 +69,7 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
   const [bpDraft, setBpDraft] = useState('');
   const [bpError, setBpError] = useState<string | null>(null);
   const listingRef = useRef<HTMLDivElement>(null);
+  const [show3d, setShow3d] = useState(false);
 
   const levelPassed = !!save.progress['cpu.z8']?.passedHash;
   const lib = useMemo(() => new ComponentLibrary(save.components), [save.components]);
@@ -456,6 +460,24 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
             ))}
           </ul>
         </div>
+      </section>
+
+      <section className="computer-3d" aria-labelledby="v3d-title">
+        <div className="computer-head">
+          <h2 id="v3d-title" className="with-icon">
+            <Box size={18} aria-hidden /> มุมมอง 3D
+          </h2>
+          <button onClick={() => setShow3d((v) => !v)} aria-expanded={show3d} disabled={!ok}>
+            {show3d ? 'ปิดมุมมอง 3D' : 'เปิดมุมมอง 3D'}
+          </button>
+        </div>
+        {show3d && ok && client ? (
+          <Suspense fallback={<p className="muted small">กำลังโหลดมุมมอง 3D…</p>}>
+            <View3D client={client} components={save.components} cpuDefId={CPU_ID} root={ROM_DUT} version={cpuKey} />
+          </Suspense>
+        ) : (
+          <p className="muted small">ดู CPU ทั้งเครื่องเป็นชั้นๆ ซูมจากภาพรวมเข้าไปจนเห็น NAND ทุกตัว และเห็นไฟวิ่งตอนรันโปรแกรม</p>
+        )}
       </section>
 
       <LogicAnalyzer client={ok ? client : null} history={history} cycle={cycle} running={running} onStep={() => client?.post({ type: 'step', count: 1 })} />

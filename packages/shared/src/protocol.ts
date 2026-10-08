@@ -45,7 +45,11 @@ export type UiToWorker =
   /** Why?: ค่าที่ขา key ("ชิ้น.ขา" หรือ "self.ขา") ในชั้น scope มาจากไหน */
   | { rid: number; type: 'why'; scope: string; key: string }
   /** ขอค่าของทุกขาในชั้นหนึ่งไปกับทุก signals: '' = ชั้นบนสุด, 'g/inv' = X-Ray ข้างใน inv ที่อยู่ใน g */
-  | { rid: number; type: 'subscribe'; scopePath: string };
+  | { rid: number; type: 'subscribe'; scopePath: string }
+  /** มุมมอง 3D: ขอ path ของ NAND ทุกตัว (ตอบ gateMap) */
+  | { rid: number; type: 'gateMap' }
+  /** มุมมอง 3D: ส่งค่าขาออกของ NAND ทุกตัวไปกับทุก signals หรือไม่ */
+  | { rid: number; type: 'watchGates'; on: boolean };
 
 export interface CompileStats {
   nets: number;
@@ -68,7 +72,11 @@ export type WorkerToUi =
       scopePath?: string;
       /** ช่วง cycle ที่ย้อนดูได้ (time travel) และขาที่บันทึกไว้ */
       history?: { first: number; last: number; pins: { name: string; width: number }[] };
+      /** ค่าขาออกของ NAND ตัวที่ i (0, 1 หรือ 2 = X) เมื่อเปิด watchGates */
+      gates?: Uint8Array;
     }
+  /** path ของ NAND ตัวที่ i เช่น "dut/alu1/add/fa3/nand2" (ว่างถ้ายังไม่มีวงจร) */
+  | { rid: number; type: 'gateMap'; paths: string[] }
   /** reason: เหตุที่หยุดเอง ('breakpoint' หรือ 'halt') */
   | { rid: number; type: 'status'; cycle: number; running: boolean; reason?: 'breakpoint' | 'halt' }
   /** ผลการตั้ง breakpoint: error บอกคอลัมน์ที่ผิด */

@@ -13,6 +13,7 @@
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/noto-sans-thai": "^5.3.0",
+    "@react-three/fiber": "^9.8.1",
     "@z-ncpu/canvas": "workspace:*",
     "@z-ncpu/content": "workspace:*",
     "@z-ncpu/engine": "workspace:*",
@@ -20,11 +21,13 @@
     "@z-ncpu/shared": "workspace:*",
     "lucide-react": "^1.52.0",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "^6.1.2",
     "vite": "^8.3.3",
     "vite-plugin-pwa": "^2.0.0",

@@ -120,8 +120,23 @@ function component(v: unknown): ComponentDef {
     body: {
       instances: arr(body.instances, 'ชิ้นส่วนในวงจร', LIMITS.instances).map(instance),
       wires: arr(body.wires, 'สาย', LIMITS.wires).map(wire),
+      ...(body.terminals !== undefined ? { terminals: terminals(body.terminals) } : {}),
     },
   };
+}
+
+/** ตำแหน่งขาวงจรเองที่ผู้เล่นย้ายไว้ */
+function terminals(v: unknown): Record<string, { x: number; y: number }> {
+  if (!isObj(v)) return bad('ตำแหน่งขาของวงจรไม่ถูกต้อง');
+  // Object.fromEntries สร้าง property ของตัวเองเสมอ (ชื่อ "__proto__" จะไม่ไปแก้ prototype)
+  return Object.fromEntries(
+    Object.entries(v)
+      .slice(0, LIMITS.pins)
+      .map(([k, p]) => {
+        const at = isObj(p) ? p : bad('ตำแหน่งขาของวงจรไม่ถูกต้อง');
+        return [name(k, 'ชื่อขา', PIN_NAME), { x: num(at.x, 'ตำแหน่ง x'), y: num(at.y, 'ตำแหน่ง y') }];
+      }),
+  );
 }
 
 function progressEntry(v: unknown): LevelProgress {
