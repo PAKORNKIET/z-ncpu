@@ -68,6 +68,13 @@ pnpm desktop:build  # สร้างตัวติดตั้ง .exe (NSIS) 
 
 ตัวติดตั้งยังไม่มี code signing (ไม่มีค่าใช้จ่าย) Windows SmartScreen จึงจะเตือนตอนติดตั้งครั้งแรก
 
+### ขึ้นเว็บ (Cloudflare Pages) และแจกแอป (GitHub Releases)
+
+- ทุกครั้งที่ push เข้า `main` และเทสต์ผ่านทั้งหมด CI จะเอาตัว build ขึ้น Cloudflare Pages ให้เอง (ต้องตั้ง secret `CLOUDFLARE_API_TOKEN` กับ `CLOUDFLARE_ACCOUNT_ID` ก่อน ถ้ายังไม่ตั้ง CI จะข้ามขั้นนี้)
+- header ความปลอดภัย (CSP ไม่โหลดอะไรจากเว็บอื่น) และการ cache อยู่ใน `apps/web/public/_headers` และมีเทสต์ตรวจว่าแอปทำงานได้ครบภายใต้ CSP นี้
+- แจกแอป Windows: แก้เลขเวอร์ชันใน `apps/web/package.json` และ `apps/desktop/src-tauri/tauri.conf.json` ให้ตรงกัน แล้ว push tag เช่น `v0.2.0`
+  GitHub Actions จะ build ตัวติดตั้งแล้วสร้าง release แบบร่างให้ตรวจก่อนกด Publish
+
 ## สถาปัตยกรรม
 
 ```text

@@ -1,0 +1,20 @@
+# Cloudflare Pages: header ความปลอดภัยและการ cache (https://developers.cloudflare.com/pages/configuration/headers/)
+# CSP ชุดเดียวกับแอป Windows (apps/desktop/src-tauri/tauri.conf.json) ไม่โหลดอะไรจากเว็บอื่นเลย
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Cross-Origin-Opener-Policy: same-origin
+
+# ไฟล์ใน assets มีชื่อตาม hash เนื้อหา เก็บ cache ได้นาน
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# service worker และหน้าแรกต้องตรวจเวอร์ชันใหม่ทุกครั้ง ผู้เล่นจะได้รับอัปเดต
+/sw.js
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache

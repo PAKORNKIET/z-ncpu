@@ -41,3 +41,32 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 7
+
+  # ขึ้นเว็บจริงบน Cloudflare Pages (ฟรี) หลังเทสต์ผ่านทั้งหมด เฉพาะ push เข้า main
+  # ต้องตั้ง secret ใน GitHub ก่อน: CLOUDFLARE_API_TOKEN (สิทธิ์ Cloudflare Pages: Edit) และ CLOUDFLARE_ACCOUNT_ID
+  # ยังไม่ได้ตั้ง = ข้ามขั้นนี้ไป CI ไม่พัง
+  deploy:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: ตรวจว่าตั้ง secret แล้ว
+        id: secrets
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: if [ -n "$TOKEN" ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; else echo "ready=false" >> "$GITHUB_OUTPUT"; echo "::notice::ยังไม่ได้ตั้ง CLOUDFLARE_API_TOKEN ข้ามการขึ้นเว็บ"; fi
+      - if: steps.secrets.outputs.ready == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: dist
+      - if: steps.secrets.outputs.ready == 'true'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=z-ncpu --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

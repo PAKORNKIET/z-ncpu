@@ -1,0 +1,54 @@
+# แจกแอป Windows ผ่าน GitHub Releases (ฟรี) — Spec ส่วน 2
+# วิธีใช้: แก้เลขเวอร์ชันแล้ว push tag เช่น `git tag v0.2.0 && git push origin v0.2.0`
+# ได้ release แบบร่าง (draft) พร้อมตัวติดตั้ง .exe ตรวจแล้วค่อยกด Publish เองบน GitHub
+name: Release (Windows)
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri -> target
+      - run: pnpm install --frozen-lockfile
+      # เลขใน tag ต้องตรงกับเวอร์ชันของแอป (ชื่อไฟล์ตัวติดตั้งใช้เลขนี้)
+      - name: ตรวจเลขเวอร์ชัน
+        shell: bash
+        run: |
+          want="${GITHUB_REF_NAME#v}"
+          have=$(node -p "require('./apps/desktop/src-tauri/tauri.conf.json').version")
+          web=$(node -p "require('./apps/web/package.json').version")
+          if [ "$want" != "$have" ] || [ "$want" != "$web" ]; then
+            echo "::error::tag $GITHUB_REF_NAME ไม่ตรงกับเวอร์ชันในแอป (tauri.conf.json = $have, apps/web/package.json = $web)"
+            exit 1
+          fi
+      # ตรวจทั้งชุดก่อน build ตัวติดตั้ง
+      - run: pnpm check
+      - uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: apps/desktop
+          tauriScript: pnpm tauri
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Z-NCPU ${{ github.ref_name }}'
+          releaseBody: |
+            ตัวติดตั้งสำหรับ Windows 10/11 (ไฟล์ `Z-NCPU_*_x64-setup.exe`)
+            ยังไม่มี code signing: Windows SmartScreen จะเตือนตอนติดตั้งครั้งแรก กด "More info" แล้ว "Run anyway"
+            เล่นบนเว็บได้ที่ลิงก์ใน README โดยไม่ต้องติดตั้ง
+          releaseDraft: true
+          prerelease: false
