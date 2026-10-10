@@ -1,21 +1,33 @@
 // หน้าหลัก: ด่าน · คอมพิวเตอร์ (รันโปรแกรมบน CPU ของผู้เล่น) · สนามทดลอง · ตัวอย่าง engine จาก M0
-import { Cpu, Download, FlaskConical, FolderOpen, GraduationCap, MonitorDown, Moon, RefreshCw, RotateCcw, Sun, WifiOff, X, Zap, type LucideIcon } from 'lucide-react';
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { Cpu, Download, Info, FlaskConical, FolderOpen, GraduationCap, MonitorDown, Moon, RefreshCw, RotateCcw, Sun, WifiOff, X, Zap, type LucideIcon } from 'lucide-react';
+import { lazy, Suspense, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { applyUpdate, installApp, pwaState, subscribePwa } from './pwa';
-import { ComputerPage } from './computer/ComputerPage';
-import { Demo } from './demo/Demo';
-import { SandboxPage } from './editor/SandboxPage';
 import { GamePage } from './game/GamePage';
 import { emptySave, parseSave, serializeSave } from './game/save';
 import { useSave } from './game/use-save';
 
-type Tab = 'game' | 'computer' | 'sandbox' | 'demo';
+// หน้าที่ไม่ได้เปิดตอนเริ่ม แยกไฟล์แล้วโหลดเมื่อกดแท็บ หน้าแรกจะได้โหลดเร็วขึ้น (PWA เก็บไว้ทั้งหมด ใช้ออฟไลน์ได้เหมือนเดิม)
+const ComputerPage = lazy(() => import('./computer/ComputerPage').then((m) => ({ default: m.ComputerPage })));
+const SandboxPage = lazy(() => import('./editor/SandboxPage').then((m) => ({ default: m.SandboxPage })));
+const AboutPage = lazy(() => import('./about/AboutPage').then((m) => ({ default: m.AboutPage })));
+const Demo = lazy(() => import('./demo/Demo').then((m) => ({ default: m.Demo })));
+
+function PageLoading() {
+  return (
+    <p className="muted page-loading" role="status">
+      กำลังโหลด…
+    </p>
+  );
+}
+
+type Tab = 'game' | 'computer' | 'sandbox' | 'demo' | 'about';
 
 const TABS: [Tab, string, LucideIcon][] = [
   ['game', 'ด่าน', GraduationCap],
   ['computer', 'คอมพิวเตอร์', Cpu],
   ['sandbox', 'สนามทดลอง', FlaskConical],
   ['demo', 'ตัวอย่าง engine', Zap],
+  ['about', 'เกี่ยวกับ', Info],
 ];
 
 const THEME_KEY = 'zncpu.theme';
@@ -183,11 +195,21 @@ export function App() {
         {tab === 'game' ? (
           <GamePage key={generation} save={save} setSave={setSave} generation={generation} />
         ) : tab === 'computer' ? (
-          <ComputerPage key={generation} save={save} setSave={setSave} />
+          <Suspense fallback={<PageLoading />}>
+            <ComputerPage key={generation} save={save} setSave={setSave} />
+          </Suspense>
         ) : tab === 'sandbox' ? (
-          <SandboxPage save={save} />
+          <Suspense fallback={<PageLoading />}>
+            <SandboxPage save={save} />
+          </Suspense>
+        ) : tab === 'demo' ? (
+          <Suspense fallback={<PageLoading />}>
+            <Demo />
+          </Suspense>
         ) : (
-          <Demo />
+          <Suspense fallback={<PageLoading />}>
+            <AboutPage />
+          </Suspense>
         )}
       </main>
       {pwa.updateReady ? (

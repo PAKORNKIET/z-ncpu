@@ -1,58 +1,39 @@
 # Z-NCPU (Zero-NandCPU)
 
-สร้าง CPU จากเกต NAND — เว็บและแอป Windows ที่ให้ผู้เรียนไทยต่อคอมพิวเตอร์ขึ้นมาเองทีละด่าน
-ตั้งแต่เกต NAND ไปจนถึง CPU ที่รันโปรแกรมที่ตัวเองเขียนได้จริง
+**สร้างคอมพิวเตอร์ 8 บิตด้วยมือตัวเอง เริ่มจากเกต NAND ตัวเดียว แล้วเขียนโปรแกรมให้ CPU ที่ต่อเองรันจริง**
 
-เอกสารออกแบบ: **Z-NCPU — Architecture Spec v3** (ส่วนที่อ้างในโค้ด เช่น "Spec ส่วน 6" หมายถึงเอกสารนี้)
+เกมเรียนรู้ภาษาไทย เล่นบนเว็บ ติดตั้งเป็นแอป (PWA) ใช้ออฟไลน์ได้ และมีแอป Windows ผู้เล่นต่อวงจรทีละด่าน ตั้งแต่ NOT, AND, ตัวบวกเลข, ALU, หน่วยความจำ
+จนได้ CPU Z8 ทั้งเครื่องที่ใช้ NAND 55,189 ตัว แล้วเขียน assembly ให้มันรัน พร้อมเครื่องมือดีบักระดับเกต และมุมมอง 3D ที่ซูมลงไปเห็น NAND ทุกตัว
 
-## สถานะ: M2 · ส่วนประกอบ CPU ✅
+> *English:* A Thai-language game where you build an 8-bit computer from a single NAND gate — logic gates, adders, an ALU, RAM, ROM, and finally a
+> 55,189-NAND CPU that runs assembly programs you write. Every value on screen comes from simulating the player's own gates in a Web Worker.
 
-### M2
+![ด่าน Full Adder: ต่อวงจรจาก NAND สายเปลี่ยนสีตามค่าแบบสด และทดสอบอัตโนมัติ](docs/screenshots/level.png)
 
-| ส่วน | สถานะ |
-| --- | --- |
-| ฐานสำหรับ 8 บิต: ตั้งความกว้างตัวแยก/รวมบัส, ทดสอบด้วยกรณีขอบ + สุ่ม 2,000 แบบเทียบฟังก์ชันอ้างอิง, วงจรใหญ่ใช้ Fast Mode อัตโนมัติ | ✅ |
-| ด่าน NOR, XNOR, MUX, DEMUX | ✅ |
-| เลขคณิต 8 บิต: Adder, NOT 8 บิต, Incrementer, Negator (two's complement), Subtractor, Zero, Equal | ✅ |
-| บท ALU: AND/OR/XOR 8 บิต, MUX 8 บิต, เลือก 1 ใน 4 / 1 ใน 8, ALU 8 บิตพร้อม flags Z C N ตามคำสั่งของ Z8 | ✅ |
-| Register 1/8 บิต, ตัวนับ, ตัวกระจาย 1→4 / 1→8, RAM8 → RAM64 → RAM256 | ✅ |
-| MUX 16 บิต, ROM8 → ROM64 → ROM256 กับแผงค่าคงที่, Program Counter, จอ 7 ส่วน + อุปกรณ์แสดงผล (จอตัวเลข, LED) | ✅ |
+| CPU ที่ต่อเองรันโปรแกรมนับ 0–9 | มุมมอง 3D: ซูมลงไปใน ALU เห็นไฟวิ่ง | บนมือถือ |
+| --- | --- | --- |
+| ![หน้าคอมพิวเตอร์](docs/screenshots/computer.png) | ![มุมมอง 3D](docs/screenshots/view3d.png) | ![มือถือ](docs/screenshots/mobile.png) |
 
-**เกณฑ์ผ่าน M2 (RAM256 รันใน Fast Mode ได้ลื่น):** RAM256 ที่ต่อจาก NAND 35,804 ตัว เปิดด่าน ~0.4 วินาที, กดปุ่มเปลี่ยน address แล้วเห็นค่าใหม่ใน 50–120 ms, ทดสอบเขียน/อ่านทั้งชุด ~0.45 วินาที (วัดใน Chromium บนเครื่อง CI)
+## จุดเด่น
 
-### M1 · ต่อวงจร ✅
+- **8 บท 53 ด่าน** พร้อมบทเรียนภาษาไทย คำใบ้ และการทดสอบอัตโนมัติทุกด่าน (ตารางความจริง ลำดับเวลา สุ่มเทียบฟังก์ชันอ้างอิง และรันโปรแกรมบน CPU)
+- **จำลองระดับเกตจริง:** วงจรของผู้เล่นถูกแปลง (flatten) เป็น NAND ล้วน แล้วจำลองใน Web Worker มีสองโหมด
+  - Visual Mode: event-driven ทีละ unit delay เห็นไฟวิ่งผ่านแต่ละเกต
+  - Fast Mode: แบ่ง SCC แล้วเรียงตาม topological order วงจร 55,000 เกตรันได้หลายร้อยจังหวะนาฬิกาต่อวินาทีในเบราว์เซอร์
+- **CPU Z8 ที่ผู้เล่นต่อเอง:** 8 บิต register A–D, Stack Pointer, flags Z C N, RAM 256 ไบต์, ROM 256 คำ และอุปกรณ์แบบ memory-mapped (จอตัวเลข, LED, 7-segment, สวิตช์, ปุ่ม, คีย์บอร์ด)
+  ค่า register ที่เห็นอ่านมาจากขาของวงจรผู้เล่น ไม่ได้มาจาก emulator (emulator ใช้เป็นตัวเทียบตอนทดสอบเท่านั้น)
+- **เครื่องมือดีบัก:** ย้อนเวลาได้ทุก cycle (keyframe + บันทึก input), Logic Analyzer, breakpoint แบบมีเงื่อนไข (parser ของตัวเอง ไม่ใช้ `eval`),
+  X-Ray ดูข้างในชิ้นส่วนทุกชั้น และ **Why?** ที่ไล่ย้อนว่าค่าที่ขานี้มาจากเกตไหน
+- **มุมมอง 3D:** three.js + React Three Fiber วาดแบบ instancing ลดรายละเอียดตามระยะซูม และระบายสีจากค่าของ NAND ทุกตัวในแต่ละเฟรม
+- **ใช้ได้ทุกจอ:** เมาส์ คีย์บอร์ด และจอสัมผัส (สองนิ้วซูมพร้อมเลื่อน) ธีมมืด/สว่าง ใช้ได้กับโปรแกรมอ่านหน้าจอ
+- **ความเป็นส่วนตัว:** ไม่ต้องสมัครสมาชิก ไม่เก็บข้อมูลการใช้งาน ความคืบหน้าอยู่ในเครื่อง ย้ายเครื่องด้วยไฟล์ `.zncpu`
 
-### M1
+## คุณภาพ
 
-| ส่วน | สถานะ |
-| --- | --- |
-| แกน editor: วาง ลบ ย้าย หมุน ต่อสาย undo/redo พร้อมตรวจการต่อสาย | ✅ |
-| หน้าต่อวงจร: ลากวาง ต่อสายด้วยเมาส์ ซูม เลื่อนจอ สายเปลี่ยนสีตามค่าแบบสด | ✅ |
-| ระบบด่าน: บทเรียน ทดสอบด้วยตารางความจริง คำใบ้ ปลดล็อก บันทึกในเครื่อง และบันทึก/เปิดไฟล์ .zncpu | ✅ |
-| X-Ray: ดับเบิลคลิกชิ้นที่สร้างเองเพื่อดูไฟวิ่งข้างใน (ลงลึกได้ทุกชั้น) | ✅ |
-| ด่าน NOT ถึง D Flip-Flop (บทตรรกะ การบวกเลข และวงจรจำค่า) พร้อมบทเรียนไทย/อังกฤษและคำใบ้ | ✅ |
-
-### M0 · โครง
-
-| ส่วน | สถานะ |
-| --- | --- |
-| Data model (pin มีความกว้าง, bus, splitter/merger) | ✅ |
-| Flatten → netlist ระดับบิต + diagnostics ไทย/อังกฤษ | ✅ |
-| Visual Mode (event-driven, unit delay, trace ไฟวิ่ง) | ✅ |
-| Fast Mode (SCC + topological order, loop วนจนนิ่ง) | ✅ |
-| ตรวจ oscillation แทนการห้าม loop | ✅ |
-| Truth table + test script ตามลำดับเวลา | ✅ |
-| Content hash + หาชิ้นที่ต้องทดสอบใหม่ | ✅ |
-| ROM ที่ผู้เล่นต่อเองจาก MUX + แผงค่าคงที่ (ROM256 = 16,320 NAND) | ✅ |
-| มัดสาย (bundle) สูงสุด 4,096 บิต + แบ่ง bus เป็นส่วน | ✅ |
-| Z8 ISA (ไฟล์นิยาม + encode/decode) | ✅ assembler เต็มมาใน M3 |
-| Level CI (เฉลยทุกด่านต้องผ่าน และใช้ NAND เท่าค่าที่ดีที่สุดที่ด่านระบุ) | ✅ ครบทุกด่าน |
-| Web: engine ใน Web Worker + หน้าทดสอบ | ✅ |
-| E2E ด้วย Playwright (dev + build) ใน CI | ✅ |
-| Windows (Tauri 2) | ✅ build และติดตั้งบน Windows แล้ว |
-
-ผลวัดล่าสุด: วงจร 26,000 NAND (ขนาดใกล้ RAM256) compile ~180 ms และรันใน Fast Mode ได้ ~570 tick/วินาที
-และ ROM256 ที่ต่อจาก NAND 16,320 ตัวอ่านถูกครบ 256 คำทั้ง Visual Mode และ Fast Mode
+- เทสต์หน่วยและเทสต์รวม 460+ ตัว (Vitest) รวม Level CI ที่บังคับว่าเฉลยทุกด่านต้องผ่านทั้งสองโหมดการจำลอง
+- E2E 110+ ตัว (Playwright) เปิดแอปจริงทั้งตอน dev และตัว build ต่อวงจรด้วยเมาส์และนิ้ว รันโปรแกรมบน CPU ทั้งเครื่อง
+- TypeScript แบบ strict, ESLint บังคับกฎ dependency ระหว่าง package และห้าม `eval` / `new Function`
+- ตอน build รวม license ของทุก dependency ไว้ใน `third-party-licenses.txt` และ build ไม่ผ่านถ้ามี license ที่ยังไม่ได้ตรวจ
 
 ## เริ่มใช้งาน
 
@@ -61,19 +42,20 @@
 ```bash
 pnpm install
 pnpm dev          # เปิดเว็บที่ http://localhost:5173
-pnpm test         # เทสต์ทั้งหมด
 pnpm check        # typecheck + lint + test (ชุดเดียวกับ CI)
 pnpm build        # build เว็บไปที่ apps/web/dist
 ```
 
-### E2E (Playwright)
+ทดสอบบนมือถือในวง Wi-Fi เดียวกัน: `pnpm --filter @z-ncpu/web exec vite --host` แล้วเปิดที่อยู่ในบรรทัด `Network:`
 
-เปิดเว็บจริงใน Chromium แล้วต่อวงจรด้วยเมาส์ กดสวิตช์ และสั่งตัวนับ ทดสอบทั้งตอน dev (React StrictMode) และตัว build ใช้ port 5174 กับ 4174 จึงรันพร้อม `pnpm dev` ได้
+### E2E (Playwright)
 
 ```bash
 pnpm e2e:install  # ครั้งแรกครั้งเดียว: ดาวน์โหลด Chromium สำหรับทดสอบ
-pnpm e2e          # build แล้วรัน E2E
+pnpm e2e          # build แล้วรัน E2E ทั้งตอน dev (port 5174) และตัว build (port 4174)
 ```
+
+ภาพหน้าจอใน README สร้างใหม่ได้ด้วย `SCREENSHOTS=1 pnpm exec playwright test e2e/screenshots.spec.ts --project=build`
 
 ### แอป Windows
 
@@ -81,28 +63,30 @@ pnpm e2e          # build แล้วรัน E2E
 
 ```bash
 pnpm desktop:dev    # เปิดแอปแบบ dev
-pnpm desktop:build  # สร้างตัวติดตั้ง .exe (NSIS) และ .msi
+pnpm desktop:build  # สร้างตัวติดตั้ง .exe (NSIS) ภาษาไทย/อังกฤษ
 ```
 
 ตัวติดตั้งยังไม่มี code signing (ไม่มีค่าใช้จ่าย) Windows SmartScreen จึงจะเตือนตอนติดตั้งครั้งแรก
 
-## โครงสร้าง
+## สถาปัตยกรรม
 
 ```text
 apps/
-  web/        Vite + React (build เดียวใช้ทั้งเว็บและ Windows)
-  desktop/    Tauri 2 ห่อ build ของ web
+  web/        Vite + React 19: หน้าด่าน, หน้าคอมพิวเตอร์, มุมมอง 3D, PWA (build เดียวใช้ทั้งเว็บและ Windows)
+  desktop/    Tauri 2 ห่อ build ของ web พร้อมตัวติดตั้ง NSIS ภาษาไทย
 packages/
-  shared/     types กลาง + protocol Worker ↔ UI
-  engine/     circuit model, flatten, simulator, validator (TS ล้วน ไม่มี UI)
-  isa/        ไฟล์นิยาม ISA + encode/decode
-  canvas/     editor (undo/redo), หน้าจอวงจร (Canvas 2D) และการโต้ตอบด้วยเมาส์/คีย์บอร์ด
-  content/    ด่าน บทเรียน คำใบ้ glossary และเฉลยสำหรับ CI
+  shared/     types กลาง + protocol ระหว่าง UI กับ Web Worker
+  engine/     circuit model, flatten → netlist NAND, Visual/Fast simulator, validator, time travel, Why? (TS ล้วน ไม่มี UI)
+  isa/        ชุดคำสั่ง Z8: assembler, encode/decode, emulator สำหรับเทียบผล
+  canvas/     editor (undo/redo), Canvas 2D renderer, การโต้ตอบเมาส์/นิ้ว/คีย์บอร์ด, ผังของมุมมอง 3D
+  content/    ด่าน บทเรียน คำใบ้ glossary และเฉลยสำหรับ Level CI
 ```
 
-กฎ dependency ระหว่าง package (Spec ส่วน 4) บังคับด้วย ESLint และห้าม `eval` / `new Function` ทั้งโปรเจกต์
+- UI กับ engine คุยกันผ่าน message เท่านั้น engine อยู่ใน Web Worker หน้าจอจึงไม่ค้างแม้วงจรใหญ่
+- React ไม่ render เกตทีละตัว: วงจร 2D วาดด้วย Canvas และ 3D วาดด้วย InstancedMesh
+- หน้าที่ไม่ได้เปิดตอนเริ่ม (คอมพิวเตอร์, 3D, สนามทดลอง) แยกไฟล์และโหลดเมื่อกดเปิด
 
-## ตัวอย่าง engine
+ตัวอย่างการใช้ engine โดยตรง:
 
 ```ts
 import { circuit, ComponentLibrary, compile, createSimulator, inp, out } from '@z-ncpu/engine';
@@ -118,16 +102,16 @@ sim.settle();
 sim.read('y'); // 0
 ```
 
-## ค่าใช้จ่าย
+## ผู้พัฒนา
 
-ฟรีทั้งหมด: Cloudflare Pages (เว็บ), GitHub Actions + Releases (CI และแจกแอป), ไลบรารีทุกตัวเป็น license เปิด
+**Pakornkiet Puanpanwong** · [github.com/PAKORNKIET](https://github.com/PAKORNKIET)
 
 ## License
 
 [MIT](LICENSE) © 2026 Pakornkiet Puanpanwong
 
-- ไลบรารีที่ติดไปกับแอปมีแค่ React, React DOM และ scheduler (MIT ทั้งหมด) ตอน build ระบบรวมข้อความ license ของทุกตัวไว้ที่ `third-party-licenses.txt` และจะ build ไม่ผ่านถ้ามี dependency ที่ license ยังไม่ได้ตรวจ
-- ฟอนต์ Noto Sans Thai และ JetBrains Mono ใช้ SIL Open Font License 1.1 และโหลดจาก Google Fonts
+- ไลบรารีที่ติดไปกับแอป (React, three.js, React Three Fiber, lucide, workbox และอื่นๆ) ใช้ license เปิดทั้งหมด รายการเต็มอยู่ใน `third-party-licenses.txt` ของตัว build
+- ฟอนต์ Noto Sans Thai และ JetBrains Mono ฝังมากับแอป ใช้ SIL Open Font License 1.1
 
 ## แรงบันดาลใจ
 

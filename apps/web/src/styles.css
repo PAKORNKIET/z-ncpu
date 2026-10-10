@@ -412,7 +412,7 @@ button.primary {
 
 .game {
   display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-columns: 230px minmax(0, 1fr);
   gap: 12px;
   margin-top: 12px;
 }
@@ -426,8 +426,56 @@ button.primary {
 }
 
 .levels h2 {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   font-size: 15px;
+}
+
+/* จอกว้าง: รายการด่านติดอยู่ข้างจอและเลื่อนในกล่องของตัวเอง ไม่ต้องเลื่อนทั้งหน้าเพื่อหาด่านถัดไป */
+@media (min-width: 1101px) {
+  .levels {
+    position: sticky;
+    top: 12px;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+.chapter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 4px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+}
+.chapter-toggle:hover {
+  background: var(--bg);
+}
+.chapter-toggle .ch-arrow {
+  flex: none;
+  transition: transform 0.15s;
+}
+.chapter-toggle[aria-expanded='true'] .ch-arrow {
+  transform: rotate(90deg);
+}
+.chapter-title {
+  flex: 1;
+  min-width: 0;
+}
+.chapter-count {
+  flex: none;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.chapter-count.done {
+  color: var(--signal-high);
 }
 
 .levels ol {
@@ -620,7 +668,7 @@ button.primary {
 /* ---------- M1-5: บัส นาฬิกา และตารางยาว ---------- */
 
 .chapter + .chapter {
-  margin-top: 10px;
+  margin-top: 4px;
 }
 
 .table-scroll {
@@ -1615,4 +1663,62 @@ details[open] > summary .chevron,
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
+}
+
+/* หน้า "เกี่ยวกับ" */
+.about {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.about > section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.about h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+.about h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+.about p {
+  margin: 6px 0;
+  line-height: 1.7;
+}
+.about .lead {
+  font-size: 16px;
+}
+.about-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.about-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.6;
+}
+.about-list svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--accent);
+}
+.about a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.page-loading {
+  padding: 24px;
+  text-align: center;
 }

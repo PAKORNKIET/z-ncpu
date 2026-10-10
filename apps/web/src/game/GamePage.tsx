@@ -9,6 +9,7 @@ import {
   BookOpen,
   CheckCircle2,
   ChevronDown,
+  ChevronRight,
   Circle,
   Cpu,
   Lightbulb,
@@ -20,7 +21,7 @@ import {
   XCircle,
   type LucideIcon,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { OkMark } from '../ui/icons';
 import { EngineClosedError } from '../engine-client';
 import { PRIMITIVE_PALETTE, Workbench, type PaletteItem, type WorkbenchContext } from '../editor/Workbench';
@@ -85,6 +86,40 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
   const [levelsOpen, setLevelsOpen] = useState(false);
   const passedCount = statuses.filter((st) => st === 'passed').length;
 
+  // บทที่เปิดดูอยู่: เริ่มจากบทของด่านปัจจุบัน และบทที่ยังเล่นอยู่ (บทที่ผ่านหมดแล้วหรือยังล็อกทั้งบทพับไว้ รายการจะได้ไม่ยาว)
+  const chapterIds = Object.keys(CHAPTERS).map(Number);
+  const levelsOf = (ch: number) => LEVELS.map((l, i) => ({ l, i })).filter(({ l }) => l.chapter === ch);
+  const [openChapters, setOpenChapters] = useState<Set<number>>(
+    () =>
+      new Set(
+        chapterIds.filter((ch) => {
+          const st = levelsOf(ch).map(({ i }) => statuses[i]);
+          return ch === level.chapter || !(st.every((x) => x === 'passed') || st.every((x) => x === 'locked'));
+        }),
+      ),
+  );
+  // เปลี่ยนด่าน: เปิดบทของด่านนั้น
+  useEffect(() => {
+    setOpenChapters((open) => (open.has(level.chapter) ? open : new Set([...open, level.chapter])));
+  }, [level.chapter]);
+  const toggleChapter = (ch: number): void =>
+    setOpenChapters((open) => {
+      const next = new Set(open);
+      if (next.has(ch)) next.delete(ch);
+      else next.add(ch);
+      return next;
+    });
+
+  // เลื่อนเฉพาะรายการด่าน (ไม่เลื่อนทั้งหน้า) ให้เห็นด่านปัจจุบัน
+  const listRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const box = listRef.current;
+    const item = box?.querySelector<HTMLElement>('[aria-current="step"]');
+    if (!box || !item || box.scrollHeight <= box.clientHeight) return;
+    const top = item.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop;
+    if (top < box.scrollTop || top + item.offsetHeight > box.scrollTop + box.clientHeight) box.scrollTop = top - box.clientHeight / 3;
+  }, [index, levelsOpen]);
+
   return (
     <div className="game">
       <button className="levels-toggle" aria-expanded={levelsOpen} aria-controls="level-list" onClick={() => setLevelsOpen(!levelsOpen)}>
@@ -95,15 +130,28 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
         <span className="muted small">ผ่าน {passedCount}</span>
         <ChevronDown size={18} aria-hidden className="chevron" />
       </button>
-      <nav id="level-list" className={`levels ${levelsOpen ? 'open' : ''}`} aria-label="ด่าน">
-        {Object.entries(CHAPTERS).map(([ch, title]) => (
+      <nav id="level-list" ref={listRef} className={`levels ${levelsOpen ? 'open' : ''}`} aria-label="ด่าน">
+        {Object.entries(CHAPTERS).map(([ch, title]) => {
+          const n = Number(ch);
+          const inChapter = levelsOf(n);
+          const done = inChapter.filter(({ i }) => statuses[i] === 'passed').length;
+          const open = openChapters.has(n);
+          return (
           <section key={ch} className="chapter">
             <h2>
-              บทที่ {ch} · {title.th}
+              <button className="chapter-toggle" aria-expanded={open} aria-controls={`chapter-${ch}`} onClick={() => toggleChapter(n)}>
+                <ChevronRight size={14} aria-hidden className="ch-arrow" />
+                <span className="chapter-title">
+                  บทที่ {ch} · {title.th}
+                </span>
+                <span className={`chapter-count ${done === inChapter.length ? 'done' : ''}`}>
+                  {done}/{inChapter.length}
+                </span>
+              </button>
             </h2>
-            <ol>
+            <ol id={`chapter-${ch}`} hidden={!open}>
               {LEVELS.map((l, i) =>
-                l.chapter !== Number(ch) ? null : (
+                l.chapter !== n ? null : (
                   <li key={l.id}>
                     <button
                       className={`level-item ${statuses[i]} ${i === index ? 'current' : ''}`}
@@ -130,7 +178,8 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
               )}
             </ol>
           </section>
-        ))}
+          );
+        })}
         <p className="muted small">บทถัดไป (ภารกิจขั้นสูง) มาใน M5</p>
       </nav>
 
