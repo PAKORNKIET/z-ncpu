@@ -63,6 +63,14 @@ jobs:
         with:
           name: web-dist
           path: dist
+      # ครั้งแรกสร้างโปรเจกต์ Pages ให้เอง (มีอยู่แล้วจะไม่ผ่านขั้นนี้ ซึ่งไม่เป็นไร)
+      - if: steps.secrets.outputs.ready == 'true'
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create z-ncpu --production-branch=main
       - if: steps.secrets.outputs.ready == 'true'
         uses: cloudflare/wrangler-action@v4
         with:
