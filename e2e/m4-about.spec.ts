@@ -15,6 +15,7 @@ test('หน้าเกี่ยวกับ: ชื่อผู้พัฒน
   await expect(about).toContainText('Pakornkiet Puanpanwong');
   await expect(about.getByRole('link', { name: /github\.com\/PAKORNKIET$/ })).toHaveAttribute('href', 'https://github.com/PAKORNKIET');
   await expect(about.getByRole('link', { name: /PAKORNKIET\/z-ncpu/ })).toHaveAttribute('href', 'https://github.com/PAKORNKIET/z-ncpu');
+  await expect(about.getByRole('link', { name: /z-ncpu\.pages\.dev/ })).toHaveAttribute('href', 'https://z-ncpu.pages.dev');
   await expect(page.getByTestId('about-version')).toHaveText(/เวอร์ชัน \d+\.\d+\.\d+/);
   await expect(about).toContainText('53 ด่าน');
   await expect(about).toContainText('MIT License');

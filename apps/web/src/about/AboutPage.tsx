@@ -6,6 +6,7 @@ declare const __APP_VERSION__: string;
 
 const REPO = 'https://github.com/PAKORNKIET/z-ncpu';
 const AUTHOR_URL = 'https://github.com/PAKORNKIET';
+const SITE = 'https://z-ncpu.pages.dev';
 
 export function AboutPage() {
   const chapters = Object.keys(CHAPTERS).length;
@@ -75,6 +76,12 @@ export function AboutPage() {
           <a href={AUTHOR_URL} target="_blank" rel="noreferrer">
             github.com/PAKORNKIET <ExternalLink size={14} aria-hidden />
           </a>
+        </p>
+        <p>
+          <a href={SITE} target="_blank" rel="noreferrer">
+            z-ncpu.pages.dev <ExternalLink size={14} aria-hidden />
+          </a>{' '}
+          <span className="small muted">(เล่นบนเว็บ)</span>
         </p>
         <p>
           <a href={REPO} target="_blank" rel="noreferrer">
