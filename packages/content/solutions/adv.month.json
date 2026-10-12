@@ -1,0 +1,3 @@
+{
+  "source": "TABLE = 0x20\n; ตารางจำนวนวัน: RAM[TABLE + เดือน]\n        MOV A, 31\n        MOV B, TABLE + 1\nfill:   STORE [B], A      ; ใส่ 31 ทุกเดือนก่อน\n        ADD B, 1\n        CMP B, TABLE + 13\n        JNZ fill\n        MOV A, 30         ; แล้วแก้เดือนที่มี 30 วัน\n        STORE [TABLE + 4], A\n        STORE [TABLE + 6], A\n        STORE [TABLE + 9], A\n        STORE [TABLE + 11], A\n        MOV A, 28\n        STORE [TABLE + 2], A\n        LOAD A, [SW]\n        CMP A, 13\n        JC bad            ; 13 ขึ้นไป\n        CMP A, 0\n        JZ bad\n        ADD A, TABLE\n        LOAD B, [A]\n        STORE [OUT], B\n        HALT\nbad:    MOV B, 0\n        STORE [OUT], B\n        HALT\n"
+}

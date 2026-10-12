@@ -23,13 +23,16 @@ export const level = (page: Page, n: number) => page.getByRole('button', { name:
 export const levelNamed = (page: Page, title: RegExp) => page.locator('.level-item').filter({ hasText: title });
 export const canvas = (page: Page) => page.getByRole('application');
 
+/** ด่านเขียนโปรแกรม (บท 8, 9) ไม่มีวงจรเฉลย มีแต่ซอร์ส assembly */
+const isProgram = (id: string): boolean => id.startsWith('prog.') || id.startsWith('adv.');
+
 /** เปิดแอปโดยมีความคืบหน้าเหมือนผ่านด่านเหล่านี้แล้ว (และร่างวงจร: id ของด่านเพื่อใช้เฉลย หรือวงจรที่แก้แล้ว) */
 export async function openWithSave(page: Page, passed: string[], drafts: (string | object)[] = []): Promise<void> {
   const save = {
     format: 'zncpu',
     schemaVersion: 1,
     project: { id: 'local', name: 'e2e' },
-    components: [...passed.filter((id) => !id.startsWith('prog.')).map(solution), ...drafts.map((d) => (typeof d === 'string' ? solution(d) : d))],
+    components: [...passed.filter((id) => !isProgram(id)).map(solution), ...drafts.map((d) => (typeof d === 'string' ? solution(d) : d))],
     progress: Object.fromEntries(passed.map((id) => [id, { attempts: 1, passedHash: '0' }])),
   };
   // ใส่ก่อนแอปเริ่ม (แอปบันทึกตอนปิดหน้า ถ้าใส่แล้วรีโหลด ข้อมูลในแอปจะเขียนทับ)
@@ -119,5 +122,13 @@ export const ORDER = [
   'prog.reverse',
   'prog.triple',
   'prog.bits',
+  'adv.fib',
+  'adv.mul',
+  'adv.div',
+  'adv.gcd',
+  'adv.month',
+  'adv.fact',
+  'adv.primes',
+  'adv.sort',
 ];
 export const before = (id: string): string[] => ORDER.slice(0, ORDER.indexOf(id));

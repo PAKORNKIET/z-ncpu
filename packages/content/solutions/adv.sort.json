@@ -1,0 +1,3 @@
+{
+  "source": "N = 6\nBASE = 0x10\n; เติมตาราง: x, 2x, 3x, … (ตัดเหลือ 8 บิต)\n        LOAD A, [SW]\n        MOV B, A\n        MOV C, BASE\nfill:   STORE [C], A\n        ADD A, B\n        ADD C, 1\n        CMP C, BASE + N\n        JNZ fill\n; bubble sort: N - 1 รอบ\n        MOV D, N - 1\npass:   MOV C, BASE\ninner:  LOAD A, [C]\n        ADD C, 1\n        LOAD B, [C]\n        CMP B, A\n        JC noswap         ; B >= A เรียงถูกแล้ว\n        STORE [C], A\n        SUB C, 1\n        STORE [C], B\n        ADD C, 1\nnoswap: CMP C, BASE + N - 1\n        JNZ inner\n        SUB D, 1\n        JNZ pass\n        MOV C, BASE\nshow:   LOAD A, [C]\n        STORE [OUT], A\n        ADD C, 1\n        CMP C, BASE + N\n        JNZ show\n        HALT\n"
+}

@@ -1,0 +1,3 @@
+{
+  "source": "        MOV A, 1\n        MOV B, 1\nloop:   STORE [OUT], A\n        MOV C, A\n        ADD C, B          ; ตัวถัดไป\n        JC done           ; เกิน 255\n        MOV B, A\n        MOV A, C\n        JMP loop\ndone:   HALT\n"
+}

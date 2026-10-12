@@ -45,6 +45,14 @@ import prog_maxLevel from '../levels/8-program/max.json';
 import prog_reverseLevel from '../levels/8-program/reverse.json';
 import prog_tripleLevel from '../levels/8-program/triple.json';
 import prog_bitsLevel from '../levels/8-program/bits.json';
+import adv_fibLevel from '../levels/9-advanced/fib.json';
+import adv_mulLevel from '../levels/9-advanced/mul.json';
+import adv_divLevel from '../levels/9-advanced/div.json';
+import adv_gcdLevel from '../levels/9-advanced/gcd.json';
+import adv_monthLevel from '../levels/9-advanced/month.json';
+import adv_factLevel from '../levels/9-advanced/fact.json';
+import adv_primesLevel from '../levels/9-advanced/primes.json';
+import adv_sortLevel from '../levels/9-advanced/sort.json';
 import add4Level from '../levels/2-arith/add4.json';
 import add8Level from '../levels/2-arith/add8.json';
 import eq8Level from '../levels/2-arith/eq8.json';
@@ -114,6 +122,14 @@ export const LEVELS: LevelDef[] = [
   prog_reverseLevel,
   prog_tripleLevel,
   prog_bitsLevel,
+  adv_fibLevel,
+  adv_mulLevel,
+  adv_divLevel,
+  adv_gcdLevel,
+  adv_monthLevel,
+  adv_factLevel,
+  adv_primesLevel,
+  adv_sortLevel,
 ] as LevelDef[];
 
 /** ชื่อบท (เลขบทตามหลักสูตรใน Spec ส่วน 12 บทที่ยังไม่มีด่านจะไม่แสดง) */
@@ -126,6 +142,7 @@ export const CHAPTERS: Record<number, { th: string; en: string }> = {
   6: { th: 'ควบคุมและอุปกรณ์', en: 'Control & I/O' },
   7: { th: 'CPU', en: 'CPU' },
   8: { th: 'การเขียนโปรแกรม', en: 'Programming' },
+  9: { th: 'ภารกิจขั้นสูง', en: 'Advanced missions' },
 };
 
 export { EXAMPLE_PROGRAMS, type ExampleProgram } from './programs';

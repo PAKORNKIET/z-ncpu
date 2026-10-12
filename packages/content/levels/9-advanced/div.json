@@ -1,0 +1,108 @@
+{
+  "id": "adv.div",
+  "chapter": 9,
+  "title": {
+    "th": "หารเอาผลหารและเศษ",
+    "en": "Division with remainder"
+  },
+  "lesson": "advanced/div",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "100 ÷ 7",
+          "en": "100 ÷ 7"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 14,
+          "leds": 2
+        },
+        "inputs": {
+          "sw": 100,
+          "key": 7
+        }
+      },
+      {
+        "name": {
+          "th": "255 ÷ 16",
+          "en": "255 ÷ 16"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 15,
+          "leds": 15
+        },
+        "inputs": {
+          "sw": 255,
+          "key": 16
+        }
+      },
+      {
+        "name": {
+          "th": "5 ÷ 9",
+          "en": "5 ÷ 9"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "out": 0,
+          "leds": 5
+        },
+        "inputs": {
+          "sw": 5,
+          "key": 9
+        }
+      },
+      {
+        "name": {
+          "th": "200 ÷ 8",
+          "en": "200 ÷ 8"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 25,
+          "leds": 0
+        },
+        "inputs": {
+          "sw": 200,
+          "key": 8
+        }
+      },
+      {
+        "name": {
+          "th": "0 ÷ 3",
+          "en": "0 ÷ 3"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "out": 0,
+          "leds": 0
+        },
+        "inputs": {
+          "sw": 0,
+          "key": 3
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "advanced/div/h1",
+    "advanced/div/h2",
+    "advanced/div/h3"
+  ],
+  "glossary": [
+    "carry-flag",
+    "memory-mapped-io"
+  ]
+}

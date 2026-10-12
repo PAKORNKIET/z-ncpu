@@ -1,0 +1,103 @@
+{
+  "id": "adv.gcd",
+  "chapter": 9,
+  "title": {
+    "th": "ห.ร.ม. แบบยูคลิด",
+    "en": "Greatest common divisor"
+  },
+  "lesson": "advanced/gcd",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "ห.ร.ม.(48, 18)",
+          "en": "gcd(48, 18)"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 6
+        },
+        "inputs": {
+          "sw": 48,
+          "key": 18
+        }
+      },
+      {
+        "name": {
+          "th": "ห.ร.ม.(17, 5)",
+          "en": "gcd(17, 5)"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 1
+        },
+        "inputs": {
+          "sw": 17,
+          "key": 5
+        }
+      },
+      {
+        "name": {
+          "th": "ห.ร.ม.(100, 75)",
+          "en": "gcd(100, 75)"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 25
+        },
+        "inputs": {
+          "sw": 100,
+          "key": 75
+        }
+      },
+      {
+        "name": {
+          "th": "ห.ร.ม.(255, 85)",
+          "en": "gcd(255, 85)"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 85
+        },
+        "inputs": {
+          "sw": 255,
+          "key": 85
+        }
+      },
+      {
+        "name": {
+          "th": "ห.ร.ม.(12, 12)",
+          "en": "gcd(12, 12)"
+        },
+        "maxCycles": 100,
+        "expect": {
+          "out": 12
+        },
+        "inputs": {
+          "sw": 12,
+          "key": 12
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "advanced/gcd/h1",
+    "advanced/gcd/h2",
+    "advanced/gcd/h3"
+  ],
+  "glossary": [
+    "carry-flag",
+    "zero-flag"
+  ]
+}

@@ -1,0 +1,3 @@
+{
+  "source": "        LOAD A, [SW]\n        CALL fact\n        STORE [OUT], A\n        HALT\n; fact: A = A! เรียกตัวเอง (recursion) ใช้ B, C ช่วย\nfact:   CMP A, 2\n        JC rec            ; A >= 2\n        MOV A, 1          ; 0! = 1! = 1\n        RET\nrec:    PUSH A            ; เก็บ n ไว้บน stack\n        SUB A, 1\n        CALL fact         ; A = (n - 1)!\n        POP B             ; B = n\n        MOV C, A\n        MOV A, 0\nmul:    ADD A, C          ; A = (n - 1)! × n\n        SUB B, 1\n        JNZ mul\n        RET\n"
+}

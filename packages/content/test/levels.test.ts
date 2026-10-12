@@ -19,7 +19,8 @@ describe('Level CI', () => {
     if (level.tests.type === 'program') {
       const suite = level.tests;
       describe(level.id, () => {
-        it('เฉลย (โปรแกรม) ผ่านบน CPU ที่ต่อจาก NAND ทั้ง Visual Mode และ Fast Mode', () => {
+        // รันโปรแกรมบน CPU 55,000 NAND หลายร้อย cycle ทั้งสองโหมด ด่านบท 9 ใช้เวลาหลายวินาที (เครื่อง CI ช้ากว่านี้อีก)
+        it('เฉลย (โปรแกรม) ผ่านบน CPU ที่ต่อจาก NAND ทั้ง Visual Mode และ Fast Mode', { timeout: 120_000 }, () => {
           const { source } = JSON.parse(readFileSync(join(root, 'solutions', `${level.id}.json`), 'utf8')) as { source: string };
           const asm = assemble(source);
           expect(asm.diagnostics).toEqual([]);

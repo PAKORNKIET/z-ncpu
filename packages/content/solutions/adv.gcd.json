@@ -1,0 +1,3 @@
+{
+  "source": "; ห.ร.ม. แบบยูคลิด (ลบตัวใหญ่ด้วยตัวเล็กจนเท่ากัน)\n        LOAD A, [SW]\n        LOAD B, [KEY]\nloop:   CMP A, B\n        JZ done\n        JC bigA           ; A > B\n        SUB B, A\n        JMP loop\nbigA:   SUB A, B\n        JMP loop\ndone:   STORE [OUT], A\n        HALT\n"
+}

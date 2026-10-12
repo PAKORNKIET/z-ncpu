@@ -1,0 +1,3 @@
+{
+  "source": "; คูณเลข 4 บิตสองตัว: สวิตช์ = a (4 บิตบน) และ b (4 บิตล่าง)\n        LOAD A, [SW]\n        MOV C, 0          ; a\nhi:     CMP A, 16\n        JC more           ; A >= 16: ยังมีหลักบนเหลือ\n        JMP mul\nmore:   SUB A, 16\n        ADD C, 1\n        JMP hi\nmul:    MOV D, 0          ; ตอนนี้ A = b\n        CMP C, 0\n        JZ done\nagain:  ADD D, A\n        SUB C, 1\n        JNZ again\ndone:   STORE [OUT], D\n        HALT\n"
+}

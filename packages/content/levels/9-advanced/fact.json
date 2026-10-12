@@ -1,0 +1,98 @@
+{
+  "id": "adv.fact",
+  "chapter": 9,
+  "title": {
+    "th": "แฟกทอเรียลด้วย recursion",
+    "en": "Factorial with recursion"
+  },
+  "lesson": "advanced/fact",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "0! = 1",
+          "en": "0! = 1"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 1
+        },
+        "inputs": {
+          "sw": 0
+        }
+      },
+      {
+        "name": {
+          "th": "1! = 1",
+          "en": "1! = 1"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 1
+        },
+        "inputs": {
+          "sw": 1
+        }
+      },
+      {
+        "name": {
+          "th": "3! = 6",
+          "en": "3! = 6"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 6
+        },
+        "inputs": {
+          "sw": 3
+        }
+      },
+      {
+        "name": {
+          "th": "4! = 24",
+          "en": "4! = 24"
+        },
+        "maxCycles": 400,
+        "expect": {
+          "out": 24
+        },
+        "inputs": {
+          "sw": 4
+        }
+      },
+      {
+        "name": {
+          "th": "5! = 120",
+          "en": "5! = 120"
+        },
+        "maxCycles": 500,
+        "expect": {
+          "out": 120
+        },
+        "inputs": {
+          "sw": 5
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "advanced/fact/h1",
+    "advanced/fact/h2",
+    "advanced/fact/h3"
+  ],
+  "glossary": [
+    "stack",
+    "stack-pointer"
+  ]
+}

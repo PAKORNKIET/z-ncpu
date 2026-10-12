@@ -1,0 +1,56 @@
+{
+  "id": "adv.fib",
+  "chapter": 9,
+  "title": {
+    "th": "ลำดับฟีโบนัชชี",
+    "en": "Fibonacci sequence"
+  },
+  "lesson": "advanced/fib",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "ทุกตัวที่ไม่เกิน 255",
+          "en": "every term up to 255"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "outs": [
+            1,
+            2,
+            3,
+            5,
+            8,
+            13,
+            21,
+            34,
+            55,
+            89,
+            144,
+            233
+          ]
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "advanced/fib/h1",
+    "advanced/fib/h2",
+    "advanced/fib/h3"
+  ],
+  "glossary": [
+    "carry-flag",
+    "overflow"
+  ]
+}

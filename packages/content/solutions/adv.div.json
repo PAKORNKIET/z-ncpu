@@ -1,0 +1,3 @@
+{
+  "source": "; หาร: สวิตช์ ÷ คีย์บอร์ด ผลหารขึ้นจอ เศษขึ้น LED\n        LOAD A, [SW]\n        LOAD B, [KEY]\n        MOV C, 0\nloop:   CMP A, B\n        JC take           ; A >= B ลบได้อีก\n        JMP done\ntake:   SUB A, B\n        ADD C, 1\n        JMP loop\ndone:   STORE [OUT], C\n        STORE [LEDS], A\n        HALT\n"
+}

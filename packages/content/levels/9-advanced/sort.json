@@ -1,0 +1,114 @@
+{
+  "id": "adv.sort",
+  "chapter": 9,
+  "title": {
+    "th": "เรียงลำดับด้วย bubble sort",
+    "en": "Bubble sort"
+  },
+  "lesson": "advanced/sort",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "x = 0x35",
+          "en": "x = 0x35"
+        },
+        "maxCycles": 1500,
+        "expect": {
+          "outs": [
+            9,
+            53,
+            62,
+            106,
+            159,
+            212
+          ]
+        },
+        "inputs": {
+          "sw": 53
+        }
+      },
+      {
+        "name": {
+          "th": "x = 0x9B",
+          "en": "x = 0x9B"
+        },
+        "maxCycles": 1500,
+        "expect": {
+          "outs": [
+            7,
+            54,
+            108,
+            155,
+            162,
+            209
+          ]
+        },
+        "inputs": {
+          "sw": 155
+        }
+      },
+      {
+        "name": {
+          "th": "x = 0x01",
+          "en": "x = 0x01"
+        },
+        "maxCycles": 1500,
+        "expect": {
+          "outs": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        "inputs": {
+          "sw": 1
+        }
+      },
+      {
+        "name": {
+          "th": "x = 0xFF",
+          "en": "x = 0xFF"
+        },
+        "maxCycles": 1500,
+        "expect": {
+          "outs": [
+            250,
+            251,
+            252,
+            253,
+            254,
+            255
+          ]
+        },
+        "inputs": {
+          "sw": 255
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "advanced/sort/h1",
+    "advanced/sort/h2",
+    "advanced/sort/h3"
+  ],
+  "glossary": [
+    "ram",
+    "address",
+    "carry-flag"
+  ]
+}

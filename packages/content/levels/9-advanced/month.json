@@ -1,0 +1,125 @@
+{
+  "id": "adv.month",
+  "chapter": 9,
+  "title": {
+    "th": "ตารางจำนวนวันในเดือน",
+    "en": "Days-in-month lookup table"
+  },
+  "lesson": "advanced/month",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "เดือน 1",
+          "en": "month 1"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 31
+        },
+        "inputs": {
+          "sw": 1
+        }
+      },
+      {
+        "name": {
+          "th": "เดือน 2",
+          "en": "month 2"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 28
+        },
+        "inputs": {
+          "sw": 2
+        }
+      },
+      {
+        "name": {
+          "th": "เดือน 4",
+          "en": "month 4"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 30
+        },
+        "inputs": {
+          "sw": 4
+        }
+      },
+      {
+        "name": {
+          "th": "เดือน 9",
+          "en": "month 9"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 30
+        },
+        "inputs": {
+          "sw": 9
+        }
+      },
+      {
+        "name": {
+          "th": "เดือน 12",
+          "en": "month 12"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 31
+        },
+        "inputs": {
+          "sw": 12
+        }
+      },
+      {
+        "name": {
+          "th": "เดือน 0 (ไม่มี)",
+          "en": "month 0 (invalid)"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 0
+        },
+        "inputs": {
+          "sw": 0
+        }
+      },
+      {
+        "name": {
+          "th": "เดือน 13 (ไม่มี)",
+          "en": "month 13 (invalid)"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 0
+        },
+        "inputs": {
+          "sw": 13
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "advanced/month/h1",
+    "advanced/month/h2",
+    "advanced/month/h3"
+  ],
+  "glossary": [
+    "ram",
+    "address",
+    "memory-mapped-io"
+  ]
+}

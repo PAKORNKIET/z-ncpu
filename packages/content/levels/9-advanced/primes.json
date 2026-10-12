@@ -1,0 +1,59 @@
+{
+  "id": "adv.primes",
+  "chapter": 9,
+  "title": {
+    "th": "จำนวนเฉพาะที่น้อยกว่า 50",
+    "en": "Primes below 50"
+  },
+  "lesson": "advanced/primes",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "จำนวนเฉพาะทั้งหมดที่น้อยกว่า 50",
+          "en": "every prime below 50"
+        },
+        "maxCycles": 2000,
+        "expect": {
+          "outs": [
+            2,
+            3,
+            5,
+            7,
+            11,
+            13,
+            17,
+            19,
+            23,
+            29,
+            31,
+            37,
+            41,
+            43,
+            47
+          ]
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "advanced/primes/h1",
+    "advanced/primes/h2",
+    "advanced/primes/h3"
+  ],
+  "glossary": [
+    "ram",
+    "address"
+  ]
+}

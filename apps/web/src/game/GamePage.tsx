@@ -180,7 +180,6 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
           </section>
           );
         })}
-        <p className="muted small">บทถัดไป (ภารกิจขั้นสูง) มาใน M5</p>
       </nav>
 
       <div className="level-main">

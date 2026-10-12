@@ -1,0 +1,3 @@
+{
+  "source": "; ตะแกรงของเอราทอสเทนีส: RAM[n] = 0 แปลว่า n ยังเป็นจำนวนเฉพาะ\n        MOV D, 0\n        MOV A, 2\nclear:  STORE [A], D\n        ADD A, 1\n        CMP A, 50\n        JNZ clear\n        MOV B, 2          ; p\nsieve:  MOV A, B\n        ADD A, B          ; เริ่มที่ 2p\nmark:   CMP A, 50\n        JC nextp          ; ถึง 50 แล้ว\n        STORE [A], B      ; ทำเครื่องหมาย (ไม่ใช่ 0)\n        ADD A, B\n        JMP mark\nnextp:  ADD B, 1\n        CMP B, 8\n        JNZ sieve\n        MOV A, 2\nscan:   LOAD C, [A]\n        CMP C, 0\n        JNZ skip\n        STORE [OUT], A\nskip:   ADD A, 1\n        CMP A, 50\n        JNZ scan\n        HALT\n"
+}

@@ -1,0 +1,111 @@
+{
+  "id": "adv.mul",
+  "chapter": 9,
+  "title": {
+    "th": "คูณเลข 4 บิต",
+    "en": "Multiply two 4-bit numbers"
+  },
+  "lesson": "advanced/mul",
+  "available": [],
+  "target": {
+    "defId": "user.cpu",
+    "pins": []
+  },
+  "tests": {
+    "type": "program",
+    "cpu": "user.cpu",
+    "cases": [
+      {
+        "name": {
+          "th": "0 × 0",
+          "en": "0 × 0"
+        },
+        "maxCycles": 200,
+        "expect": {
+          "out": 0
+        },
+        "inputs": {
+          "sw": 0
+        }
+      },
+      {
+        "name": {
+          "th": "3 × 7 (สวิตช์ 0x37)",
+          "en": "3 × 7 (switches 0x37)"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 21
+        },
+        "inputs": {
+          "sw": 55
+        }
+      },
+      {
+        "name": {
+          "th": "15 × 15 (สวิตช์ 0xFF)",
+          "en": "15 × 15 (switches 0xFF)"
+        },
+        "maxCycles": 600,
+        "expect": {
+          "out": 225
+        },
+        "inputs": {
+          "sw": 255
+        }
+      },
+      {
+        "name": {
+          "th": "9 × 0 (สวิตช์ 0x90)",
+          "en": "9 × 0 (switches 0x90)"
+        },
+        "maxCycles": 400,
+        "expect": {
+          "out": 0
+        },
+        "inputs": {
+          "sw": 144
+        }
+      },
+      {
+        "name": {
+          "th": "1 × 15 (สวิตช์ 0x1F)",
+          "en": "1 × 15 (switches 0x1F)"
+        },
+        "maxCycles": 300,
+        "expect": {
+          "out": 15
+        },
+        "inputs": {
+          "sw": 31
+        }
+      },
+      {
+        "name": {
+          "th": "12 × 5 (สวิตช์ 0xC5)",
+          "en": "12 × 5 (switches 0xC5)"
+        },
+        "maxCycles": 500,
+        "expect": {
+          "out": 60
+        },
+        "inputs": {
+          "sw": 197
+        }
+      }
+    ]
+  },
+  "unlocks": [],
+  "devices": {
+    "out": "number"
+  },
+  "hints": [
+    "advanced/mul/h1",
+    "advanced/mul/h2",
+    "advanced/mul/h3"
+  ],
+  "glossary": [
+    "carry-flag",
+    "bitwise"
+  ]
+}
