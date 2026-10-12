@@ -13,6 +13,8 @@ import { useEngine } from '../use-engine';
 import { LedBar, NumberDisplay, SevenSegment } from '../ui/devices';
 import { BusInput } from '../ui/widgets';
 import { AsmEditor } from './AsmEditor';
+import { TutorPanel } from '../tutor/TutorPanel';
+import { programSummary, reportSummary } from '../tutor/tutor';
 import { LogicAnalyzer } from './LogicAnalyzer';
 
 // three.js ใหญ่ โหลดเฉพาะตอนเปิดมุมมอง 3D
@@ -306,6 +308,24 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
           <Upload size={16} aria-hidden />
           โหลดลง CPU แล้ว reset
         </button>
+        <TutorPanel
+          context={() => ({
+            place: `หน้าคอมพิวเตอร์ (เขียนโปรแกรมอิสระ) บน CPU ${plus ? 'Z8+' : 'Z8'} ที่ผู้เล่นต่อเองจาก NAND`,
+            goal: plus
+              ? `ไม่มีโจทย์ตายตัว CPU นี้มีคำสั่งเพิ่มจาก Z8: ${isa.instructions
+                  .filter((d) => d.group === 3)
+                  .map((d) => `${d.mnemonic} ${d.operands.join(', ')} (${d.semantics ?? ''})`)
+                  .join('; ')}`
+              : 'ไม่มีโจทย์ตายตัว ผู้เล่นทดลองเขียนโปรแกรม assembly ของ Z8',
+            work: programSummary(source, asm.diagnostics),
+            result: [
+              `ตอนนี้: cycle ${cycle}${halted ? ' หยุดที่ HALT' : ''} · PC=${String(pins.pc)} A=${String(pins.a)} B=${String(pins.b)} C=${String(pins.c)} D=${String(pins.d)} SP=${String(pins.sp)} flags(ZCN)=${String(pins.flags)} จอ=${String(pins.out ?? '-')}`,
+              verify?.k === 'done' && verify.source === source ? `เทียบกับ emulator: ${verify.error ?? reportSummary(verify.report)}` : '',
+            ]
+              .filter(Boolean)
+              .join('\n'),
+          })}
+        />
       </section>
 
       <section className="computer-run" aria-labelledby="run-title">

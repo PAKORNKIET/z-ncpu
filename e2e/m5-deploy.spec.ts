@@ -57,3 +57,24 @@ test('CSP ของเว็บจริง: ด่าน, CPU, มุมมอ�
   // ฟอนต์ในแอปโหลดได้ (ไม่ถูก CSP บล็อก)
   expect(await page.evaluate(() => document.fonts.check('16px "Noto Sans Thai"'))).toBe(true);
 });
+
+test('CSP เปิดให้ติดต่อภายนอกได้เฉพาะ API ของ AI ติวเตอร์ และติวเตอร์ใช้งานได้ภายใต้ CSP', async ({ page }) => {
+  const connect = siteHeaders()['Content-Security-Policy']!.split(';').map((d) => d.trim()).find((d) => d.startsWith('connect-src'))!;
+  expect(connect.split(/\s+/).slice(1).sort()).toEqual(["'self'", 'https://api.anthropic.com', 'https://api.openai.com', 'https://generativelanguage.googleapis.com']);
+  // แอป Windows ใช้ชุดเดียวกัน
+  const tauri = readFileSync(join(import.meta.dirname, '..', 'apps', 'desktop', 'src-tauri', 'tauri.conf.json'), 'utf8');
+  for (const host of ['https://api.anthropic.com', 'https://api.openai.com', 'https://generativelanguage.googleapis.com']) expect(tauri).toContain(host);
+
+  // route ที่ลงทะเบียนทีหลังทำงานก่อน: ตอบแทน API จริง (CSP ของหน้ายังตรวจคำขอก่อนถึงตรงนี้)
+  await page.route('https://api.openai.com/**', (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ output_text: 'ผ่าน CSP' }) }),
+  );
+  await openWithSave(page, []);
+  await page.locator('details.tutor summary').first().click();
+  await page.getByRole('button', { name: 'ตั้งค่าและเปิดใช้' }).click();
+  await page.getByRole('combobox', { name: 'ผู้ให้บริการ AI' }).selectOption({ label: 'OpenAI' });
+  await page.getByLabel('คีย์ API', { exact: true }).fill('sk-test');
+  await page.getByRole('button', { name: 'บันทึกและเปิดใช้' }).click();
+  await page.getByRole('button', { name: 'ส่งไป api.openai.com' }).click();
+  await expect(page.getByTestId('tutor-answer')).toContainText('ผ่าน CSP');
+});

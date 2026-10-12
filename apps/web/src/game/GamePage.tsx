@@ -28,6 +28,9 @@ import { PRIMITIVE_PALETTE, Workbench, type PaletteItem, type WorkbenchContext }
 import { Markdown } from '../ui/Markdown';
 import { Diagnostics } from '../ui/widgets';
 import { ProgramLevel } from './ProgramLevel';
+import { TutorPanel } from '../tutor/TutorPanel';
+import { levelGoal, levelPlace } from '../tutor/context';
+import { circuitSummary, reportSummary } from '../tutor/tutor';
 import { lessonText } from './lessons';
 import {
   availableParts,
@@ -395,6 +398,15 @@ function TestPanel(props: {
           </button>
         ) : null}
       </div>
+
+      <TutorPanel
+        context={() => ({
+          place: levelPlace(level),
+          goal: levelGoal(level),
+          work: circuitSummary(ctx.def, ctx.gates),
+          result: !result ? 'ยังไม่ได้ทดสอบ' : stale ? 'แก้วงจรหลังทดสอบครั้งล่าสุด ยังไม่ได้ทดสอบใหม่' : reportSummary(result.report, result.diagnostics),
+        })}
+      />
     </section>
   );
 }

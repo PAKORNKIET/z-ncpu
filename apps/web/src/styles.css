@@ -1839,3 +1839,89 @@ details[open] > summary .chevron,
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 }
+
+/* AI ติวเตอร์ */
+.tutor {
+  margin-top: 12px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.tutor > summary {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-weight: 600;
+  list-style: none;
+}
+.tutor > summary::-webkit-details-marker {
+  display: none;
+}
+.tutor-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+.tutor-body p {
+  margin: 0;
+  line-height: 1.7;
+}
+.tutor-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.tutor-question,
+.tutor-settings label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tutor textarea,
+.tutor-settings input:not([type='checkbox']) {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.tutor textarea {
+  resize: vertical;
+}
+.tutor-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tutor-settings label.tutor-check {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+}
+.tutor-preview pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 240px;
+  overflow: auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  margin: 6px 0 0;
+}
+.tutor-preview summary {
+  cursor: pointer;
+}
+.tutor-answer {
+  line-height: 1.7;
+}

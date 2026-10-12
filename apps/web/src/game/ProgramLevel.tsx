@@ -8,6 +8,9 @@ import { OkMark } from '../ui/icons';
 import { AsmEditor } from '../computer/AsmEditor';
 import { EngineClosedError } from '../engine-client';
 import { useEngine } from '../use-engine';
+import { TutorPanel } from '../tutor/TutorPanel';
+import { levelGoal, levelPlace } from '../tutor/context';
+import { programSummary, reportSummary } from '../tutor/tutor';
 import { hashText, programOf, putProgram, recordTest, type LevelStatus } from './progress';
 import type { SaveFile } from './save';
 
@@ -216,6 +219,15 @@ export function ProgramLevel(props: {
             </button>
           ) : null}
         </div>
+
+        <TutorPanel
+          context={() => ({
+            place: levelPlace(level),
+            goal: `${levelGoal(level)}\n\nกรณีทดสอบ:\n${suite.cases.map((c) => `- ${c.name.th}: ${expectText(c)}`).join('\n')}`,
+            work: programSummary(source, asm.diagnostics),
+            result: !result ? 'ยังไม่ได้ทดสอบ' : stale ? 'แก้โปรแกรมหลังทดสอบครั้งล่าสุด ยังไม่ได้ทดสอบใหม่' : [result.error ?? '', reportSummary(result.report)].filter(Boolean).join('\n'),
+          })}
+        />
       </section>
     </div>
   );
