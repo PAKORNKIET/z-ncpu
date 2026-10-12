@@ -5,6 +5,7 @@
 import type { CpuInputs, CpuOracle, CpuSnapshot } from '@z-ncpu/shared';
 import { assemble, disassembleWord, formatDiagnostic } from './asm';
 import { Z8, type IsaDef } from './index';
+import { evalSemantics } from './sem';
 
 /** ค่าที่ขาเข้าของ I/O: sw อ่านที่ 0xF8, btn ที่ 0xF9, key ที่ 0xFA */
 export type Z8Inputs = CpuInputs;
@@ -192,8 +193,20 @@ export class Z8Machine {
           break;
         default: // func 111 ไม่ได้ใช้ ทำงานเหมือน NOP
       }
+    } else {
+      // กลุ่ม 11: คำสั่งของผู้เล่นทำตามสูตร (ถ้า ISA ไม่มีคำสั่งที่ func นี้ ทำงานเหมือน NOP)
+      const def = this.isa.instructions.find((d) => d.group === 3 && d.func === func);
+      if (def?.assigns) {
+        const fx = evalSemantics(def.assigns, this, rd, src);
+        for (const [r, v] of fx.regs) this.regs[r] = v;
+        if (fx.z !== undefined) this.z = fx.z;
+        if (fx.c !== undefined) this.c = fx.c;
+        if (fx.n !== undefined) this.n = fx.n;
+        if (fx.sp !== undefined) this.sp = fx.sp;
+        if (fx.mem) this.write(fx.mem.addr, fx.mem.value);
+        if (fx.pc !== undefined) pc = fx.pc;
+      }
     }
-    // กลุ่ม 11 สงวนไว้ ทำงานเหมือน NOP
     this.pc = pc;
     this.cycle++;
   }

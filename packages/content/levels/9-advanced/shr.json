@@ -1,0 +1,226 @@
+{
+  "id": "adv.shr",
+  "chapter": 9,
+  "title": {
+    "th": "โบนัส: เพิ่มคำสั่ง SHR ให้ CPU",
+    "en": "Bonus: add SHR to your CPU"
+  },
+  "lesson": "advanced/shr",
+  "available": [
+    "prim.nand",
+    "prim.split",
+    "prim.merge",
+    "prim.const0",
+    "prim.const1",
+    "user.not",
+    "user.and",
+    "user.or",
+    "user.nor",
+    "user.xor",
+    "user.xnor",
+    "user.mux",
+    "user.demux",
+    "user.ha",
+    "user.fa",
+    "user.add4",
+    "user.add8",
+    "user.not8",
+    "user.inc8",
+    "user.neg8",
+    "user.sub8",
+    "user.zero8",
+    "user.eq8",
+    "user.and8",
+    "user.or8",
+    "user.xor8",
+    "user.mux8",
+    "user.sel4",
+    "user.sel8",
+    "user.alu8",
+    "user.srlatch",
+    "user.dlatch",
+    "user.dff",
+    "user.bit",
+    "user.reg8",
+    "user.counter8",
+    "user.demux4",
+    "user.demux8",
+    "user.ram8",
+    "user.ram64",
+    "user.ram256",
+    "user.mux16",
+    "user.rom8",
+    "user.rom64",
+    "user.rom256",
+    "user.pc",
+    "user.seg7",
+    "user.decoder",
+    "user.regfile",
+    "user.sp"
+  ],
+  "startFrom": "user.cpu",
+  "target": {
+    "defId": "user.cpuplus",
+    "pins": [
+      {
+        "name": "prog",
+        "dir": "in",
+        "width": 4096
+      },
+      {
+        "name": "reset",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "clk",
+        "dir": "in",
+        "width": 1
+      },
+      {
+        "name": "sw",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "btn",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "key",
+        "dir": "in",
+        "width": 8
+      },
+      {
+        "name": "out",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "leds",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "seg",
+        "dir": "out",
+        "width": 7
+      },
+      {
+        "name": "halt",
+        "dir": "out",
+        "width": 1
+      },
+      {
+        "name": "pc",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "a",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "c",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "d",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "sp",
+        "dir": "out",
+        "width": 8
+      },
+      {
+        "name": "flags",
+        "dir": "out",
+        "width": 3
+      }
+    ]
+  },
+  "tests": {
+    "type": "cpu",
+    "isa": {
+      "format": "zncpu-isa",
+      "version": 1,
+      "base": "Z8",
+      "name": "Z8+",
+      "instructions": [
+        {
+          "mnemonic": "SHR",
+          "func": 0,
+          "operands": [
+            "rd"
+          ],
+          "semantics": "rd = rd >> 1",
+          "description": "เลื่อนบิตไปทางขวา 1 ตำแหน่ง (หารสองปัดเศษทิ้ง)"
+        }
+      ]
+    },
+    "programs": [
+      {
+        "name": {
+          "th": "SHR ทุก register และ flags ไม่เปลี่ยน",
+          "en": "SHR on every register, flags unchanged"
+        },
+        "maxCycles": 60,
+        "source": "        MOV A, 0x96\n        SHR A           ; 0x4B\n        MOV B, 1\n        SHR B           ; 0 (บิตที่หลุดไปหายไปเลย)\n        MOV C, 0xFF\n        CMP C, 0xFF     ; Z = 1, C = 1\n        SHR C           ; 0x7F และ flags ยังเป็นค่าเดิม\n        MOV D, 0x80\n        SHR D           ; 0x40\n        SHR D           ; 0x20\n        .word 0xC800    ; func อื่นของกลุ่ม 11 ยังไม่มีคำสั่ง: ทำงานเหมือน NOP\n        STORE [OUT], A\n        HALT\n"
+      },
+      {
+        "name": {
+          "th": "หารสองซ้ำจนเหลือ 0",
+          "en": "Halve until zero"
+        },
+        "maxCycles": 80,
+        "source": "        MOV A, 200\nloop:   SHR A\n        STORE [OUT], A  ; 100 50 25 12 6 3 1 0\n        CMP A, 0\n        JNZ loop\n        HALT\n"
+      },
+      {
+        "name": {
+          "th": "คำสั่งเดิมยังถูก: ALU และ flags",
+          "en": "Old instructions still work: ALU and flags"
+        },
+        "source": "        MOV A, 200\n        MOV B, 100\n        ADD A, B        ; 300 ล้น: A = 44, C = 1\n        JC ok1\n        HALT\nok1:    SUB A, 45       ; 44 − 45 = 255, N = 1, C = 0\n        JN ok2\n        HALT\nok2:    MOV C, 0x0F\n        AND C, 0x3C     ; 0x0C\n        OR C, 0x30      ; 0x3C\n        XOR C, B        ; 0x3C ^ 0x64 = 0x58\n        NOT C           ; 0xA7\n        MOV D, C\n        CMP D, 0xA7     ; Z = 1, D ไม่เปลี่ยน\n        JZ ok3\n        HALT\nok3:    SUB D, D        ; 0, Z = 1 C = 1\n        JNZ bad\n        CMP B, 101      ; 100 < 101: C = 0\n        JC bad\n        STORE [OUT], C\n        STORE [LEDS], A\n        HALT\nbad:    MOV A, 0xEE\n        STORE [OUT], A\n        HALT\n",
+        "maxCycles": 100
+      },
+      {
+        "name": {
+          "th": "คำสั่งเดิมยังถูก: RAM, stack และ CALL",
+          "en": "Old instructions still work: RAM, stack and CALL"
+        },
+        "source": "        MOV A, 3\n        STORE [0x10], A\n        MOV B, 0x10\n        LOAD C, [B]     ; C = 3\n        ADD C, 0x10 - 0x10 + 4\n        PUSH C          ; stack: 7\n        CALL square     ; A = A * A\n        STORE [OUT], A\n        POP D           ; D = 7\n        STORE [SEG], D\n        CALL nested\n        STORE [LEDS], B\n        HALT\n; A = A * A ด้วยการบวกซ้ำ (ใช้ B, C เป็นตัวช่วย เก็บไว้บน stack)\nsquare: PUSH B\n        PUSH C\n        MOV B, A\n        MOV C, 0\nsq:     ADD C, A\n        SUB B, 1\n        JNZ sq\n        MOV A, C\n        POP C\n        POP B\n        RET\nnested: CALL inner\n        ADD B, 1\n        RET\ninner:  MOV B, 0x80\n        RET\n",
+        "maxCycles": 300
+      }
+    ]
+  },
+  "unlocks": [
+    "user.cpuplus"
+  ],
+  "devices": {
+    "out": "number",
+    "leds": "leds",
+    "seg": "seg7"
+  },
+  "hints": [
+    "advanced/shr/h1",
+    "advanced/shr/h2",
+    "advanced/shr/h3",
+    "advanced/shr/h4"
+  ],
+  "glossary": [
+    "isa",
+    "opcode",
+    "control-signal",
+    "shift"
+  ]
+}

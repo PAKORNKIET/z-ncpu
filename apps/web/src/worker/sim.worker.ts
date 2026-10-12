@@ -18,7 +18,7 @@ import {
   type CondNode,
   type Simulator,
 } from '@z-ncpu/engine';
-import { Z8_ORACLE } from '@z-ncpu/isa';
+import { isaOfSuite, makeOracle } from '@z-ncpu/isa';
 import type { SignalValue, SimMode, UiToWorker, WorkerToUi } from '@z-ncpu/shared';
 
 declare const self: DedicatedWorkerGlobalScope;
@@ -302,7 +302,9 @@ self.onmessage = (event: MessageEvent<UiToWorker>) => {
         return;
 
       case 'test': {
-        const { report, diagnostics } = testComponent(lib, msg.defId, msg.tests, msg.mode, undefined, Z8_ORACLE);
+        // ด่าน/การตรวจที่มีคำสั่งของผู้เล่น: emulator อ้างอิงต้องรู้จักคำสั่งนั้น
+        const oracle = makeOracle(isaOfSuite(msg.tests));
+        const { report, diagnostics } = testComponent(lib, msg.defId, msg.tests, msg.mode, undefined, oracle);
         post({ rid: msg.rid, type: 'testResult', defId: msg.defId, mode: msg.mode, report, diagnostics });
         return;
       }

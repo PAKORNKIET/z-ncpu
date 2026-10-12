@@ -53,6 +53,7 @@ import adv_monthLevel from '../levels/9-advanced/month.json';
 import adv_factLevel from '../levels/9-advanced/fact.json';
 import adv_primesLevel from '../levels/9-advanced/primes.json';
 import adv_sortLevel from '../levels/9-advanced/sort.json';
+import adv_shrLevel from '../levels/9-advanced/shr.json';
 import add4Level from '../levels/2-arith/add4.json';
 import add8Level from '../levels/2-arith/add8.json';
 import eq8Level from '../levels/2-arith/eq8.json';
@@ -130,6 +131,7 @@ export const LEVELS: LevelDef[] = [
   adv_factLevel,
   adv_primesLevel,
   adv_sortLevel,
+  adv_shrLevel,
 ] as LevelDef[];
 
 /** ชื่อบท (เลขบทตามหลักสูตรใน Spec ส่วน 12 บทที่ยังไม่มีด่านจะไม่แสดง) */

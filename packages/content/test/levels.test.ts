@@ -2,7 +2,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ComponentLibrary, compile, contentHash, testComponent } from '@z-ncpu/engine';
-import { assemble, Z8_ORACLE } from '@z-ncpu/isa';
+import { assemble, checkExtension, isaOfSuite, makeOracle, Z8_ORACLE } from '@z-ncpu/isa';
 import type { ComponentDef } from '@z-ncpu/shared';
 import { describe, expect, it } from 'vitest';
 import { GLOSSARY, HINTS_TH, LEVELS, term } from '../src';
@@ -52,10 +52,12 @@ describe('Level CI', () => {
         for (const inst of sol.body?.instances ?? []) expect(level.available).toContain(inst.defId);
       });
 
-      it('เฉลยผ่านเทสต์ทั้ง Visual Mode และ Fast Mode', () => {
+      it('เฉลยผ่านเทสต์ทั้ง Visual Mode และ Fast Mode', { timeout: 60_000 }, () => {
         lib.add(sol);
+        // ด่านที่เพิ่มคำสั่งเอง: emulator อ้างอิงต้องรู้จักคำสั่งนั้นด้วย
+        const oracle = makeOracle(isaOfSuite(level.tests));
         for (const mode of ['visual', 'fast'] as const) {
-          const { report, diagnostics } = testComponent(lib, sol.id, level.tests, mode, undefined, Z8_ORACLE);
+          const { report, diagnostics } = testComponent(lib, sol.id, level.tests, mode, undefined, oracle);
           expect(diagnostics).toEqual([]);
           expect(report?.passed).toBe(true);
         }
@@ -75,6 +77,21 @@ describe('Level CI', () => {
       });
     });
   }
+
+  it('ด่านที่เพิ่มคำสั่งเอง: ISA ของด่านไม่มีข้อผิดพลาด และ CPU เดิมที่ไม่มีคำสั่งนั้นไม่ผ่าน', { timeout: 60_000 }, () => {
+    const levels = LEVELS.filter((l) => l.tests.type === 'cpu' && l.tests.isa);
+    expect(levels.map((l) => l.id)).toEqual(['adv.shr']);
+    for (const level of levels) {
+      if (level.tests.type !== 'cpu') continue;
+      expect(checkExtension(level.tests.isa!).issues).toEqual([]);
+      expect(level.startFrom).toBe('user.cpu');
+      // CPU ของบท 7 (ไม่มี SHR) ต้องไม่ผ่านด่านนี้ ถ้าเปลี่ยนแค่ id
+      const old = { ...solution('cpu.z8'), id: level.target.defId };
+      const { report } = testComponent(new ComponentLibrary([...lib.all().filter((d) => d.id !== old.id), old]), old.id, level.tests, 'fast', undefined, makeOracle(isaOfSuite(level.tests)));
+      expect(report?.passed).toBe(false);
+      expect(report?.firstFailure?.cpu?.instruction).toBe('SHR A');
+    }
+  });
 
   it('ทุกด่านมีไฟล์เฉลย และไม่มีเฉลยที่ไม่มีด่าน', () => {
     const files = readdirSync(join(root, 'solutions')).map((f) => f.replace(/\.json$/, ''));

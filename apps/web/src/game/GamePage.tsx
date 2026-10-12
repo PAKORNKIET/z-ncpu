@@ -1,7 +1,7 @@
 // หน้าด่าน (M1-3): รายการด่าน → บทเรียน → ต่อวงจร → ทดสอบ → ปลดล็อกชิ้นใหม่
 import { ComponentLibrary, contentHash } from '@z-ncpu/engine';
 import { CHAPTERS, GLOSSARY, HINTS_TH, LEVELS } from '@z-ncpu/content';
-import { assemble, disassemble } from '@z-ncpu/isa';
+import { assemble, disassemble, isaOfSuite } from '@z-ncpu/isa';
 import type { ComponentDef, Diagnostic, LevelDef, SignalValue, TestCaseResult, TestReport } from '@z-ncpu/shared';
 import {
   AlertTriangle,
@@ -609,8 +609,9 @@ function ReferenceTable({ level, report }: { level: LevelDef; report: TestReport
 /** โปรแกรมตัวอย่างที่ใส่แผงของด่าน CPU ตอนลองเล่น: โปรแกรมทดสอบตัวแรก */
 function samplePrograms(level: LevelDef): { words: number[]; listing: string[] } {
   if (level.tests.type !== 'cpu' || !level.tests.programs[0]) return { words: [], listing: [] };
-  const words = assemble(level.tests.programs[0].source).words;
-  return { words, listing: disassemble(words) };
+  const isa = isaOfSuite(level.tests);
+  const words = assemble(level.tests.programs[0].source, isa).words;
+  return { words, listing: disassemble(words, isa) };
 }
 
 const CPU_PIN_TH: Record<string, string> = { pc: 'PC', a: 'A', b: 'B', c: 'C', d: 'D', sp: 'SP', flags: 'flags (ZCN)', halt: 'halt', out: 'จอ (out)', leds: 'LED', seg: '7-segment' };

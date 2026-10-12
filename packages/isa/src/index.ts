@@ -2,6 +2,7 @@
 // encode/decode ทีละคำสั่งอยู่ที่นี่ ส่วน assembler อยู่ใน asm.ts และ emulator อ้างอิงอยู่ใน machine.ts
 
 import type { LocalizedText } from '@z-ncpu/shared';
+import type { SemAssign } from './sem';
 import z8Json from './z8.isa.json';
 
 export type OperandKind = 'rd' | 'src' | '[src]';
@@ -12,6 +13,10 @@ export interface InstructionDef {
   func: number;
   operands: OperandKind[];
   flags?: string;
+  /** คำสั่งของผู้เล่น (กลุ่ม 11): สูตรที่ผู้เล่นเขียน และสูตรที่แปลงแล้วให้ emulator ใช้ */
+  semantics?: string;
+  assigns?: SemAssign[];
+  description?: string;
 }
 
 export interface IsaDef {
@@ -111,3 +116,5 @@ export const hex16 = (w: number): string => w.toString(16).toUpperCase().padStar
 export * from './asm';
 export * from './machine';
 export * from './explain';
+export * from './sem';
+export * from './custom';

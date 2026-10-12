@@ -230,3 +230,37 @@ describe('ด่านเขียนโปรแกรม (บท 8)', () => {
     expect(hashText('x')).toMatch(/^[0-9a-f]{14}$/);
   });
 });
+
+describe('ด่านโบนัส Z8+ และ ISA ของผู้เล่น (M5-3)', () => {
+  const bonus = LEVELS.find((l) => l.id === 'adv.shr')!;
+
+  it('ด่านโบนัสเริ่มจากสำเนาของ CPU ที่ต่อไว้ โดย CPU เดิมไม่ถูกแตะ', () => {
+    const cpu = solution('cpu.z8');
+    const s = putComponent(emptySave(), cpu);
+    const draft = draftFor(bonus, s);
+    expect(draft.id).toBe('user.cpuplus');
+    expect(draft.pins).toEqual(bonus.target.pins);
+    expect(draft.body).toEqual(cpu.body);
+    expect(draft.body).not.toBe(cpu.body);
+    draft.body!.instances.pop();
+    expect(s.components[0]!.body!.instances.length).toBe(cpu.body!.instances.length);
+    // ยังไม่มี CPU: เริ่มจากวงจรเปล่า
+    expect(draftFor(bonus, emptySave()).body).toEqual({ instances: [], wires: [] });
+    // มีร่างของด่านนี้อยู่แล้ว: ใช้ร่างเดิม
+    const mine = { ...draft, name: { th: 'ของฉัน', en: 'mine' } };
+    expect(draftFor(bonus, putComponent(s, mine)).name.th).toBe('ของฉัน');
+  });
+
+  it('ISA และโปรแกรมของ Z8+ อยู่ในไฟล์บันทึก และไฟล์ ISA ที่เสียทำให้เปิดไม่ได้', () => {
+    const isa = { format: 'zncpu-isa' as const, version: 1 as const, base: 'Z8' as const, name: 'ของฉัน', instructions: [{ mnemonic: 'INC', func: 1, operands: ['rd' as const], semantics: 'rd = rd + 1' }] };
+    const base = { ...emptySave(), isa, programs: [{ id: 'main', isa: 'Z8+', source: 'INC A\nHALT' }] };
+    const r = parseSave(serializeSave(base));
+    expect(r.ok && r.save.isa).toEqual(isa);
+    expect(r.ok && r.save.programs[0]!.isa).toBe('Z8+');
+    // สูตรผิดยังเปิดได้ (ให้แก้ต่อ) แต่โครงสร้างผิดเปิดไม่ได้
+    expect(parseSave(JSON.stringify({ ...base, isa: { ...isa, instructions: [{ ...isa.instructions[0], semantics: 'rd = (' }] } })).ok).toBe(true);
+    expect(parseSave(JSON.stringify({ ...base, isa: { ...isa, base: 'ARM' } })).ok).toBe(false);
+    expect(parseSave(JSON.stringify({ ...base, isa: { ...isa, instructions: [{ ...isa.instructions[0], func: 9 }] } })).ok).toBe(false);
+    expect(parseSave(JSON.stringify({ ...emptySave() })).ok && parseSave(JSON.stringify(emptySave())).ok).toBe(true);
+  });
+});

@@ -54,11 +54,22 @@ export function partName(defId: string, levels: readonly LevelDef[] = []): strin
   return (defId.split('.').pop() ?? defId).toUpperCase();
 }
 
-/** วงจรที่กำลังทำในด่านนี้ (ร่างที่บันทึกไว้ หรือวงจรเปล่าตาม pin ที่ด่านกำหนด) */
+/**
+ * วงจรที่กำลังทำในด่านนี้: ร่างที่บันทึกไว้, สำเนาของวงจรที่ด่านให้เริ่มต่อยอด (startFrom)
+ * หรือวงจรเปล่าตาม pin ที่ด่านกำหนด
+ */
 export function draftFor(level: LevelDef, save: SaveFile): ComponentDef {
   const existing = componentOf(save, level.target.defId);
   if (existing) return existing;
   const n = partName(level.target.defId, [level]);
+  const base = level.startFrom ? componentOf(save, level.startFrom) : undefined;
+  if (base) {
+    // คัดลอกเฉพาะส่วนที่ใช้ได้กับ pin ของด่าน (สายที่ไปขาที่ด่านไม่มีถูกทิ้ง)
+    const pins = new Set(level.target.pins.map((p) => p.name));
+    const body = structuredClone(base.body ?? { instances: [], wires: [] });
+    body.wires = body.wires.filter((w) => (w.from.inst !== 'self' || pins.has(w.from.pin)) && (w.to.inst !== 'self' || pins.has(w.to.pin)));
+    return { id: level.target.defId, name: { th: n, en: n }, kind: 'circuit', pins: level.target.pins.map((p) => ({ ...p })), body };
+  }
   return {
     id: level.target.defId,
     name: { th: n, en: n },

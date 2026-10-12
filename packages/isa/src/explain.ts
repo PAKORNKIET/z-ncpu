@@ -3,6 +3,7 @@
 
 import { decode, formatDecoded, Z8, type IsaDef } from './index';
 import { IO, z8Alu } from './machine';
+import { evalSemantics } from './sem';
 
 export interface RegisterView {
   pc: number;
@@ -94,6 +95,42 @@ export function explainInstruction(word: number, r: RegisterView, isa: IsaDef = 
     case 'RET':
       return `${text}: กลับไปที่ address ที่อยู่ใน RAM[SP = ${h(r.sp)}] แล้ว SP ← ${h((r.sp + 1) & 0xff)}`;
     default:
-      return text;
+      return d.def.assigns ? explainCustom(text, d.def.semantics ?? '', d.def.assigns, regs, d.rd, src, { z, c, n, pc: r.pc, sp: r.sp }) : text;
+  }
+}
+
+class NeedsMemory extends Error {}
+
+/** คำสั่งของผู้เล่น: แสดงสูตร แล้วบอกว่าจะเปลี่ยนอะไรบ้าง (ถ้าสูตรอ่าน RAM ซึ่งหน้านี้ไม่รู้ค่า บอกแค่สูตร) */
+function explainCustom(
+  text: string,
+  semantics: string,
+  assigns: Parameters<typeof evalSemantics>[0],
+  regs: Record<string, number>,
+  rdName: string,
+  src: number,
+  f: { z: number; c: number; n: number; pc: number; sp: number },
+): string {
+  const names = ['A', 'B', 'C', 'D'];
+  const formula = semantics.replace(/\s*\n\s*/g, '; ').trim();
+  try {
+    const fx = evalSemantics(assigns, {
+      regs: names.map((k) => regs[k] ?? 0),
+      ...f,
+      read: () => {
+        throw new NeedsMemory();
+      },
+    }, Math.max(0, names.indexOf(rdName)), src);
+    const parts = fx.regs.map(([i, v]) => `${names[i]} = ${v}`);
+    if (fx.z !== undefined) parts.push(`Z = ${fx.z}`);
+    if (fx.c !== undefined) parts.push(`C = ${fx.c}`);
+    if (fx.n !== undefined) parts.push(`N = ${fx.n}`);
+    if (fx.sp !== undefined) parts.push(`SP = ${h(fx.sp)}`);
+    if (fx.mem) parts.push(`${place(fx.mem.addr)} = ${fx.mem.value}`);
+    if (fx.pc !== undefined) parts.push(`ไปที่ ${h(fx.pc)}`);
+    return `${text}: ${formula} → ${parts.length > 0 ? parts.join(', ') : 'ไม่เปลี่ยนอะไร'}`;
+  } catch (e) {
+    if (e instanceof NeedsMemory) return `${text}: ${formula}`;
+    throw e;
   }
 }

@@ -172,6 +172,34 @@ export interface CpuProgram {
 export interface CpuSuite {
   type: 'cpu';
   programs: CpuProgram[];
+  /** คำสั่งเพิ่มเติมที่ CPU ของด่านนี้ต้องทำได้ (emulator อ้างอิงทำตามสูตรของคำสั่ง) */
+  isa?: IsaExtension;
+}
+
+// ---------- ISA ของผู้เล่น (M5-3) ----------
+
+/** ตัวถูกดำเนินการของคำสั่ง: register ปลายทาง, register หรือค่าคงที่, หรือ address ในวงเล็บ */
+export type IsaOperandKind = 'rd' | 'src' | '[src]';
+
+/**
+ * คำสั่งที่ผู้เล่นเพิ่มเองในกลุ่ม 11 ของ Z8 (func 0–7)
+ * semantics คือสูตรสั้นๆ เช่น "rd = rd >> 1" ที่ emulator ใช้เป็นคำตอบอ้างอิง (parser ของตัวเอง ไม่ใช้ eval)
+ */
+export interface CustomInstruction {
+  mnemonic: string;
+  func: number;
+  operands: IsaOperandKind[];
+  semantics: string;
+  description?: string;
+}
+
+/** ไฟล์นิยาม ISA ของผู้เล่น (.isa.json): ต่อยอดจาก Z8 */
+export interface IsaExtension {
+  format: 'zncpu-isa';
+  version: 1;
+  base: 'Z8';
+  name: string;
+  instructions: CustomInstruction[];
 }
 
 /** สิ่งที่โปรแกรมต้องทำให้ได้ในหนึ่งกรณี (ทุกกรณีต้องจบด้วย HALT ภายใน maxCycles) */
@@ -270,6 +298,8 @@ export interface LevelDef {
   lesson: string;
   /** def id ที่ผู้เล่นวางได้ในด่านนี้ */
   available: string[];
+  /** เริ่มด่านจากสำเนาของวงจรนี้ (เช่น ด่านโบนัสเริ่มจาก CPU ที่ต่อไว้แล้ว) */
+  startFrom?: string;
   target: {
     defId: string;
     pins: PinDef[];
@@ -321,4 +351,6 @@ export interface ZncpuFile {
   programs: ProgramSource[];
   progress: Record<string, LevelProgress>;
   settings: Record<string, unknown>;
+  /** ISA ของผู้เล่น ใช้กับ CPU Z8+ (ไม่มี = ใช้คำสั่งเริ่มต้นของด่านโบนัส) */
+  isa?: IsaExtension;
 }

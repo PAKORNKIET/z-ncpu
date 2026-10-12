@@ -1722,3 +1722,120 @@ details[open] > summary .chevron,
   padding: 24px;
   text-align: center;
 }
+
+/* ISA ของฉัน (สนามทดลอง) และการเทียบกับ emulator (หน้าคอมพิวเตอร์) */
+.sandbox {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.isa-editor {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  min-width: 0;
+}
+.isa-editor h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+.isa-editor p {
+  line-height: 1.7;
+}
+.isa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.isa-list {
+  list-style: none;
+  margin: 12px 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+  gap: 10px;
+}
+.isa-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.isa-item.has-error {
+  border-color: var(--error);
+}
+.isa-item label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 0;
+}
+.isa-item input,
+.isa-item select {
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  min-width: 0;
+}
+.isa-item input.mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+.isa-item [aria-invalid='true'] {
+  border-color: var(--error);
+}
+.isa-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr) minmax(0, 1.1fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+.isa-fields .linklike {
+  padding: 8px;
+}
+.isa-item p {
+  margin: 0;
+}
+.isa-issues {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.isa-status p {
+  margin: 6px 0;
+}
+.isa-help ul {
+  padding-left: 18px;
+  line-height: 1.8;
+}
+.verify {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 10px 0;
+}
+.verify-result {
+  flex-basis: 100%;
+}
+.verify-result p {
+  margin: 4px 0;
+}
+.verify-pins {
+  margin: 4px 0;
+  padding-left: 18px;
+}
+@media (max-width: 640px) {
+  .isa-fields {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}

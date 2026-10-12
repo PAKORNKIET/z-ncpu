@@ -48,5 +48,7 @@
   {"id": "stack-pointer", "th": "ตัวชี้สแตก", "en": "Stack Pointer (SP)", "explain_th": "register ที่เก็บ address ของค่าบนสุดของ stack ใน Z8 stack โตลงล่างเริ่มที่ 0xF0"},
   {"id": "cpu", "th": "หน่วยประมวลผลกลาง", "en": "CPU (Central Processing Unit)", "explain_th": "วงจรที่ดึงคำสั่งจากหน่วยความจำมาทำทีละคำสั่ง ประกอบด้วย PC, decoder, register, ALU และทางเดินข้อมูล"},
   {"id": "datapath", "th": "ทางเดินข้อมูล", "en": "Datapath", "explain_th": "เส้นทางที่ข้อมูลไหลผ่านใน CPU จาก register ผ่าน ALU และหน่วยความจำ กลับมาที่ register โดยมีสัญญาณควบคุมเลือกทาง"},
-  {"id": "memory-mapped-io", "th": "I/O แบบใช้ address หน่วยความจำ", "en": "Memory-mapped I/O", "explain_th": "การคุยกับอุปกรณ์ผ่าน address แบบเดียวกับ RAM เช่นเขียนที่ 0xF0 แล้วตัวเลขไปขึ้นจอ"}
+  {"id": "memory-mapped-io", "th": "I/O แบบใช้ address หน่วยความจำ", "en": "Memory-mapped I/O", "explain_th": "การคุยกับอุปกรณ์ผ่าน address แบบเดียวกับ RAM เช่นเขียนที่ 0xF0 แล้วตัวเลขไปขึ้นจอ"},
+  {"id": "isa", "th": "ชุดคำสั่ง", "en": "Instruction Set Architecture (ISA)", "explain_th": "รายการคำสั่งทั้งหมดที่ CPU ทำได้ พร้อมรูปแบบบิตของแต่ละคำสั่ง เป็นข้อตกลงระหว่างคนเขียนโปรแกรมกับคนออกแบบวงจร"},
+  {"id": "shift", "th": "การเลื่อนบิต", "en": "Bit shift", "explain_th": "ย้ายทุกบิตไปทางซ้ายหรือขวาหนึ่งตำแหน่ง เลื่อนขวาคือหารสอง เลื่อนซ้ายคือคูณสอง ในวงจรทำได้ด้วยการต่อสายเยื้องกัน"}
 ]

@@ -3,9 +3,9 @@
 // ค่า register อ่านจากขาดีบักของ CPU ไม่ได้มาจาก emulator
 import { EXAMPLE_PROGRAMS } from '@z-ncpu/content';
 import { ComponentLibrary, contentHash, cpuHarness, ROM_DUT, ROM_PANEL } from '@z-ncpu/engine';
-import { assemble, explainInstruction, hex16, type AsmResult } from '@z-ncpu/isa';
-import type { SignalValue } from '@z-ncpu/shared';
-import { AlertTriangle, Box, BookOpen, Upload, CircleDot, Cpu, FileCode2, ListOrdered, Pause, Play, RotateCcw, StepForward, X } from 'lucide-react';
+import { assemble, explainInstruction, extendIsa, hex16, Z8, Z8_PLUS_DEFAULT, type AsmResult } from '@z-ncpu/isa';
+import type { CpuSuite, SignalValue, TestReport } from '@z-ncpu/shared';
+import { AlertTriangle, Box, BookOpen, CheckCircle2, Upload, CircleDot, Cpu, FileCode2, ListOrdered, Pause, Play, RotateCcw, ScanSearch, StepForward, X, XCircle } from 'lucide-react';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { EngineClosedError } from '../engine-client';
 import type { SaveFile } from '../game/save';
@@ -19,7 +19,11 @@ import { LogicAnalyzer } from './LogicAnalyzer';
 const View3D = lazy(() => import('./View3D'));
 
 const CPU_ID = 'user.cpu';
+/** CPU ที่ผู้เล่นเพิ่มคำสั่งเอง (ด่านโบนัสของบท 9) ใช้ ISA ของฉัน */
+const CPU_PLUS_ID = 'user.cpuplus';
 const PROGRAM_ID = 'main';
+/** จำนวน cycle ที่เทียบกับ emulator (CPU 55,000 NAND เดินได้ราวหลายร้อย cycle ต่อวินาที) */
+const VERIFY_CYCLES = 500;
 const SPEEDS: [number, string][] = [
   [1, '1 Hz'],
   [4, '4 Hz'],
@@ -55,11 +59,21 @@ export function ComputerPage({ save, setSave }: { save: SaveFile; setSave: Dispa
   return <Computer save={save} setSave={setSave} />;
 }
 
+type Verify = { k: 'running' } | { k: 'done'; report: TestReport | null; error?: string; source: string; cpuId: string };
+
 function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStateAction<SaveFile>> }) {
   const { client, pins, cycle, running, stopReason, history } = useEngine();
-  const stored = save.programs.find((p) => p.id === PROGRAM_ID)?.source;
+  const storedProgram = save.programs.find((p) => p.id === PROGRAM_ID);
+  const stored = storedProgram?.source;
+  const hasPlus = save.components.some((c) => c.id === CPU_PLUS_ID);
+  // CPU ที่เลือก: โปรแกรมที่บันทึกไว้บอกว่าเขียนให้ Z8 หรือ Z8+
+  const [cpuId, setCpuId] = useState(hasPlus && storedProgram?.isa === 'Z8+' ? CPU_PLUS_ID : CPU_ID);
+  const plus = cpuId === CPU_PLUS_ID;
+  const ext = save.isa ?? Z8_PLUS_DEFAULT;
+  const isa = useMemo(() => (plus ? extendIsa(ext) : Z8), [plus, ext]);
   const [source, setSource] = useState(stored ?? EXAMPLE_PROGRAMS[0]!.source);
-  const asm = useMemo(() => assemble(source), [source]);
+  const asm = useMemo(() => assemble(source, isa), [source, isa]);
+  const [verify, setVerify] = useState<Verify | null>(null);
   /** โปรแกรมที่อยู่ในแผงตอนนี้ */
   const [loaded, setLoaded] = useState<{ source: string; asm: AsmResult } | null>(null);
   const [hz, setHz] = useState(EXAMPLE_PROGRAMS[0]!.hz);
@@ -71,34 +85,39 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
   const listingRef = useRef<HTMLDivElement>(null);
   const [show3d, setShow3d] = useState(false);
 
-  const levelPassed = !!save.progress['cpu.z8']?.passedHash;
+  const levelPassed = !!save.progress[plus ? 'adv.shr' : 'cpu.z8']?.passedHash;
   const lib = useMemo(() => new ComponentLibrary(save.components), [save.components]);
-  // compile ใหม่เฉพาะเมื่อวงจรของ CPU เปลี่ยนจริง (ไม่นับตำแหน่ง) ไม่ใช่ทุกครั้งที่ save เปลี่ยน
-  const cpuKey = useMemo(() => contentHash(lib, CPU_ID), [lib]);
+  // compile ใหม่เฉพาะเมื่อวงจรของ CPU เปลี่ยนจริง (ไม่นับตำแหน่ง) หรือเปลี่ยน CPU ไม่ใช่ทุกครั้งที่ save เปลี่ยน
+  const cpuKey = useMemo(() => `${cpuId}:${contentHash(lib, cpuId)}`, [lib, cpuId]);
 
   // บันทึกโปรแกรมลง save (หน่วงไว้ ไม่บันทึกทุกตัวอักษร)
   useEffect(() => {
-    if (source === stored) return;
+    const isaName = plus ? 'Z8+' : 'Z8';
+    if (source === stored && (storedProgram?.isa ?? 'Z8') === isaName) return;
     const t = setTimeout(() => {
       setSave((s) => ({
         ...s,
-        programs: [...s.programs.filter((p) => p.id !== PROGRAM_ID), { id: PROGRAM_ID, isa: 'Z8', source }],
+        programs: [...s.programs.filter((p) => p.id !== PROGRAM_ID), { id: PROGRAM_ID, isa: isaName, source }],
       }));
     }, 500);
     return () => clearTimeout(t);
-  }, [source, stored, setSave]);
+  }, [source, stored, storedProgram?.isa, plus, setSave]);
 
   const loadedRef = useRef(loaded);
   loadedRef.current = loaded;
   const inputsRef = useRef(inputs);
   inputsRef.current = inputs;
-  const firstAsm = useRef(asm);
+  // โปรแกรมล่าสุดในตัวแก้ (ใช้ตอน compile CPU ครั้งแรกหรือหลังเปลี่ยน CPU)
+  const asmRef = useRef(asm);
+  asmRef.current = asm;
+  const sourceRef = useRef(source);
+  sourceRef.current = source;
 
   // compile CPU ของผู้เล่นในวงจรห่อ (แผงโปรแกรม → prog) แล้วโหลดโปรแกรมและ reset
   useEffect(() => {
     if (!client) return;
     let active = true;
-    const harness = cpuHarness(lib, CPU_ID);
+    const harness = cpuHarness(lib, cpuId);
     if ('code' in harness) {
       setReady({ error: harness.message.th });
       return;
@@ -115,10 +134,10 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
           return;
         }
         setReady({ gates: res.stats.gates });
-        const prog = loadedRef.current ?? (firstAsm.current.ok ? { source: '', asm: firstAsm.current } : null);
+        const prog = loadedRef.current ?? (asmRef.current.ok ? { source: sourceRef.current, asm: asmRef.current } : null);
         if (prog) {
           client.post({ type: 'loadPanel', panel: ROM_PANEL, words: prog.asm.words });
-          if (!loadedRef.current) setLoaded({ source, asm: prog.asm });
+          if (!loadedRef.current) setLoaded(prog);
         }
         for (const [pin, value] of Object.entries(inputsRef.current)) client.post({ type: 'setInput', pin, value });
         client.post({ type: 'resetCpu' });
@@ -153,6 +172,35 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
       box.scrollTop = row.offsetTop - box.clientHeight / 2;
     }
   }, [pc]);
+
+  /** เปลี่ยน CPU: รหัสเครื่องเดิมอาจมีคำสั่งที่ CPU ใหม่ไม่รู้จัก จึงล้างแผงแล้วโหลดโปรแกรมใหม่หลัง compile */
+  const switchCpu = (next: string): void => {
+    if (next === cpuId) return;
+    client?.post({ type: 'pause' });
+    setLoaded(null);
+    setVerify(null);
+    setCpuId(next);
+  };
+
+  /** รันโปรแกรมเดียวกันบน CPU (วงจร NAND) และบน emulator ที่ทำตามสูตรของ ISA แล้วเทียบทุกขาทุก cycle */
+  const verifyProgram = async (): Promise<void> => {
+    if (!client || !asm.ok) return;
+    client.post({ type: 'pause' });
+    setVerify({ k: 'running' });
+    const tests: CpuSuite = {
+      type: 'cpu',
+      programs: [{ name: { th: 'โปรแกรมของฉัน', en: 'My program' }, source, maxCycles: VERIFY_CYCLES, inputs }],
+      ...(plus ? { isa: ext } : {}),
+    };
+    try {
+      const res = await client.send({ type: 'test', defId: cpuId, tests, mode: 'fast' });
+      if (res.type !== 'testResult') return;
+      const error = res.report?.error?.message.th ?? (res.report ? undefined : (res.diagnostics[0]?.message.th ?? 'ตรวจไม่ได้'));
+      setVerify({ k: 'done', report: res.report, source, cpuId, ...(error ? { error } : {}) });
+    } catch (e) {
+      if (!(e instanceof EngineClosedError)) console.error(e);
+    }
+  };
 
   const loadProgram = (): void => {
     if (!client || !asm.ok) return;
@@ -209,7 +257,9 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
     pc !== undefined && regValues.every((v) => v !== undefined) && loaded
       ? halted
         ? 'HALT: CPU หยุดแล้ว กด Reset เพื่อเริ่มใหม่'
-        : explainInstruction(loaded.asm.words[pc] ?? 0, {
+        : explainInstruction(
+            loaded.asm.words[pc] ?? 0,
+            {
             pc,
             a: regValues[1]!,
             b: regValues[2]!,
@@ -217,7 +267,9 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
             d: regValues[4]!,
             sp: regValues[5]!,
             flags: regValues[6]!,
-          })
+            },
+            isa,
+          )
       : null;
 
   return (
@@ -257,9 +309,25 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
       </section>
 
       <section className="computer-run" aria-labelledby="run-title">
-        <h2 id="run-title" className="with-icon">
-          <Cpu size={18} aria-hidden /> CPU ของฉัน
-        </h2>
+        <div className="computer-head">
+          <h2 id="run-title" className="with-icon">
+            <Cpu size={18} aria-hidden /> CPU ของฉัน
+          </h2>
+          {hasPlus ? (
+            <label className="small">
+              CPU{' '}
+              <select aria-label="เลือก CPU" value={cpuId} onChange={(e) => switchCpu(e.target.value)}>
+                <option value={CPU_ID}>Z8 (บทที่ 7)</option>
+                <option value={CPU_PLUS_ID}>Z8+ (ISA ของฉัน)</option>
+              </select>
+            </label>
+          ) : null}
+        </div>
+        {plus ? (
+          <p className="muted small" data-testid="isa-info">
+            ISA: Z8 + {extendIsa(ext).instructions.filter((d) => d.group === 3).map((d) => d.mnemonic).join(', ') || '(ยังไม่มีคำสั่งเพิ่ม)'} · แก้ได้ที่ “สนามทดลอง” ส่วน ISA ของฉัน
+          </p>
+        ) : null}
         {ready === null ? <p className="muted">กำลังเตรียม CPU (compile วงจร NAND)…</p> : null}
         {ready && 'error' in ready ? <p className="error with-icon">
             <AlertTriangle size={16} aria-hidden /> CPU ยังรันไม่ได้: {ready.error}
@@ -267,7 +335,7 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
         {ok ? (
           <p className="muted small">
             <span data-testid="cpu-gates">{ready.gates.toLocaleString()}</span> NAND
-            {levelPassed ? ' · ผ่านการทดสอบแล้ว' : ' · ยังไม่ผ่านด่าน CPU ผลอาจไม่ตรงกับที่โปรแกรมควรทำ'}
+            {levelPassed ? ' · ผ่านการทดสอบแล้ว' : plus ? ' · ยังไม่ผ่านด่านโบนัส Z8+ ผลอาจไม่ตรงกับที่โปรแกรมควรทำ' : ' · ยังไม่ผ่านด่าน CPU ผลอาจไม่ตรงกับที่โปรแกรมควรทำ'}
           </p>
         ) : null}
 
@@ -313,6 +381,15 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
           <NumberDisplay label="จอ (0xF0)" value={pins.out} width={8} />
           <SevenSegment label="7-segment (0xF2)" value={pins.seg} />
           <LedBar label="LED (0xF1)" value={pins.leds} width={8} />
+        </div>
+
+        <div className="verify">
+          <button onClick={() => void verifyProgram()} disabled={!ok || !asm.ok || verify?.k === 'running'}>
+            <ScanSearch size={16} aria-hidden />
+            {verify?.k === 'running' ? 'กำลังเทียบ…' : 'เทียบกับ emulator'}
+          </button>
+          <span className="muted small">รันโปรแกรมในตัวแก้ ({VERIFY_CYCLES} cycle แรก) บน CPU ของคุณกับ emulator แล้วเทียบทุก register ทุก cycle</span>
+          <VerifyResult verify={verify} stale={verify?.k === 'done' && (verify.source !== source || verify.cpuId !== cpuId)} />
         </div>
 
         {explain ? (
@@ -473,7 +550,7 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
         </div>
         {show3d && ok && client ? (
           <Suspense fallback={<p className="muted small">กำลังโหลดมุมมอง 3D…</p>}>
-            <View3D client={client} components={save.components} cpuDefId={CPU_ID} root={ROM_DUT} version={cpuKey} />
+            <View3D client={client} components={save.components} cpuDefId={cpuId} root={ROM_DUT} version={cpuKey} />
           </Suspense>
         ) : (
           <p className="muted small">ดู CPU ทั้งเครื่องเป็นชั้นๆ ซูมจากภาพรวมเข้าไปจนเห็น NAND ทุกตัว และเห็นไฟวิ่งตอนรันโปรแกรม</p>
@@ -481,6 +558,54 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
       </section>
 
       <LogicAnalyzer client={ok ? client : null} history={history} cycle={cycle} running={running} onStep={() => client?.post({ type: 'step', count: 1 })} />
+    </div>
+  );
+}
+
+const PIN_TH: Record<string, string> = { pc: 'PC', a: 'A', b: 'B', c: 'C', d: 'D', sp: 'SP', flags: 'flags', halt: 'halt', out: 'จอ', leds: 'LED', seg: '7-segment' };
+const showValue = (v: SignalValue | undefined): string => (typeof v === 'number' ? `${v} (0x${hex2(v)})` : String(v ?? '–'));
+
+function VerifyResult({ verify, stale }: { verify: Verify | null; stale: boolean }) {
+  if (!verify || verify.k === 'running') return null;
+  return (
+    <div role="status" aria-live="polite" className="verify-result small" data-testid="verify-result">
+      {stale ? <p className="muted">โปรแกรมหรือ CPU เปลี่ยนแล้ว กดเทียบอีกครั้ง</p> : null}
+      {verify.error ? (
+        <p className="error with-icon">
+          <AlertTriangle size={16} aria-hidden /> {verify.error}
+        </p>
+      ) : verify.report?.passed ? (
+        <p className="with-icon">
+          <CheckCircle2 size={16} aria-hidden className="pass-icon" /> ตรงกับ emulator ทุก cycle ({verify.report.results[0]?.cpu?.cycle ?? 0} cycle)
+        </p>
+      ) : verify.report?.firstFailure?.cpu ? (
+        (() => {
+          const f = verify.report.firstFailure;
+          const cpu = f.cpu!;
+          const wrong = Object.keys(f.expected).filter((p) => f.expected[p] !== f.actual[p]);
+          return (
+            <>
+              <p className="error with-icon">
+                <XCircle size={16} aria-hidden /> ไม่ตรงที่ cycle {cpu.cycle}
+                {cpu.instruction !== undefined ? (
+                  <>
+                    {' '}หลังคำสั่ง <code>{cpu.instruction}</code> ที่ 0x{hex2(cpu.pc ?? 0)}
+                  </>
+                ) : (
+                  ' (หลัง reset)'
+                )}
+              </p>
+              <ul className="verify-pins">
+                {wrong.map((p) => (
+                  <li key={p} className="mono">
+                    {PIN_TH[p] ?? p}: CPU ได้ {showValue(f.actual[p])} แต่ emulator ได้ {showValue(f.expected[p])}
+                  </li>
+                ))}
+              </ul>
+            </>
+          );
+        })()
+      ) : null}
     </div>
   );
 }

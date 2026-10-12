@@ -200,7 +200,7 @@ export function App() {
           </Suspense>
         ) : tab === 'sandbox' ? (
           <Suspense fallback={<PageLoading />}>
-            <SandboxPage save={save} />
+            <SandboxPage save={save} setSave={setSave} />
           </Suspense>
         ) : tab === 'demo' ? (
           <Suspense fallback={<PageLoading />}>

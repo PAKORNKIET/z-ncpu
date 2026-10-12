@@ -23,12 +23,13 @@ export const level = (page: Page, n: number) => page.getByRole('button', { name:
 export const levelNamed = (page: Page, title: RegExp) => page.locator('.level-item').filter({ hasText: title });
 export const canvas = (page: Page) => page.getByRole('application');
 
-/** ด่านเขียนโปรแกรม (บท 8, 9) ไม่มีวงจรเฉลย มีแต่ซอร์ส assembly */
-const isProgram = (id: string): boolean => id.startsWith('prog.') || id.startsWith('adv.');
+/** ด่านเขียนโปรแกรม (บท 8, 9) ไม่มีวงจรเฉลย มีแต่ซอร์ส assembly (ด่านโบนัส adv.shr เป็นวงจร) */
+export const isProgram = (id: string): boolean => 'source' in (solution(id) as object);
 
 /** เปิดแอปโดยมีความคืบหน้าเหมือนผ่านด่านเหล่านี้แล้ว (และร่างวงจร: id ของด่านเพื่อใช้เฉลย หรือวงจรที่แก้แล้ว) */
-export async function openWithSave(page: Page, passed: string[], drafts: (string | object)[] = []): Promise<void> {
+export async function openWithSave(page: Page, passed: string[], drafts: (string | object)[] = [], extra: Record<string, unknown> = {}): Promise<void> {
   const save = {
+    ...extra,
     format: 'zncpu',
     schemaVersion: 1,
     project: { id: 'local', name: 'e2e' },
@@ -130,5 +131,6 @@ export const ORDER = [
   'adv.fact',
   'adv.primes',
   'adv.sort',
+  'adv.shr',
 ];
 export const before = (id: string): string[] => ORDER.slice(0, ORDER.indexOf(id));

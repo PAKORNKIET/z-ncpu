@@ -4,15 +4,15 @@ import { expect, test, type Page } from '@playwright/test';
 import { join } from 'node:path';
 import { ComponentLibrary, contentHash } from '@z-ncpu/engine';
 import type { ComponentDef } from '@z-ncpu/shared';
-import { before, ORDER, solution } from './helpers';
+import { before, isProgram, ORDER, solution } from './helpers';
 
 /** เปิดแอปเหมือนผู้เล่นที่ผ่านด่านเหล่านี้มาแล้วจริง (hash ถูกต้อง รายการด่านจึงขึ้นว่าผ่าน ไม่ใช่ต้องทดสอบใหม่) */
 async function openWithSave(page: Page, passed: string[], drafts: string[] = []): Promise<void> {
-  const components = [...passed.filter((id) => !id.startsWith('prog.') && !id.startsWith('adv.')), ...drafts].map((id) => solution(id) as ComponentDef);
+  const components = [...passed.filter((id) => !isProgram(id)), ...drafts].map((id) => solution(id) as ComponentDef);
   const lib = new ComponentLibrary(components);
   const progress = Object.fromEntries(
     // เฉลยของแต่ละด่านคือ def เป้าหมายของด่านนั้น (ด่านเขียนโปรแกรมใช้ CPU)
-    passed.map((id) => [id, { attempts: 1, passedHash: contentHash(lib, id.startsWith('prog.') || id.startsWith('adv.') ? 'user.cpu' : (solution(id) as ComponentDef).id) }]),
+    passed.map((id) => [id, { attempts: 1, passedHash: contentHash(lib, isProgram(id) ? 'user.cpu' : (solution(id) as ComponentDef).id) }]),
   );
   const save = { format: 'zncpu', schemaVersion: 1, project: { id: 'local', name: 'screenshots' }, components, progress };
   await page.addInitScript((text) => {

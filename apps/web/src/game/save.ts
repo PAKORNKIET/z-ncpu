@@ -2,6 +2,7 @@
 // ไฟล์ที่เปิดมาจากข้างนอกเป็นข้อมูลที่เชื่อไม่ได้ จึงตรวจทุกช่องและสร้าง object ใหม่จากช่องที่รู้จักเท่านั้น
 // (ไม่มีโค้ดใน DOM ที่นี่ ทดสอบได้ใน Node)
 
+import { readIsaExtension } from '@z-ncpu/isa';
 import type { ComponentDef, Instance, LevelProgress, PinDef, Rotation, Wire, ZncpuFile } from '@z-ncpu/shared';
 
 export const SAVE_KEY = 'zncpu.save.v1';
@@ -177,14 +178,20 @@ export function parseSave(text: string): ParseResult {
     for (const p of arr(raw.programs ?? [], 'โปรแกรม', 50)) {
       if (!isObj(p)) bad('โปรแกรมไม่ถูกต้อง');
       const prog = p as Record<string, unknown>;
-      if (prog.isa !== 'Z8') bad('โปรแกรมต้องเป็นของ ISA Z8');
-      save.programs.push({ id: name(prog.id, 'ชื่อโปรแกรม', /^[A-Za-z0-9_][A-Za-z0-9_.-]{0,39}$/), isa: 'Z8', source: str(prog.source, 'ซอร์สของโปรแกรม', 64_000) });
+      if (prog.isa !== 'Z8' && prog.isa !== 'Z8+') bad('โปรแกรมต้องเป็นของ ISA Z8 หรือ Z8+');
+      save.programs.push({ id: name(prog.id, 'ชื่อโปรแกรม', /^[A-Za-z0-9_][A-Za-z0-9_.-]{0,39}$/), isa: prog.isa as string, source: str(prog.source, 'ซอร์สของโปรแกรม', 64_000) });
     }
     if (raw.progress !== undefined) {
       if (!isObj(raw.progress)) bad('ความคืบหน้าไม่ถูกต้อง');
       for (const [id, p] of Object.entries(raw.progress as Record<string, unknown>).slice(0, 1000)) {
         save.progress[name(id, 'รหัสด่าน', LEVEL_ID)] = progressEntry(p);
       }
+    }
+    if (raw.isa !== undefined) {
+      // ISA ของผู้เล่น: ตรวจโครงสร้างแบบเดียวกับตอนเปิดไฟล์ .isa.json (สูตรผิดยังเก็บไว้ให้แก้ต่อได้)
+      const isa = readIsaExtension(raw.isa);
+      if (!isa.ok) bad(isa.reason);
+      else save.isa = isa.ext;
     }
     return { ok: true, save };
   } catch (e) {
