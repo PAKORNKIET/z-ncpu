@@ -1,6 +1,7 @@
 // @z-ncpu/content — ด่าน บทเรียน คำใบ้ และ glossary (Spec ส่วน 13, 16)
 // ไฟล์ข้อมูลล้วน ไม่มีโค้ดที่ต้องรัน จึงนำเข้าด่านจากคนอื่นได้อย่างปลอดภัย
-// หมายเหตุ: solutions/ ใช้ใน CI เท่านั้น ห้าม import จากที่นี่ เพื่อไม่ให้เฉลยติดไปกับแอป
+// หมายเหตุ: solutions/ (เฉลย) และ explain/ (คำอธิบายเฉลย) ไม่ import จากที่นี่ แอปโหลดแยกไฟล์เฉพาะตอนผู้เล่นกด "ดูเฉลย"
+// (apps/web/src/game/solution.ts) ส่วน Level CI อ่านจากไฟล์โดยตรง
 
 import type { GlossaryEntry, LevelDef } from '@z-ncpu/shared';
 import glossaryJson from '../i18n/glossary.json';

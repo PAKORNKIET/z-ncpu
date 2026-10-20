@@ -41,6 +41,8 @@ export function CircuitCanvas(props: {
   model: EditorModel;
   values: Record<string, SignalValue>;
   label?: string;
+  /** ตัวช่วยของ E2E (อ่านตำแหน่งขา) ผูกกับพื้นที่วาดหลักเท่านั้น */
+  testHook?: boolean;
   /** คลิกขวาหรือกดค้าง: เปิดเมนูที่จุดนี้บนจอ (พิกัดของหน้าต่าง) */
   onMenu?: (target: MenuTarget, client: { x: number; y: number }, canvasPoint: { x: number; y: number }) => void;
 }) {
@@ -115,7 +117,8 @@ export function CircuitCanvas(props: {
     // ฟอนต์ไทยโหลดเสร็จแล้ววาดใหม่ให้ตัวหนังสือถูกฟอนต์
     void document.fonts?.ready.then(request);
 
-    if (new URLSearchParams(location.search).has('test')) {
+    const hook = props.testHook !== false && new URLSearchParams(location.search).has('test');
+    if (hook) {
       window.__zncpuTest = {
         pin: (inst, pin) => {
           const p = model.ui.pinOnScreen({ inst, pin });
@@ -132,7 +135,7 @@ export function CircuitCanvas(props: {
       canvas.removeEventListener('touchstart', noCallout);
       if (frame) cancelAnimationFrame(frame);
       renderer.destroy();
-      delete window.__zncpuTest;
+      if (hook) delete window.__zncpuTest;
     };
   }, [model]);
 

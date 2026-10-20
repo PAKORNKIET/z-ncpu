@@ -9,6 +9,7 @@ import { AsmEditor } from '../computer/AsmEditor';
 import { EngineClosedError } from '../engine-client';
 import { useEngine } from '../use-engine';
 import { TutorPanel } from '../tutor/TutorPanel';
+import { SolutionButton } from './SolutionDialog';
 import { levelGoal, levelPlace } from '../tutor/context';
 import { programSummary, reportSummary } from '../tutor/tutor';
 import { hashText, programOf, putProgram, recordTest, type LevelStatus } from './progress';
@@ -213,11 +214,14 @@ export function ProgramLevel(props: {
               <Lightbulb size={16} aria-hidden className="hint-icon" /> <span>คำใบ้ {i + 1}: {HINTS_TH[h]}</span>
             </p>
           ))}
-          {hints < level.hints.length ? (
-            <button onClick={() => setHints(hints + 1)}>
-              ขอคำใบ้ ({hints}/{level.hints.length})
-            </button>
-          ) : null}
+          <div className="row">
+            {hints < level.hints.length ? (
+              <button onClick={() => setHints(hints + 1)}>
+                ขอคำใบ้ ({hints}/{level.hints.length})
+              </button>
+            ) : null}
+            <SolutionButton level={level} components={save.components} />
+          </div>
         </div>
 
         <TutorPanel

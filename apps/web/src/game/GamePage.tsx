@@ -28,6 +28,7 @@ import { PRIMITIVE_PALETTE, Workbench, type PaletteItem, type WorkbenchContext }
 import { Markdown } from '../ui/Markdown';
 import { Diagnostics } from '../ui/widgets';
 import { ProgramLevel } from './ProgramLevel';
+import { SolutionButton } from './SolutionDialog';
 import { TutorPanel } from '../tutor/TutorPanel';
 import { levelGoal, levelPlace } from '../tutor/context';
 import { circuitSummary, reportSummary } from '../tutor/tutor';
@@ -392,11 +393,14 @@ function TestPanel(props: {
             <Lightbulb size={16} aria-hidden className="hint-icon" /> <span>คำใบ้ {i + 1}: {HINTS_TH[h]}</span>
           </p>
         ))}
-        {hints < level.hints.length ? (
-          <button onClick={() => setHints(hints + 1)}>
-            ขอคำใบ้ ({hints}/{level.hints.length})
-          </button>
-        ) : null}
+        <div className="row">
+          {hints < level.hints.length ? (
+            <button onClick={() => setHints(hints + 1)}>
+              ขอคำใบ้ ({hints}/{level.hints.length})
+            </button>
+          ) : null}
+          <SolutionButton level={level} components={props.save.components} />
+        </div>
       </div>
 
       <TutorPanel

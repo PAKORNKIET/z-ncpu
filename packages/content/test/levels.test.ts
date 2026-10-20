@@ -93,6 +93,19 @@ describe('Level CI', () => {
     }
   });
 
+  it('ทุกด่านมีคำอธิบายเฉลยภาษาไทย (หลักการ ต่อ/ทำอย่างไร และทำไม) และไม่มีไฟล์เกิน', () => {
+    const files = readdirSync(join(root, 'explain', 'th')).map((f) => f.replace(/\.md$/, ''));
+    expect(files.sort()).toEqual(LEVELS.map((l) => l.id).sort());
+    for (const level of LEVELS) {
+      const text = readFileSync(join(root, 'explain', 'th', `${level.id}.md`), 'utf8');
+      expect(text.length, level.id).toBeGreaterThan(200);
+      expect(text, level.id).toContain('## หลักการ');
+      expect(text, level.id).toContain('## ทำไมต้องแบบนี้');
+      // renderer ของบทเรียนไม่รองรับ code block
+      expect(text, level.id).not.toContain('```');
+    }
+  });
+
   it('ทุกด่านมีไฟล์เฉลย และไม่มีเฉลยที่ไม่มีด่าน', () => {
     const files = readdirSync(join(root, 'solutions')).map((f) => f.replace(/\.json$/, ''));
     expect(files.sort()).toEqual(LEVELS.map((l) => l.id).sort());

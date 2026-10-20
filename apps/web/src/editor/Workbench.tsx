@@ -227,7 +227,7 @@ export function Workbench(props: {
   useEffect(() => {
     const onKey = (e: globalThis.KeyboardEvent): void => {
       const t = e.target instanceof HTMLElement ? e.target : null;
-      if (t?.closest('input, textarea, select, [contenteditable="true"]')) return;
+      if (t?.closest('input, textarea, select, [contenteditable="true"], dialog')) return;
       const free = !t || t === document.body || t.tagName === 'CANVAS';
       // คัดลอกตัวหนังสือบนหน้า (เช่นบทเรียน) ด้วย Ctrl+C ตามปกติ ไม่ใช่คัดลอกชิ้นในวงจร
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && (document.getSelection()?.toString() ?? '') !== '') return;
