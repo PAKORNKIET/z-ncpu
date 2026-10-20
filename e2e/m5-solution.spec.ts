@@ -59,3 +59,24 @@ test('ด่านเขียนโปรแกรม: เห็นโปรแ
   await page.keyboard.press('Escape');
   await expect(page.getByRole('textbox', { name: 'ซอร์สโค้ด assembly' })).not.toHaveValue(/CMP A, B/);
 });
+
+test('โหลดเฉลยไม่ได้: บอกเหตุผลและกดลองอีกครั้งได้ · คลิกพื้นหลังไม่ปิดหน้าต่าง', async ({ page }) => {
+  // หน้าเปิดไฟล์เฉลยไม่ได้ (เช่นเน็ตหลุด) เบราว์เซอร์จะเขียน error ลง console เอง
+  page.removeAllListeners('console');
+  check = () => undefined;
+  await openWithSave(page, []);
+  await page.route(/logic\.not[^/]*$/, (route) => route.abort());
+  page.once('dialog', (d) => void d.accept());
+  await page.getByRole('button', { name: 'ดูเฉลย' }).click();
+  const dlg = page.getByRole('dialog', { name: 'เฉลย: สร้าง NOT' });
+  await expect(dlg.getByRole('alert')).toContainText('โหลดเฉลยไม่ได้');
+  await page.unroute(/logic\.not[^/]*$/);
+  await dlg.getByRole('button', { name: 'ลองอีกครั้ง' }).click();
+  await expect(dlg.getByTestId('solution-text')).toContainText('ป้อนค่าเดียวกันเข้าทั้งสองขา');
+
+  // คลิกพื้นหลังนอกกล่อง (มุมจอ) หน้าต่างยังอยู่
+  await page.mouse.click(5, 5);
+  await expect(dlg).toBeVisible();
+  await dlg.getByRole('button', { name: 'ปิดเฉลย' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+});

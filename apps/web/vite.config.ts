@@ -55,7 +55,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2,txt,webmanifest}'],
+        // json/md คือเฉลยและคำอธิบายเฉลย เก็บไว้ด้วยเพื่อให้ดูเฉลยได้ตอนออฟไลน์
+        globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2,txt,webmanifest,json,md}'],
         // bundle หลักใหญ่กว่าค่าเริ่มต้น 2 MB ของ workbox ได้ในอนาคต
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         cleanupOutdatedCaches: true,
@@ -76,6 +77,8 @@ export default defineConfig({
     // ไฟล์มุมมอง 3D (three.js + React Three Fiber ~950 kB) โหลดเฉพาะตอนกดเปิดมุมมอง 3D ไม่กระทบหน้าแรก
     // R3F ดึง three.js มาทั้งชุด (extend(THREE)) จึงตัดส่วนที่ไม่ใช้ออกไม่ได้ ไฟล์อื่นยังตรวจงบ 500 kB ด้วย chunkBudget()
     chunkSizeWarningLimit: 1000,
+    // เฉลยและคำอธิบายเป็นไฟล์แยก (โหลดด้วย fetch ตอนกด "ดูเฉลย") ห้ามฝังเป็น data: URL เพราะ CSP connect-src ไม่อนุญาต
+    assetsInlineLimit: (file: string) => (/\.(json|md)$/.test(file) ? false : undefined),
     rolldownOptions: {
       output: {
         // React แยกไฟล์ไว้: อัปเดตแอปแล้วผู้เล่นไม่ต้องโหลด React ซ้ำ

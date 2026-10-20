@@ -78,3 +78,10 @@ test('CSP เปิดให้ติดต่อภายนอกได้เ�
   await page.getByRole('button', { name: 'ส่งไป api.openai.com' }).click();
   await expect(page.getByTestId('tutor-answer')).toContainText('ผ่าน CSP');
 });
+
+test('CSP: เปิดเฉลยได้ (ไฟล์เฉลยโหลดจากเว็บเดียวกัน ไม่ฝังเป็น data: URL)', async ({ page }) => {
+  await openWithSave(page, []);
+  page.once('dialog', (d) => void d.accept());
+  await page.getByRole('button', { name: 'ดูเฉลย' }).click();
+  await expect(page.getByRole('dialog').getByTestId('solution-text')).toContainText('ป้อนค่าเดียวกันเข้าทั้งสองขา');
+});
