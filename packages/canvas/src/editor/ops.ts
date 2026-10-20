@@ -215,6 +215,67 @@ export function setParams(
   };
 }
 
+/** ชิ้นที่คัดลอกไว้ พร้อมสายที่ต่อกันเองระหว่างชิ้นเหล่านั้น (สายที่ต่อออกไปข้างนอกไม่ติดมาด้วย) */
+export interface Clipboard {
+  instances: Instance[];
+  wires: { from: PinRef; to: PinRef }[];
+}
+
+const cloneInstance = (i: Instance): Instance => ({ ...i, ...(i.params ? { params: { ...i.params } } : {}) });
+
+export function copyParts(def: ComponentDef, ids: readonly string[]): Clipboard | null {
+  const picked = new Set(ids);
+  const b = body(def);
+  const instances = b.instances.filter((i) => picked.has(i.id)).map(cloneInstance);
+  if (instances.length === 0) return null;
+  const wires = b.wires.filter((w) => picked.has(w.from.inst) && picked.has(w.to.inst)).map((w) => ({ from: { ...w.from }, to: { ...w.to } }));
+  return { instances, wires };
+}
+
+/** มุมซ้ายบนของชิ้นที่คัดลอกไว้ (ใช้วางตรงตำแหน่งเมาส์) */
+export function clipboardOrigin(clip: Clipboard): { x: number; y: number } {
+  return { x: Math.min(...clip.instances.map((i) => i.x)), y: Math.min(...clip.instances.map((i) => i.y)) };
+}
+
+/**
+ * วางชิ้นที่คัดลอกไว้โดยเลื่อนไป (dx, dy) ตั้งชื่อใหม่ไม่ให้ซ้ำ และต่อสายภายในกลับเหมือนเดิม
+ * allow: ชิ้นที่ใช้ในวงจรนี้ไม่ได้ (เช่นคัดลอกมาจากด่านอื่น) ถูกข้าม และสายที่ต่อกับชิ้นนั้นก็ไม่ถูกวาง
+ */
+export function pasteParts(
+  def: ComponentDef,
+  clip: Clipboard,
+  dx: number,
+  dy: number,
+  allow: (defId: string) => boolean = () => true,
+): { def: ComponentDef; ids: string[]; skipped: number } {
+  const b = body(def);
+  const taken = b.instances.map((i) => i.id);
+  const rename = new Map<string, string>();
+  const added: Instance[] = [];
+  let skipped = 0;
+  for (const src of clip.instances) {
+    if (!allow(src.defId)) {
+      skipped++;
+      continue;
+    }
+    const id = nextId(taken, src.defId);
+    taken.push(id);
+    rename.set(src.id, id);
+    added.push({ ...cloneInstance(src), id, x: src.x + dx, y: src.y + dy });
+  }
+  const wireIds = b.wires.map((w) => w.id);
+  const wires: Wire[] = [];
+  for (const w of clip.wires) {
+    const from = rename.get(w.from.inst);
+    const to = rename.get(w.to.inst);
+    if (!from || !to) continue;
+    const id = nextId(wireIds, 'w');
+    wireIds.push(id);
+    wires.push({ id, from: { inst: from, pin: w.from.pin }, to: { inst: to, pin: w.to.pin } });
+  }
+  return { def: withBody(def, { ...b, instances: [...b.instances, ...added], wires: [...b.wires, ...wires] }), ids: added.map((i) => i.id), skipped };
+}
+
 /** ชิ้นส่วนที่ถูกใช้อยู่ในวงจรนี้กี่ตัว (ใช้แสดงจำนวน NAND ระดับบนสุด) */
 export function countByDef(def: ComponentDef): Map<string, number> {
   const counts = new Map<string, number>();

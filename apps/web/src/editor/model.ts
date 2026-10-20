@@ -33,6 +33,8 @@ export class EditorModel {
   onOpen: (instanceId: string) => void = () => {};
   /** host ตั้งค่า: โหมด Why? คลิกขา/สายเพื่อถามว่าค่ามาจากไหน */
   onProbe: (ref: PinRef) => void = () => {};
+  /** host ตั้งค่า: ชิ้นนี้วางในวงจรนี้ได้ไหม (ตอนวางที่คัดลอกมาจากที่อื่น) */
+  canPlace: (defId: string) => boolean = () => true;
   private cache: { def: ComponentDef; scene: Scene } | null = null;
   private readonly listeners = new Set<() => void>();
   private version = 0;
@@ -54,6 +56,7 @@ export class EditorModel {
       onOpen: (id) => this.onOpen(id),
       onProbe: (ref) => this.onProbe(ref),
       onChange: () => this.emit(),
+      canPlace: (defId) => this.canPlace(defId),
       readOnly: !!options.readOnly,
     });
     this.editor.history.subscribe(() => {

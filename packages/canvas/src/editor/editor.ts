@@ -6,6 +6,9 @@ import { History } from './history';
 import {
   addInstance,
   connect,
+  copyParts,
+  pasteParts,
+  type Clipboard,
   moveInstances,
   removeInstances,
   removeWires,
@@ -90,6 +93,21 @@ export class Editor {
     this.lastError = undefined;
     this.history.push(r.def, 'ต่อสาย');
     return true;
+  }
+
+  /** คัดลอกชิ้นที่เลือกอยู่ (พร้อมสายที่ต่อกันเองระหว่างชิ้นเหล่านั้น) */
+  copy(ids: readonly string[] = this.selection.instances): Clipboard | null {
+    return copyParts(this.def, ids);
+  }
+
+  /** วางชิ้นที่คัดลอกไว้ เลื่อนไป (dx, dy) แล้วเลือกชิ้นที่วางใหม่ คืนจำนวนชิ้นที่วางไม่ได้ */
+  paste(clip: Clipboard, dx: number, dy: number, allow?: (defId: string) => boolean): { ids: string[]; skipped: number } {
+    const r = pasteParts(this.def, clip, dx, dy, allow);
+    if (r.ids.length > 0) {
+      this.history.push(r.def, r.ids.length === clip.instances.length && clip.instances.length > 1 ? `วาง ${r.ids.length} ชิ้น` : 'วางชิ้นที่คัดลอก');
+      this.selection = { instances: r.ids, wires: [] };
+    }
+    return { ids: r.ids, skipped: r.skipped };
   }
 
   /** ลบสิ่งที่เลือกอยู่ทั้งชิ้นส่วนและสาย */

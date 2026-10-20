@@ -8,7 +8,7 @@ export type { WireStyle } from './style';
 export { Canvas2DRenderer, toBit } from './renderer2d';
 export type { CircuitRenderer, Frame } from './renderer2d';
 export { Interaction } from './interaction';
-export type { InteractionOptions, KeyInput, Overlay, PlaceSpec, PointerInput } from './interaction';
+export type { InteractionOptions, KeyInput, MenuTarget, Overlay, PlaceSpec, PointerInput } from './interaction';
 
 export * from './editor/ops';
 export { History } from './editor/history';

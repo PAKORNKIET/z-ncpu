@@ -1,5 +1,5 @@
 // พื้นที่วาดวงจร: ส่งเหตุการณ์เมาส์/คีย์บอร์ดให้ Interaction และวาดด้วย Canvas2DRenderer ทุกครั้งที่มีอะไรเปลี่ยน
-import { Canvas2DRenderer, ghostNode, type Frame, type PlaceSpec } from '@z-ncpu/canvas';
+import { Canvas2DRenderer, ghostNode, type Frame, type MenuTarget, type PlaceSpec } from '@z-ncpu/canvas';
 import type { SignalValue } from '@z-ncpu/shared';
 import { useEffect, useRef, type DragEvent, type PointerEvent } from 'react';
 import type { EditorModel } from './model';
@@ -33,8 +33,20 @@ declare global {
   }
 }
 
-export function CircuitCanvas(props: { model: EditorModel; values: Record<string, SignalValue>; label?: string }) {
+/** กดค้างนานเท่านี้ (ms) โดยไม่ขยับนิ้ว = เปิดเมนู */
+const LONG_PRESS_MS = 500;
+const LONG_PRESS_SLOP = 10;
+
+export function CircuitCanvas(props: {
+  model: EditorModel;
+  values: Record<string, SignalValue>;
+  label?: string;
+  /** คลิกขวาหรือกดค้าง: เปิดเมนูที่จุดนี้บนจอ (พิกัดของหน้าต่าง) */
+  onMenu?: (target: MenuTarget, client: { x: number; y: number }, canvasPoint: { x: number; y: number }) => void;
+}) {
   const { model, values } = props;
+  const onMenu = useRef(props.onMenu);
+  onMenu.current = props.onMenu;
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const valuesRef = useRef(values);
@@ -140,6 +152,19 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
     return { d: Math.hypot(a.x - b.x, a.y - b.y), c: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } };
   };
 
+  /** กดค้างนิ้วเดียว: เปิดเมนูแทนการลาก (fired = เปิดไปแล้ว ไม่ต้องส่งการปล่อยนิ้วต่อ) */
+  const press = useRef<{ timer: number; x: number; y: number; fired: boolean } | null>(null);
+  const endPress = (): void => {
+    if (press.current) window.clearTimeout(press.current.timer);
+    press.current = null;
+  };
+  useEffect(() => endPress, []);
+  const openMenu = (canvasPoint: { x: number; y: number }): void => {
+    const r = canvasRef.current!.getBoundingClientRect();
+    const target = model.ui.contextAt(canvasPoint);
+    if (target) onMenu.current?.(target, { x: r.left + canvasPoint.x, y: r.top + canvasPoint.y }, canvasPoint);
+  };
+
   const pos = (e: PointerEvent<HTMLCanvasElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top, button: e.button, shift: e.shiftKey };
@@ -170,7 +195,7 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
         ref={canvasRef}
         tabIndex={0}
         role="application"
-        aria-label={props.label ?? "พื้นที่ต่อวงจร: ลากขาไปหาอีกขาเพื่อต่อสาย ลากชิ้นส่วนเพื่อย้าย ดับเบิลคลิกชิ้นเพื่อดูข้างใน ล้อเมาส์เพื่อซูม"}
+        aria-label={props.label ?? "พื้นที่ต่อวงจร: ลากขาไปหาอีกขาเพื่อต่อสาย ลากชิ้นส่วนเพื่อย้าย ดับเบิลคลิกชิ้นเพื่อดูข้างใน ล้อเมาส์เพื่อซูม คลิกขวาหรือปุ่มเมนูเพื่อเปิดเมนูคำสั่ง"}
         onPointerDown={(e) => {
           e.currentTarget.focus({ preventScroll: true });
           e.currentTarget.setPointerCapture(e.pointerId);
@@ -178,17 +203,31 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
             touches.current.set(e.pointerId, pos(e));
             if (touches.current.size === 2) {
               // นิ้วที่สองลง: ยกเลิกสิ่งที่นิ้วแรกเริ่มไว้ แล้วเข้าโหมดซูม
+              endPress();
               model.ui.cancel();
               pinch.current = spread();
               return;
             }
             if (touches.current.size > 2) return;
+            if (onMenu.current) {
+              const p = pos(e);
+              const timer = window.setTimeout(() => {
+                if (!press.current) return;
+                press.current.fired = true;
+                model.ui.cancel();
+                openMenu({ x: press.current.x, y: press.current.y });
+              }, LONG_PRESS_MS);
+              press.current = { timer, x: p.x, y: p.y, fired: false };
+            }
           }
           model.ui.pointerDown(pos(e));
         }}
         onPointerMove={(e) => {
           if (e.pointerType === 'touch' && touches.current.has(e.pointerId)) {
-            touches.current.set(e.pointerId, pos(e));
+            const p = pos(e);
+            touches.current.set(e.pointerId, p);
+            if (press.current?.fired) return;
+            if (press.current && Math.hypot(p.x - press.current.x, p.y - press.current.y) > LONG_PRESS_SLOP) endPress();
             if (pinch.current !== null) {
               const now = spread();
               const before = pinch.current;
@@ -204,12 +243,18 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
         onPointerUp={(e) => {
           if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
           touches.current.delete(e.pointerId);
+          const longPressed = !!press.current?.fired;
+          endPress();
+          if (longPressed) return;
           if (pinch.current !== null) {
             if (touches.current.size === 0) pinch.current = null;
             return;
           }
           const p = pos(e);
           model.ui.pointerUp(p);
+          // เมนูจากเมาส์เปิดตอนปล่อยปุ่มขวา (ลากปุ่มขวา = เลื่อนจอ ไม่เปิดเมนู) เบราว์เซอร์ส่ง contextmenu
+          // ตอนกดลง (macOS/Linux) หรือตอนปล่อย (Windows) ไม่เท่ากัน จึงไม่ใช้ event นั้นกับเมาส์
+          if (e.button === 2 && e.pointerType !== 'touch') openMenu(p);
           if (e.pointerType === 'touch') {
             const prev = lastTap.current;
             const now = performance.now();
@@ -222,6 +267,7 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
           }
         }}
         onPointerCancel={(e) => {
+          endPress();
           touches.current.delete(e.pointerId);
           if (touches.current.size === 0) pinch.current = null;
           model.ui.cancel();
@@ -231,7 +277,15 @@ export function CircuitCanvas(props: { model: EditorModel; values: Record<string
           const r = e.currentTarget.getBoundingClientRect();
           model.ui.doubleClick({ x: e.clientX - r.left, y: e.clientY - r.top });
         }}
+        // ไม่ใช้เมนูของเบราว์เซอร์: เมนูของเกมเปิดเองตอนปล่อยปุ่มขวา, กดค้างบนจอสัมผัส และจากคีย์บอร์ดใน onKeyDown
         onContextMenu={(e) => e.preventDefault()}
+        onKeyDown={(e) => {
+          // ปุ่มเมนูบนคีย์บอร์ด หรือ Shift+F10: เปิดเมนูกลางพื้นที่วาด (ใช้กับสิ่งที่เลือกอยู่)
+          if (!onMenu.current || !(e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10'))) return;
+          e.preventDefault();
+          const r = e.currentTarget.getBoundingClientRect();
+          openMenu({ x: r.width / 2, y: r.height / 2 });
+        }}
       />
     </div>
   );

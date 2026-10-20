@@ -1,11 +1,17 @@
 // พื้นที่ทำงาน: กล่องชิ้นส่วน + พื้นที่วาด + แผงขาเข้า/ขาออก จำลองสดใน Worker ทุกครั้งที่แก้วงจร
 // ใช้ทั้งในด่าน (GamePage) และสนามทดลอง (SandboxPage) — ส่วนเฉพาะของแต่ละหน้าส่งมาทาง side
 import { ComponentLibrary, cpuHarness, romHarness, romSampleWords, ROM_DUT, ROM_PANEL } from '@z-ncpu/engine';
+import type { MenuTarget } from '@z-ncpu/canvas';
 import type { ComponentDef, DeviceKind, Diagnostic, SignalValue, WhyAnswer } from '@z-ncpu/shared';
 import {
   AlertTriangle,
   ArrowLeft,
   ArrowUp,
+  BoxSelect,
+  ClipboardPaste,
+  Copy,
+  CopyPlus,
+  Eye,
   Cpu,
   HelpCircle,
   History,
@@ -29,6 +35,7 @@ import { useEngine } from '../use-engine';
 import { Device } from '../ui/devices';
 import { BusInput, Diagnostics, Led, Switch } from '../ui/widgets';
 import { CircuitCanvas, DND_TYPE } from './CircuitCanvas';
+import { ContextMenu, type MenuEntry } from './ContextMenu';
 import { EditorModel, useEditorModel } from './model';
 
 export interface PaletteItem {
@@ -222,6 +229,8 @@ export function Workbench(props: {
       const t = e.target instanceof HTMLElement ? e.target : null;
       if (t?.closest('input, textarea, select, [contenteditable="true"]')) return;
       const free = !t || t === document.body || t.tagName === 'CANVAS';
+      // คัดลอกตัวหนังสือบนหน้า (เช่นบทเรียน) ด้วย Ctrl+C ตามปกติ ไม่ใช่คัดลอกชิ้นในวงจร
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && (document.getSelection()?.toString() ?? '') !== '') return;
       if (!free && !(e.ctrlKey || e.metaKey) && e.key !== 'Escape') return;
       const k = keyTarget.current;
       if (k.view.ui.key({ key: e.key, ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })) e.preventDefault();
@@ -254,6 +263,68 @@ export function Workbench(props: {
     setInputs((s) => ({ ...s, clk: 0 }));
   };
   model.onToggleInput = toggle;
+  // วางที่คัดลอกมาจากด่านอื่นได้เฉพาะชิ้นที่ด่านนี้มีให้ใช้
+  const allowed = useMemo(() => new Set(props.palette.map((p) => p.defId)), [props.palette]);
+  model.canPlace = (defId) => allowed.has(defId);
+
+  // ---------- เมนูคลิกขวา / กดค้าง ----------
+  const [menu, setMenu] = useState<{ target: MenuTarget; x: number; y: number; at: { x: number; y: number } } | null>(null);
+  const canvasBox = (): DOMRect | undefined => document.querySelector('.canvas-wrap')?.getBoundingClientRect();
+  const fitView = (): void => {
+    const c = canvasBox();
+    if (c) view.fit(c.width, c.height);
+  };
+  const menuItems = (t: MenuTarget, at: { x: number; y: number }): { title: string; items: MenuEntry[] } => {
+    const ro = inXRay;
+    const ui2 = view.ui;
+    const why = (ref: { inst: string; pin: string }, label: string): MenuEntry => ({ label, icon: HelpCircle, run: () => askWhy(`${ref.inst}.${ref.pin}`) });
+    const nameOf = (defId: string): string => view.sceneOptions.titleOf?.(defId) ?? defId;
+    switch (t.kind) {
+      case 'instance': {
+        const many = t.count > 1;
+        const inside = !many && !!model.library.get(t.defId)?.body;
+        const items: MenuEntry[] = [];
+        if (inside) items.push({ label: 'ดูข้างใน (X-Ray)', icon: Eye, shortcut: 'ดับเบิลคลิก', run: () => openInside(t.id) });
+        if (!ro) {
+          if (inside) items.push(null);
+          items.push(
+            { label: 'หมุน', icon: RotateCw, shortcut: 'R', run: () => ui2.key({ key: 'r' }) },
+            { label: many ? `ทำสำเนา ${t.count} ชิ้น` : 'ทำสำเนา', icon: CopyPlus, shortcut: 'Ctrl+D', run: () => ui2.duplicate() },
+            { label: 'คัดลอก', icon: Copy, shortcut: 'Ctrl+C', run: () => ui2.copy() },
+            null,
+            { label: many ? `ลบ ${t.count} ชิ้น` : 'ลบ', icon: Trash2, shortcut: 'Delete', danger: true, run: () => ui2.key({ key: 'Delete' }) },
+          );
+        }
+        return { title: many ? `${t.count} ชิ้นที่เลือก` : `${t.id} (${nameOf(t.defId)})`, items };
+      }
+      case 'wire':
+        return {
+          title: `สายจาก ${t.from.inst === 'self' ? '' : `${t.from.inst}.`}${t.from.pin}`,
+          items: [why(t.from, 'Why? ค่าในสายนี้มาจากไหน'), ...(ro ? [] : [null, { label: 'ลบสาย', icon: Trash2, shortcut: 'Delete', danger: true, run: () => ui2.key({ key: 'Delete' }) }])],
+        };
+      case 'pin': {
+        const name = t.ref.inst === 'self' ? t.ref.pin : `${t.ref.inst}.${t.ref.pin}`;
+        return { title: `ขา ${name}`, items: [why(t.ref, `Why? ค่าที่ขา ${name} มาจากไหน`)] };
+      }
+      case 'empty':
+        return {
+          title: ro ? 'X-Ray (ดูอย่างเดียว)' : 'พื้นที่ว่าง',
+          items: ro
+            ? [
+                { label: 'ดูทั้งวงจร', icon: Maximize2, run: fitView },
+                { label: 'ออกจาก X-Ray ชั้นนี้', icon: ArrowLeft, shortcut: 'Esc', run: () => exitXRay(1) },
+              ]
+            : [
+                { label: 'วาง', icon: ClipboardPaste, shortcut: 'Ctrl+V', disabled: !ui2.hasClipboard, run: () => ui2.paste(at) },
+                { label: 'เลือกทั้งหมด', icon: BoxSelect, shortcut: 'Ctrl+A', disabled: (def.body?.instances.length ?? 0) === 0, run: () => ui2.key({ key: 'a', ctrl: true }) },
+                { label: 'ดูทั้งวงจร', icon: Maximize2, run: fitView },
+                null,
+                { label: h.undoLabel ? `ย้อน: ${h.undoLabel}` : 'ย้อน', icon: Undo2, shortcut: 'Ctrl+Z', disabled: !h.canUndo, run: () => ui2.key({ key: 'z', ctrl: true }) },
+                { label: 'ทำซ้ำ', icon: Redo2, shortcut: 'Ctrl+Y', disabled: !h.canRedo, run: () => ui2.key({ key: 'y', ctrl: true }) },
+              ],
+        };
+    }
+  };
   /** ซูมรอบกลางพื้นที่วาด (ปุ่ม +/− สำหรับจอสัมผัสและคนที่ไม่มีล้อเมาส์) */
   const zoom = (factor: number): void => {
     const c = document.querySelector('.canvas-wrap')?.getBoundingClientRect();
@@ -373,8 +444,26 @@ export function Workbench(props: {
           key={viewKey}
           model={view}
           values={values}
+          onMenu={(target, at, canvasPoint) => setMenu({ target, x: at.x, y: at.y, at: canvasPoint })}
           {...(inXRay ? { label: `X-Ray ข้างใน ${viewKey}: ดูอย่างเดียว ดับเบิลคลิกชิ้นเพื่อดูลึกลงไป Esc เพื่อออก` } : {})}
         />
+        {menu
+          ? (() => {
+              const { title, items } = menuItems(menu.target, menu.at);
+              return (
+                <ContextMenu
+                  x={menu.x}
+                  y={menu.y}
+                  title={title}
+                  items={items}
+                  onClose={(refocus) => {
+                    setMenu(null);
+                    if (refocus) document.querySelector<HTMLCanvasElement>('.canvas-wrap canvas')?.focus({ preventScroll: true });
+                  }}
+                />
+              );
+            })()
+          : null}
 
         <div className="status-line" role="alert" aria-live="assertive">
           {view.editor.lastError ? <span className="error with-icon">
@@ -393,10 +482,10 @@ export function Workbench(props: {
               : (
                 <>
                   <span className="mouse-only">
-                    ลากจากขาหนึ่งไปอีกขาเพื่อต่อสาย · ลากที่ว่างเพื่อเลื่อนจอ · Shift+ลาก เลือกหลายชิ้น · ล้อเมาส์ซูม · R หมุน · Delete ลบ · ดับเบิลคลิกชิ้นเพื่อดูข้างใน
+                    ลากจากขาหนึ่งไปอีกขาเพื่อต่อสาย · ลากที่ว่างเพื่อเลื่อนจอ · Shift+ลาก เลือกหลายชิ้น · ล้อเมาส์ซูม · คลิกขวาเปิดเมนู · R หมุน · Delete ลบ · Ctrl+C/V คัดลอก/วาง · Ctrl+D ทำสำเนา · ดับเบิลคลิกชิ้นเพื่อดูข้างใน
                   </span>
                   <span className="touch-only">
-                    ลากจากขาหนึ่งไปอีกขาเพื่อต่อสาย · ลากที่ว่างเพื่อเลื่อนจอ · ใช้สองนิ้วถ่าง/บีบเพื่อซูม · แตะชิ้นแล้วกดปุ่มหมุนหรือลบด้านบน · แตะสองครั้งเพื่อดูข้างใน
+                    ลากจากขาหนึ่งไปอีกขาเพื่อต่อสาย · ลากที่ว่างเพื่อเลื่อนจอ · ใช้สองนิ้วถ่าง/บีบเพื่อซูม · กดค้างที่ชิ้น สาย หรือที่ว่างเพื่อเปิดเมนู (หมุน ทำสำเนา ลบ วาง) · แตะสองครั้งเพื่อดูข้างใน
                   </span>
                 </>
               )}

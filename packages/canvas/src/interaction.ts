@@ -8,10 +8,13 @@
 // ปุ่มกลาง/ขวา       → ลากเพื่อเลื่อนจอ
 // ล้อเมาส์           → ซูมตรงตำแหน่งเมาส์
 // ดับเบิลคลิกชิ้น     → ดูข้างใน (X-Ray)
+// คลิกขวา (ไม่ลาก)   → host เปิดเมนู ตามสิ่งที่อยู่ใต้เมาส์ (contextAt)
+// Ctrl+C / Ctrl+V / Ctrl+D → คัดลอก / วาง / ทำสำเนา (ที่คัดลอกไว้ใช้ร่วมกันทุกพื้นที่วาดในหน้า)
 // โหมดอ่านอย่างเดียว (X-Ray): เลือก เลื่อนจอ ซูม และดับเบิลคลิกเข้าไปลึกขึ้นได้ แต่แก้วงจรไม่ได้
 
 import type { PinRef } from '@z-ncpu/shared';
 import type { Editor } from './editor/editor';
+import { clipboardOrigin, type Clipboard } from './editor/ops';
 import { snap, snapPoint, toScreen, toWorld, zoomAt, type Camera, type Point, type Rect } from './geometry';
 import { hitTest, nodesInRect, pinKey, type Hit, type Scene, type ScenePin } from './scene';
 
@@ -56,6 +59,18 @@ type Mode =
   | { k: 'marquee'; start: Point; end: Point }
   | { k: 'place'; spec: PlaceSpec };
 
+/** สิ่งที่อยู่ใต้เมาส์ตอนเปิดเมนูคลิกขวา */
+export type MenuTarget =
+  | { kind: 'instance'; id: string; defId: string; count: number }
+  | { kind: 'wire'; id: string; from: PinRef }
+  | { kind: 'pin'; ref: PinRef }
+  | { kind: 'empty'; world: Point };
+
+/** ชิ้นที่คัดลอกไว้ ใช้ร่วมกันทุก Interaction (คัดลอกจากด่านหนึ่งไปวางในสนามทดลองได้) */
+let clipboard: Clipboard | null = null;
+/** วางซ้ำโดยไม่ขยับเมาส์ ให้แต่ละครั้งเลื่อนออกไปเรื่อยๆ ไม่ทับกัน */
+const PASTE_STEP = 40;
+
 /** ขยับเกินกี่ px ถึงนับว่าลาก ไม่ใช่คลิก */
 const CLICK_SLOP = 4;
 /** รัศมีที่นับว่าชี้โดนขา (px บนจอ) */
@@ -74,6 +89,8 @@ export interface InteractionOptions {
   readOnly?: boolean;
   /** โหมด Why?: คลิกขาหรือสายเพื่อถามว่าค่ามาจากไหน */
   onProbe?: (ref: PinRef) => void;
+  /** ชิ้นนี้วางในวงจรนี้ได้ไหม (ตอนวางที่คัดลอกมาจากด่านอื่น) */
+  canPlace?: (defId: string) => boolean;
 }
 
 export class Interaction {
@@ -83,6 +100,10 @@ export class Interaction {
   private hover: Hit | null = null;
   /** โหมด Why?: คลิกขาหรือสายแทนการต่อสาย (ใช้ได้ทั้งตอนแก้และตอน X-Ray) */
   probeMode = false;
+  /** ลากปุ่มขวาเพื่อเลื่อนจอไปแล้ว: ไม่ต้องเปิดเมนูตอนปล่อย */
+  private rightPanned = false;
+  /** วางซ้ำกี่ครั้งแล้วโดยไม่ขยับเมาส์ */
+  private pasteRun = 0;
 
   constructor(
     private readonly editor: Editor,
@@ -257,6 +278,7 @@ export class Interaction {
   pointerMove(p: PointerInput): void {
     const world = toWorld(this.camera, p);
     this.cursorWorld = world;
+    this.pasteRun = 0;
     const m = this.mode;
     switch (m.k) {
       case 'pan': {
@@ -303,6 +325,7 @@ export class Interaction {
       case 'pan':
         // คลิกที่ว่างโดยไม่ลาก = ยกเลิกการเลือก
         if (!m.moved && p.button === 0) this.editor.clearSelection();
+        this.rightPanned = m.moved && p.button === 2;
         this.mode = { k: 'idle' };
         break;
       case 'drag':
@@ -362,6 +385,90 @@ export class Interaction {
     return true;
   }
 
+  /**
+   * เมนูคลิกขวา: บอก host ว่าใต้จุด p มีอะไร (null = ไม่ต้องเปิดเมนู เช่นเพิ่งลากปุ่มขวาเลื่อนจอ)
+   * ชิ้นหรือสายที่ยังไม่ได้เลือกจะถูกเลือกก่อน เมนูจะได้ทำกับสิ่งที่เห็นว่าเลือกอยู่
+   */
+  contextAt(p: Point): MenuTarget | null {
+    if (this.rightPanned) {
+      this.rightPanned = false;
+      return null;
+    }
+    if (this.mode.k === 'drag') this.editor.endDrag();
+    this.mode = { k: 'idle' };
+    const world = toWorld(this.camera, p);
+    this.cursorWorld = world;
+    const hit = this.hitAt(world);
+    let target: MenuTarget;
+    if (hit?.kind === 'pin') {
+      target = { kind: 'pin', ref: hit.pin.ref };
+    } else if (hit?.kind === 'node' && hit.node.kind === 'instance') {
+      const id = hit.node.id;
+      if (!this.editor.selection.instances.includes(id)) this.editor.select({ instances: [id] });
+      const inst = this.editor.def.body?.instances.find((i) => i.id === id);
+      target = { kind: 'instance', id, defId: inst?.defId ?? '', count: this.editor.selection.instances.length };
+    } else if (hit?.kind === 'node') {
+      // ขาของวงจรเอง (กล่อง a = 0 / y = X)
+      target = { kind: 'pin', ref: { inst: 'self', pin: hit.node.id.slice('self.'.length) } };
+    } else if (hit?.kind === 'wire') {
+      if (!this.editor.selection.wires.includes(hit.wire.id)) this.editor.select({ wires: [hit.wire.id] });
+      target = { kind: 'wire', id: hit.wire.id, from: hit.wire.from };
+    } else {
+      target = { kind: 'empty', world };
+    }
+    this.changed();
+    return target;
+  }
+
+  get hasClipboard(): boolean {
+    return clipboard !== null;
+  }
+
+  /** คัดลอกชิ้นที่เลือก คืนจำนวนชิ้นที่คัดลอก */
+  copy(): number {
+    const clip = this.editor.copy();
+    if (!clip) return 0;
+    clipboard = clip;
+    this.pasteRun = 0;
+    return clip.instances.length;
+  }
+
+  /**
+   * วางที่คัดลอกไว้: at = ตำแหน่งบนจอ (มุมซ้ายบนของชิ้นที่คัดลอกไปอยู่ตรงนั้น)
+   * ไม่ระบุ = วางที่เมาส์ถ้าเมาส์อยู่บนพื้นที่วาด ไม่งั้นวางเยื้องจากของเดิม
+   */
+  paste(at?: Point): boolean {
+    if (this.options.readOnly || !clipboard) return false;
+    const origin = clipboardOrigin(clipboard);
+    const target = at ? toWorld(this.camera, at) : this.cursorWorld;
+    const step = PASTE_STEP * ++this.pasteRun;
+    const base = target ? snapPoint(target) : { x: origin.x + PASTE_STEP, y: origin.y + PASTE_STEP };
+    // วางครั้งแรกตรงเมาส์พอดี ครั้งต่อไป (เมาส์ไม่ขยับ) เยื้องลงขวาล่างทีละช่อง
+    const dx = base.x - origin.x + step - PASTE_STEP;
+    const dy = base.y - origin.y + step - PASTE_STEP;
+    this.cancelGesture();
+    const { ids, skipped } = this.editor.paste(clipboard, dx, dy, this.options.canPlace);
+    if (skipped > 0) {
+      this.editor.lastError = {
+        th: ids.length > 0 ? `วางได้ ${ids.length} ชิ้น อีก ${skipped} ชิ้นใช้ในวงจรนี้ไม่ได้` : 'ชิ้นที่คัดลอกไว้ใช้ในวงจรนี้ไม่ได้',
+        en: ids.length > 0 ? `Pasted ${ids.length}; ${skipped} part(s) are not allowed here` : 'The copied parts are not allowed here',
+      };
+    }
+    this.changed();
+    return ids.length > 0;
+  }
+
+  /** ทำสำเนาชิ้นที่เลือก วางเยื้องลงขวาล่าง (ไม่แตะที่คัดลอกไว้) */
+  duplicate(): boolean {
+    if (this.options.readOnly) return false;
+    const clip = this.editor.copy();
+    if (!clip) return false;
+    this.cancelGesture();
+    this.editor.paste(clip, PASTE_STEP, PASTE_STEP, this.options.canPlace);
+    this.changed();
+    return true;
+  }
+
   /** deltaY > 0 = ซูมออก */
   /** ซูมรอบจุด p ด้วยอัตรา factor (ปุ่ม +/− และการบีบสองนิ้วบนจอสัมผัส) */
   zoomBy(p: Point, factor: number): void {
@@ -415,6 +522,12 @@ export class Interaction {
       else this.editor.clearSelection();
     } else if (k.ctrl && key === 'a') {
       this.editor.select({ instances: (this.editor.def.body?.instances ?? []).map((i) => i.id) });
+    } else if (k.ctrl && key === 'c') {
+      if (this.copy() === 0) return false;
+    } else if (k.ctrl && key === 'v') {
+      if (!this.paste()) return false;
+    } else if (k.ctrl && key === 'd') {
+      if (!this.duplicate()) return false;
     } else {
       return false;
     }
