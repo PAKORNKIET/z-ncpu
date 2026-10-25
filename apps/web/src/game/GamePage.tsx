@@ -15,6 +15,7 @@ import {
   Lightbulb,
   ListOrdered,
   Lock,
+  SkipForward,
   Play,
   RotateCw,
   Timer,
@@ -28,6 +29,7 @@ import { PRIMITIVE_PALETTE, Workbench, type PaletteItem, type WorkbenchContext }
 import { Markdown } from '../ui/Markdown';
 import { Diagnostics } from '../ui/widgets';
 import { ProgramLevel } from './ProgramLevel';
+import { SkipButton } from './SkipButton';
 import { SolutionButton } from './SolutionDialog';
 import { TutorPanel } from '../tutor/TutorPanel';
 import { levelGoal, levelPlace } from '../tutor/context';
@@ -41,6 +43,7 @@ import {
   partName,
   putComponent,
   recordTest,
+  skipLevel,
   type HashOf,
   type LevelStatus,
 } from './progress';
@@ -53,8 +56,9 @@ const STATUS_TEXT: Record<LevelStatus, string> = {
   open: 'ยังไม่ผ่าน',
   passed: 'ผ่านแล้ว',
   retest: 'แก้วงจรแล้ว ต้องทดสอบใหม่',
+  skipped: 'ข้ามแล้ว (ใช้เฉลย)',
 };
-const STATUS_ICON: Record<LevelStatus, LucideIcon> = { locked: Lock, open: Circle, passed: CheckCircle2, retest: RotateCw };
+const STATUS_ICON: Record<LevelStatus, LucideIcon> = { locked: Lock, open: Circle, passed: CheckCircle2, retest: RotateCw, skipped: SkipForward };
 
 /** ชิ้นของผู้เล่นในกล่องเครื่องมือ: บอกว่ามาจากด่านไหน */
 export function paletteFor(ids: readonly string[], busWidth = 4): PaletteItem[] {
@@ -89,6 +93,13 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
   /** จอแคบ: รายการด่านพับเก็บไว้ เปิดด้วยปุ่มด้านบน */
   const [levelsOpen, setLevelsOpen] = useState(false);
   const passedCount = statuses.filter((st) => st === 'passed').length;
+  /** ข้ามด่านแล้วสร้างพื้นที่ทำงานใหม่ (ไม่งั้นร่างเดิมในพื้นที่วาดจะบันทึกทับเฉลย) */
+  const [skips, setSkips] = useState(0);
+  const skip = (solution: ComponentDef | null): void => {
+    setSave((s) => skipLevel(s, level.id, solution, (next) => hashOf(next.components, solution!.id)));
+    setSkips((n) => n + 1);
+    if (index + 1 < LEVELS.length) setIndex(index + 1);
+  };
 
   // บทที่เปิดดูอยู่: เริ่มจากบทของด่านปัจจุบัน และบทที่ยังเล่นอยู่ (บทที่ผ่านหมดแล้วหรือยังล็อกทั้งบทพับไว้ รายการจะได้ไม่ยาว)
   const chapterIds = Object.keys(CHAPTERS).map(Number);
@@ -98,7 +109,7 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
       new Set(
         chapterIds.filter((ch) => {
           const st = levelsOf(ch).map(({ i }) => statuses[i]);
-          return ch === level.chapter || !(st.every((x) => x === 'passed') || st.every((x) => x === 'locked'));
+          return ch === level.chapter || !(st.every((x) => x === 'passed' || x === 'skipped') || st.every((x) => x === 'locked'));
         }),
       ),
   );
@@ -190,16 +201,17 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
         <Lesson key={level.id} level={level} startOpen={statuses[index] !== 'passed'} />
         {level.tests.type === 'program' ? (
           <ProgramLevel
-            key={`${level.id}#${props.generation}`}
+            key={`${level.id}#${props.generation}#${skips}`}
             level={level}
             save={save}
             setSave={setSave}
             status={statuses[index]!}
+            onSkip={skip}
             next={index + 1 < LEVELS.length ? () => setIndex(index + 1) : undefined}
           />
         ) : (
           <Workbench
-            key={`${level.id}#${props.generation}`}
+            key={`${level.id}#${props.generation}#${skips}`}
             initial={draftFor(level, save)}
             deps={save.components.filter((c) => c.id !== level.target.defId)}
             palette={paletteFor(availableParts(level, LEVELS, save), busWidthOf(level))}
@@ -213,6 +225,7 @@ export function GamePage(props: { save: SaveFile; setSave: (f: (s: SaveFile) => 
                 status={statuses[index]!}
                 save={save}
                 ctx={ctx}
+                onSkip={skip}
                 onResult={(def, passed, nand) =>
                   setSave((s) => {
                     const withDef = putComponent(s, def);
@@ -272,6 +285,7 @@ function TestPanel(props: {
   save: SaveFile;
   ctx: WorkbenchContext;
   onResult: (def: ComponentDef, passed: boolean, nand: number) => void;
+  onSkip: (solution: ComponentDef | null) => void;
   next?: (() => void) | undefined;
 }) {
   const { level, ctx } = props;
@@ -400,6 +414,7 @@ function TestPanel(props: {
             </button>
           ) : null}
           <SolutionButton level={level} components={props.save.components} />
+          {props.status === 'open' || props.status === 'retest' ? <SkipButton level={level} onSkip={props.onSkip} /> : null}
         </div>
       </div>
 

@@ -505,6 +505,11 @@ button.primary {
   color: var(--warning);
 }
 
+/* ข้ามไว้ (ใช้เฉลย): สีจาง ต่างจากผ่านแล้ว */
+.level-item.skipped .level-icon {
+  color: var(--accent);
+}
+
 .level-main {
   min-width: 0;
 }

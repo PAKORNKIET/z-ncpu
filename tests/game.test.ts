@@ -16,6 +16,7 @@ import {
   putComponent,
   putProgram,
   recordTest,
+  skipLevel,
   type HashOf,
 } from '../apps/web/src/game/progress';
 import { emptySave, loadSave, parseSave, serializeSave, storeSave, BACKUP_KEY, SAVE_KEY, type KeyValueStore } from '../apps/web/src/game/save';
@@ -262,5 +263,38 @@ describe('ด่านโบนัส Z8+ และ ISA ของผู้เล
     expect(parseSave(JSON.stringify({ ...base, isa: { ...isa, base: 'ARM' } })).ok).toBe(false);
     expect(parseSave(JSON.stringify({ ...base, isa: { ...isa, instructions: [{ ...isa.instructions[0], func: 9 }] } })).ok).toBe(false);
     expect(parseSave(JSON.stringify({ ...emptySave() })).ok && parseSave(JSON.stringify(emptySave())).ok).toBe(true);
+  });
+});
+
+describe('ข้ามด่าน', () => {
+  it('ข้ามด่านวงจร: ใช้เฉลยเป็นชิ้นของด่าน ด่านถัดไปเปิดและมีชิ้นนั้นให้ใช้ แต่ไม่นับว่าผ่าน', () => {
+    const not = solution('logic.not');
+    const s = skipLevel(emptySave(), 'logic.not', not, (x) => hashOf(x.components, not.id));
+    expect(levelStatus(LEVELS, 0, s, hashOf)).toBe('skipped');
+    expect(levelStatus(LEVELS, 1, s, hashOf)).toBe('open');
+    expect(availableParts(LEVELS[1]!, LEVELS, s)).toEqual(['prim.nand', 'user.not']);
+    expect(firstUnfinished(LEVELS, s)).toBe(1);
+    expect(s.progress['logic.not']).toMatchObject({ skipped: true, attempts: 0 });
+    // แก้วงจรเฉลยแล้วยังไม่ทดสอบ: ต้องทดสอบใหม่
+    const edited = putComponent(s, { ...not, body: { ...not.body!, wires: not.body!.wires.slice(1) } });
+    expect(levelStatus(LEVELS, 0, edited, hashOf)).toBe('retest');
+    // กลับมาทำเองแล้วผ่าน: เปลี่ยนเป็นผ่านแล้ว
+    const { save: done } = play(s, 'logic.not', not);
+    expect(levelStatus(LEVELS, 0, done, hashOf)).toBe('passed');
+    expect(done.progress['logic.not']!.skipped).toBeUndefined();
+    // บันทึกแล้วเปิดใหม่ สถานะข้ามยังอยู่
+    const r = parseSave(serializeSave(s));
+    expect(r.ok && levelStatus(LEVELS, 0, r.save, hashOf)).toBe('skipped');
+  });
+
+  it('ข้ามด่านเขียนโปรแกรม: ไม่แตะโปรแกรมของผู้เล่น และด่านถัดไปเปิด', () => {
+    const idx = LEVELS.findIndex((l) => l.id === 'prog.hello');
+    const before = LEVELS.slice(0, idx).reduce((x, l) => ({ ...x, progress: { ...x.progress, [l.id]: { attempts: 1, passedHash: '0' } } }), emptySave());
+    const mine = putProgram(before, 'prog.hello', 'HALT');
+    const s = skipLevel(mine, 'prog.hello', null, () => 'x');
+    expect(levelStatus(LEVELS, idx, s, hashOf)).toBe('skipped');
+    expect(isUnlocked(LEVELS, idx + 1, s)).toBe(true);
+    expect(programOf(s, 'prog.hello')).toBe('HALT');
+    expect(parseSave(serializeSave(s)).ok).toBe(true);
   });
 });

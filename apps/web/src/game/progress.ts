@@ -5,7 +5,7 @@
 import type { ComponentDef, LevelDef } from '@z-ncpu/shared';
 import type { SaveFile } from './save';
 
-export type LevelStatus = 'locked' | 'open' | 'passed' | 'retest';
+export type LevelStatus = 'locked' | 'open' | 'passed' | 'retest' | 'skipped';
 
 /** content hash ของวงจรผู้เล่น (app ส่ง contentHash ของ engine มา) */
 export type HashOf = (components: readonly ComponentDef[], defId: string) => string;
@@ -28,8 +28,14 @@ export function isUnlocked(levels: readonly LevelDef[], index: number, save: Sav
 export function levelStatus(levels: readonly LevelDef[], index: number, save: SaveFile, hashOf: HashOf): LevelStatus {
   const level = levels[index];
   if (!level || !isUnlocked(levels, index, save)) return 'locked';
-  const passed = save.progress[level.id]?.passedHash;
+  const progress = save.progress[level.id];
+  const passed = progress?.passedHash;
   if (!passed) return 'open';
+  if (progress.skipped) {
+    // ข้ามไว้: ชิ้นของด่านคือเฉลย ถ้าผู้เล่นแก้วงจรนั้นแล้ว (แต่ยังไม่ทดสอบผ่าน) ต้องทดสอบใหม่
+    if (level.tests.type === 'program') return 'skipped';
+    return componentOf(save, level.target.defId) && hashOf(save.components, level.target.defId) === passed ? 'skipped' : 'retest';
+  }
   if (level.tests.type === 'program') {
     // ด่านเขียนโปรแกรม: แก้โปรแกรมหลังผ่านแล้วต้องทดสอบใหม่
     const source = programOf(save, level.id);
@@ -95,8 +101,20 @@ export function recordTest(save: SaveFile, levelId: string, result: { passed: bo
   if (result.passed) {
     next.passedHash = result.hash;
     next.bestNand = Math.min(prev.bestNand ?? Infinity, result.nand);
+    delete next.skipped;
   }
   return touch({ ...save, progress: { ...save.progress, [levelId]: next } });
+}
+
+/**
+ * ข้ามด่าน: ด่านถัดไปเปิด และชิ้นของด่านนี้ใช้วงจรเฉลย (solution) แทน ด่านเขียนโปรแกรมไม่มีชิ้น จึงไม่แตะโปรแกรมของผู้เล่น
+ * hash = hash ของวงจรเฉลยหลังใส่ (ใช้รู้ว่าผู้เล่นแก้ไปหรือยัง) ส่วนด่านเขียนโปรแกรมใช้ '0' (ไฟล์บันทึกรับเฉพาะเลขฐานสิบหก)
+ */
+export function skipLevel(save: SaveFile, levelId: string, solution: ComponentDef | null, hashOfDef: (s: SaveFile) => string): SaveFile {
+  const withDef = solution ? putComponent(save, solution) : save;
+  const prev = withDef.progress[levelId] ?? { attempts: 0 };
+  const next = { ...prev, passedHash: solution ? hashOfDef(withDef) : '0', skipped: true };
+  return touch({ ...withDef, progress: { ...withDef.progress, [levelId]: next } });
 }
 
 /** ด่านแรกที่ยังไม่ผ่าน (ใช้เปิดตอนเริ่ม) */

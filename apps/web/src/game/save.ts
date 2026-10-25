@@ -145,6 +145,7 @@ function progressEntry(v: unknown): LevelProgress {
   const p: LevelProgress = { attempts: int(v.attempts ?? 0, 'จำนวนครั้งที่ทดสอบ', 0, 1e9) };
   if (v.passedHash !== undefined) p.passedHash = name(v.passedHash, 'hash', /^[0-9a-f]{1,32}$/);
   if (v.bestNand !== undefined) p.bestNand = int(v.bestNand, 'จำนวน NAND', 0, 1e7);
+  if (v.skipped === true) p.skipped = true;
   return p;
 }
 

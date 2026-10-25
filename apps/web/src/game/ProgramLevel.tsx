@@ -3,12 +3,13 @@ import { HINTS_TH } from '@z-ncpu/content';
 import { assemble } from '@z-ncpu/isa';
 import type { LevelDef, ProgramCase, TestCaseResult, TestReport } from '@z-ncpu/shared';
 import { AlertTriangle, ArrowRight, CheckCircle2, Copy, FileCode2, Lightbulb, PartyPopper, Play, XCircle } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { OkMark } from '../ui/icons';
 import { AsmEditor } from '../computer/AsmEditor';
 import { EngineClosedError } from '../engine-client';
 import { useEngine } from '../use-engine';
 import { TutorPanel } from '../tutor/TutorPanel';
+import { SkipButton } from './SkipButton';
 import { SolutionButton } from './SolutionDialog';
 import { levelGoal, levelPlace } from '../tutor/context';
 import { programSummary, reportSummary } from '../tutor/tutor';
@@ -45,6 +46,7 @@ export function ProgramLevel(props: {
   save: SaveFile;
   setSave: (f: (s: SaveFile) => SaveFile) => void;
   status: LevelStatus;
+  onSkip: (solution: null) => void;
   next?: (() => void) | undefined;
 }) {
   const { level, save, setSave } = props;
@@ -66,6 +68,16 @@ export function ProgramLevel(props: {
     const t = setTimeout(() => setSave((s) => putProgram(s, level.id, source)), 500);
     return () => clearTimeout(t);
   }, [source, stored, level.id, setSave]);
+  // ออกจากด่าน (เปลี่ยนด่าน ข้ามด่าน) ก่อนครบเวลาหน่วง: บันทึกที่พิมพ์ล่าสุดไว้ด้วย ไม่ให้หาย
+  const latest = useRef({ source, stored });
+  latest.current = { source, stored };
+  useEffect(
+    () => () => {
+      const { source: text, stored: saved } = latest.current;
+      if (text !== saved && text !== STARTER) setSave((s) => putProgram(s, level.id, text));
+    },
+    [level.id, setSave],
+  );
 
   // วงจรทั้งหมดของผู้เล่น (CPU และทุกชิ้นข้างใน) ให้ worker ใช้ตอนทดสอบ
   useEffect(() => {
@@ -131,7 +143,7 @@ export function ProgramLevel(props: {
       <section className="test-panel" aria-labelledby="test-title">
         <h2 id="test-title">ทดสอบ</h2>
         <p className="muted small" data-testid="level-status">
-          สถานะ: {{ locked: 'ล็อก', open: 'ยังไม่ผ่าน', passed: 'ผ่านแล้ว', retest: 'แก้โปรแกรมแล้ว ต้องทดสอบใหม่' }[props.status]}
+          สถานะ: {{ locked: 'ล็อก', open: 'ยังไม่ผ่าน', passed: 'ผ่านแล้ว', retest: 'แก้โปรแกรมแล้ว ต้องทดสอบใหม่', skipped: 'ข้ามแล้ว' }[props.status]}
           {best !== undefined && props.status !== 'open' ? ` · ดีที่สุด ${best} คำสั่ง` : ''}
         </p>
         <p className="muted small">
@@ -221,6 +233,7 @@ export function ProgramLevel(props: {
               </button>
             ) : null}
             <SolutionButton level={level} components={save.components} />
+            {props.status === 'open' || props.status === 'retest' ? <SkipButton level={level} onSkip={() => props.onSkip(null)} /> : null}
           </div>
         </div>
 

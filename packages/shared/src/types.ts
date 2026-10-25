@@ -335,6 +335,8 @@ export interface LevelProgress {
   attempts: number;
   /** จำนวน NAND น้อยที่สุดที่เคยผ่าน */
   bestNand?: number;
+  /** ข้ามด่านนี้ไป (ใช้เฉลยเป็นชิ้นของด่านแทน) ยังไม่นับว่าผ่าน หายไปเมื่อผ่านด่านเอง */
+  skipped?: boolean;
 }
 
 export interface ZncpuFile {
