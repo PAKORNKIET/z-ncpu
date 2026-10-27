@@ -127,8 +127,8 @@ function SolutionDialog({ level, components, onClose }: { level: LevelDef; compo
         <h2 id="solution-title" className="with-icon">
           <BookKey size={18} aria-hidden /> เฉลย: {level.title.th}
         </h2>
-        <button className="linklike" aria-label="ปิดเฉลย" onClick={() => ref.current?.close()}>
-          <X size={18} aria-hidden />
+        <button className="icon-close" aria-label="ปิดเฉลย" onClick={() => ref.current?.close()}>
+          <X size={20} aria-hidden />
         </button>
       </div>
       {state.k === 'loading' ? (

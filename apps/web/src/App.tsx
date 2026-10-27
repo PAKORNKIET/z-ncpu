@@ -30,6 +30,12 @@ const TABS: [Tab, string, LucideIcon][] = [
   ['about', 'เกี่ยวกับ', Info],
 ];
 
+/**
+ * ชนิดไฟล์ที่ให้เลือกตอนเปิดไฟล์บันทึก: iPhone/iPad (และ Android) ไม่รู้จักนามสกุล .zncpu
+ * ถ้ากรองไว้ไฟล์จะเป็นสีเทากดเลือกไม่ได้ อุปกรณ์จอสัมผัสจึงไม่กรอง (แอปตรวจเนื้อไฟล์ก่อนเปิดอยู่แล้ว)
+ */
+const SAVE_ACCEPT = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0 ? undefined : '.zncpu,application/json';
+
 const THEME_KEY = 'zncpu.theme';
 type Theme = 'dark' | 'light';
 
@@ -140,7 +146,7 @@ export function App() {
             <input
               ref={fileInput}
               type="file"
-              accept=".zncpu,application/json"
+              accept={SAVE_ACCEPT}
               hidden
               data-testid="open-file"
               onChange={(e) => {
@@ -222,8 +228,8 @@ export function App() {
       ) : pwa.offlineReady && !offlineSeen ? (
         <div className="toast" role="status">
           <WifiOff size={16} aria-hidden /> พร้อมใช้แบบออฟไลน์แล้ว
-          <button className="linklike" aria-label="ปิดข้อความ" onClick={() => setOfflineSeen(true)}>
-            <X size={16} aria-hidden />
+          <button className="icon-close" aria-label="ปิดข้อความ" onClick={() => setOfflineSeen(true)}>
+            <X size={18} aria-hidden />
           </button>
         </div>
       ) : null}

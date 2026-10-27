@@ -1,6 +1,7 @@
 // ชิ้น UI เล็กๆ ที่ใช้หลายหน้า
 import type { Diagnostic, SignalValue } from '@z-ncpu/shared';
 import { AlertTriangle, Info } from 'lucide-react';
+import type { CSSProperties } from 'react';
 
 export function Switch(props: { label: string; value: SignalValue | undefined; onClick: () => void; disabled?: boolean }) {
   const on = props.value === 1;
@@ -56,7 +57,7 @@ export function BusInput(props: { label: string; width: number; value: number; o
       <legend>
         {props.label} = <span className="mono">{value}</span>
       </legend>
-      <div className="bus-bits">
+      <div className="bus-bits" style={{ '--cols': Math.min(width, 8) } as CSSProperties}>
         {bits.map((i) => {
           const on = ((value >> i) & 1) === 1;
           return (

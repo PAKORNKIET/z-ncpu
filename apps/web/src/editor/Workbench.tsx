@@ -756,8 +756,8 @@ function WhyPanel(props: {
         <h3 className="with-icon">
           <HelpCircle size={16} aria-hidden /> Why?
         </h3>
-        <button className="linklike" onClick={props.onClose} aria-label="ปิด Why?">
-          <X size={16} aria-hidden />
+        <button className="icon-close" onClick={props.onClose} aria-label="ปิด Why?">
+          <X size={18} aria-hidden />
         </button>
       </div>
       {!a ? (

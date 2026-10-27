@@ -83,6 +83,9 @@ test.describe('คอม: คลิกขวา', () => {
 
   test('คลิกขวาที่สาย: Why? บอกว่าค่ามาจากไหน · ลากปุ่มขวาเลื่อนจอแล้วไม่เปิดเมนู', async ({ page }) => {
     await openWithSave(page, [], ['logic.not']);
+    // รอให้วงจรพร้อมและพื้นที่วาดจัดมุมกล้องเสร็จก่อนอ่านตำแหน่งขา (เครื่องช้าอาจอ่านก่อนกล้องขยับ แล้วคลิกพลาดสาย)
+    await expect(nands(page)).toHaveText('1');
+    await canvas(page).scrollIntoViewIfNeeded();
     const y = await pinAt(page, 'n1', 'y');
     const out = await pinAt(page, 'self', 'y');
     await page.mouse.click((y.x + out.x) / 2, (y.y + out.y) / 2, { button: 'right' });

@@ -38,6 +38,12 @@
   box-sizing: border-box;
 }
 
+/* iOS ไม่ขยายตัวหนังสือเองตอนหมุนจอเป็นแนวนอน */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -46,10 +52,12 @@ body {
   line-height: 1.6;
 }
 
+/* เว้นขอบจอโค้ง รอยบาก และแถบโฮมของมือถือ (viewport-fit=cover) ทุกขนาดจอ รวมตอนหมุนเป็นแนวนอน */
 .page {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(48px, env(safe-area-inset-bottom) + 24px)
+    max(16px, env(safe-area-inset-left));
 }
 
 .header h1 {
@@ -289,7 +297,7 @@ select:focus-visible {
 }
 
 .palette-desc {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.4;
 }
@@ -454,8 +462,11 @@ button.primary {
   color: var(--text);
   text-align: left;
 }
-.chapter-toggle:hover {
-  background: var(--bg);
+/* hover เฉพาะอุปกรณ์ที่มีเมาส์ (จอสัมผัสแตะแล้วสถานะ hover ค้างจนแตะที่อื่น) */
+@media (hover: hover) {
+  .chapter-toggle:hover {
+    background: var(--bg);
+  }
 }
 .chapter-toggle .ch-arrow {
   flex: none;
@@ -470,7 +481,7 @@ button.primary {
 }
 .chapter-count {
   flex: none;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   color: var(--muted);
 }
@@ -574,7 +585,7 @@ button.primary {
 .truth-table th {
   font-family: 'Noto Sans Thai', system-ui, sans-serif;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .truth-table tr.ok td:last-child {
@@ -635,7 +646,8 @@ button.primary {
   margin: 0 0 8px;
 }
 
-@media (max-width: 1100px) {
+/* จอแคบ และแท็บเล็ตแนวนอน (จอสัมผัสถึง 1400px เช่น iPad): รายการด่านพับไว้ด้านบน พื้นที่วาดจะได้กว้างขึ้น */
+@media (max-width: 1100px), (pointer: coarse) and (max-width: 1400px) {
   .game {
     grid-template-columns: 1fr;
   }
@@ -653,6 +665,7 @@ button.primary {
   border: none;
   background: none;
   padding: 2px 4px;
+  min-height: 24px;
   color: var(--accent);
 }
 
@@ -697,11 +710,14 @@ button.primary {
   white-space: nowrap;
 }
 
+/* min-width: 0 ให้ fieldset หดตามกล่องได้ (ค่าเริ่มต้นของ fieldset คือกว้างเท่าเนื้อหา ทำให้ล้นแผงข้าง) */
 .bus-input {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 2px 8px 8px;
   margin: 0;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .bus-input legend {
@@ -709,14 +725,16 @@ button.primary {
   padding: 0 4px;
 }
 
+/* แถวละไม่เกิน 8 บิต (--cols ตั้งจาก BusInput): บัส 16 บิตเป็นสองแถว ไบต์บนอยู่แถวแรก และปุ่มหดได้ในแผงแคบ */
 .bus-bits {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 8), minmax(24px, var(--bit-max, 30px)));
   gap: 4px;
 }
 
 .bus-bits .bit {
-  min-width: 28px;
-  padding: 2px 6px;
+  min-width: 0;
+  padding: 2px 0;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
@@ -854,13 +872,13 @@ button.tick {
   font-weight: 600;
 }
 pre.asm {
-  font-size: 12px;
+  font-size: 13px;
   max-height: 16rem;
   overflow: auto;
   white-space: pre;
 }
 .panel-view table.program {
-  font-size: 12px;
+  font-size: 13px;
 }
 .cpu-pins td {
   white-space: nowrap;
@@ -959,6 +977,21 @@ pre.asm {
   text-decoration: underline;
   font: inherit;
 }
+/* ปุ่มแบบลิงก์และหัวข้อพับ/กาง: อย่างน้อย 24px ตาม WCAG 2.5.8 แม้ตัวหนังสือจะเล็ก */
+button.linklike,
+summary {
+  min-height: 24px;
+}
+/* ปุ่มปิด (×) ของหน้าต่างและข้อความ: ไอคอนเล็กแต่พื้นที่กดใหญ่ */
+.icon-close {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-color: transparent;
+  background: none;
+  color: var(--muted);
+}
 .run-controls {
   display: flex;
   gap: 8px;
@@ -995,13 +1028,30 @@ pre.asm {
   width: 36px;
   height: 36px;
   border-radius: 50%;
+  /* ปุ่มกดค้าง: นิ้วขยับนิดเดียวไม่กลายเป็นเลื่อนหน้า (ปุ่มจะไม่ปล่อยเอง) และกดค้างไม่ขึ้นเมนูเลือกตัวหนังสือ */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 .push-buttons button.on {
   background: var(--signal-high);
   color: #000;
 }
 .key-input input {
-  width: 9em;
+  width: 10em;
+  font-family: inherit;
+}
+/* ช่องกรอกที่ไม่มีสไตล์ของตัวเอง: สีตามธีม และสูงพอให้กดง่าย */
+.key-input input,
+.breakpoints input {
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-height: 32px;
 }
 .listing-scroll {
   max-height: 360px;
@@ -1011,16 +1061,28 @@ pre.asm {
 .computer-listing table.program {
   width: 100%;
 }
+/* จุด breakpoint: เห็นเป็นวงเล็ก แต่พื้นที่กดใหญ่กว่าวง (วงวาดด้วย ::before) */
 .bp-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.bp-dot::before {
+  content: '';
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
+  border: 1px solid var(--signal-low);
+  box-sizing: border-box;
 }
-.bp-dot.on {
+.bp-dot.on::before {
   background: var(--error);
   border-color: var(--error);
 }
@@ -1060,6 +1122,8 @@ pre.asm {
 .tt-controls input[type='range'] {
   flex: 1;
   min-width: 160px;
+  /* แถบเลื่อนบาง แต่พื้นที่กดสูงกว่าแถบ */
+  height: 28px;
 }
 .probes {
   border: 0;
@@ -1191,8 +1255,10 @@ button {
   transition: border-color 0.12s, background-color 0.12s;
 }
 
-button:not(:disabled):hover {
-  border-color: var(--accent);
+@media (hover: hover) {
+  button:not(:disabled):hover {
+    border-color: var(--accent);
+  }
 }
 
 button svg,
@@ -1363,12 +1429,12 @@ details[open] > summary .chevron,
   }
 }
 
-/* รายการด่านบนจอแคบ: พับเก็บ เปิดด้วยปุ่ม */
+/* รายการด่านบนจอแคบและแท็บเล็ต: พับเก็บ เปิดด้วยปุ่ม (เงื่อนไขเดียวกับ .game ด้านบน) */
 .levels-toggle {
   display: none;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1100px), (pointer: coarse) and (max-width: 1400px) {
   .levels-toggle {
     display: flex;
     justify-content: flex-start;
@@ -1388,6 +1454,7 @@ details[open] > summary .chevron,
 
   .levels {
     display: none;
+    position: static;
   }
 
   .levels.open {
@@ -1433,7 +1500,8 @@ details[open] > summary .chevron,
 /* มือถือ: ปุ่มบนหัวหน้าและแถบเครื่องมือเหลือแค่ไอคอน (ชื่อยังอยู่ใน aria-label และ title) */
 @media (max-width: 640px) {
   .page {
-    padding: 12px max(10px, env(safe-area-inset-right)) 32px max(10px, env(safe-area-inset-left));
+    padding: max(12px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom) + 16px)
+      max(10px, env(safe-area-inset-left));
   }
 
   .header h1 {
@@ -1476,29 +1544,15 @@ details[open] > summary .chevron,
   }
 
   .footer {
-    font-size: 12px;
+    font-size: 13px;
   }
 }
 
-/* จอสัมผัส: ปุ่มใหญ่พอให้นิ้วกด */
+/* จอสัมผัส: ปุ่มใหญ่พอให้นิ้วกด (กฎเฉพาะชิ้นอยู่ท้ายไฟล์ ให้ชนะกฎของชิ้นที่ประกาศทีหลัง) */
 @media (pointer: coarse) {
   button,
   select {
     min-height: 40px;
-  }
-
-  .bus-bits .bit {
-    min-width: 34px;
-  }
-
-  .bp-dot {
-    width: 22px;
-    height: 22px;
-    min-height: 0;
-  }
-
-  .linklike {
-    min-height: 0;
   }
 }
 
@@ -1913,6 +1967,14 @@ details[open] > summary .chevron,
   align-items: flex-start;
   gap: 8px;
 }
+/* ลิงก์ขอคีย์อยู่บรรทัดของตัวเอง: กว้างแค่ตัวหนังสือ และสูงพอให้กด */
+.tutor-settings a {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+}
 .tutor-preview pre {
   white-space: pre-wrap;
   word-break: break-word;
@@ -1960,10 +2022,14 @@ details[open] > summary .chevron,
   text-align: left;
   width: 100%;
 }
-.ctx-menu button:not(:disabled):hover,
 .ctx-menu button:focus-visible {
   background: var(--bg);
   outline: none;
+}
+@media (hover: hover) {
+  .ctx-menu button:not(:disabled):hover {
+    background: var(--bg);
+  }
 }
 .ctx-menu button:focus-visible {
   box-shadow: inset 0 0 0 2px var(--accent);
@@ -1994,7 +2060,9 @@ details[open] > summary .chevron,
 
 /* เฉลยของด่าน */
 .solution-dialog {
-  width: min(1200px, calc(100vw - 32px));
+  width: min(1200px, calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+  /* dvh: ไม่โดนแถบที่อยู่ของเบราว์เซอร์มือถือบัง (เบราว์เซอร์เก่าที่ไม่รู้จัก dvh ใช้บรรทัดแรก) */
+  max-height: calc(100vh - 32px);
   max-height: calc(100dvh - 32px);
   overflow: auto;
   padding: 16px 18px;
@@ -2059,5 +2127,131 @@ details[open] > summary .chevron,
   }
   .solution-canvas .canvas-wrap {
     height: 50vh;
+  }
+}
+
+/* ---------- ใช้ได้ทุกอุปกรณ์: มือถือ แท็บเล็ต คอม ---------- */
+
+/* แตะสองครั้งเร็วๆ (เช่นกดบิตหรือเดินหน้าทีละ cycle) ไม่ให้มือถือซูมหน้า ส่วนการซูมด้วยสองนิ้วยังใช้ได้ */
+button,
+a,
+summary,
+label,
+select,
+textarea,
+input:not([type='range']) {
+  touch-action: manipulation;
+}
+
+/* จอเตี้ย (มือถือแนวนอน): พื้นที่วาดไม่สูงเต็มจอ เหลือขอบให้นิ้วเลื่อนหน้าได้ (บนพื้นที่วาดนิ้วใช้เลื่อนวงจร) */
+@media (max-height: 500px) {
+  .canvas-wrap,
+  .view3d-stage {
+    height: 68vh;
+    min-height: 220px;
+  }
+
+  .solution-canvas .canvas-wrap {
+    height: 60vh;
+    min-height: 200px;
+  }
+}
+
+/* จอสัมผัส: กฎเฉพาะชิ้นอยู่ท้ายไฟล์ จะได้ชนะกฎของชิ้นนั้นที่ประกาศไว้ก่อน */
+@media (pointer: coarse) {
+  /* ช่องกรอกตัวหนังสือ 16px ขึ้นไป: iPhone/iPad จะไม่ซูมหน้าเองตอนแตะช่อง */
+  body :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file']), select, textarea) {
+    font-size: 16px;
+  }
+
+  /* ช่องเขียน assembly: เลขบรรทัดต้องสูงเท่าบรรทัดในช่องพิมพ์เสมอ */
+  .asm-gutter div,
+  .asm-editor textarea {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .bus-bits {
+    --bit-max: 40px;
+  }
+
+  /* กฎ .file-actions button เจาะจงกว่า button เฉยๆ จึงต้องตั้งซ้ำ */
+  .file-actions button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .icon-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* ปุ่มแบบลิงก์บางปุ่มอยู่กลางบรรทัด จึงไม่สูงถึง 40px แต่ยังกดง่ายกว่าตัวหนังสือเปล่า */
+  button.linklike {
+    min-height: 32px;
+  }
+
+  .crumbs button,
+  .isa-fields .linklike {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .crumbs button {
+    padding: 6px 8px;
+  }
+
+  /* หัวข้อพับ/กางทุกอันสูงพอให้นิ้วกด */
+  summary {
+    padding-block: 8px;
+  }
+
+  .tutor > summary {
+    padding-block: 2px;
+    min-height: 40px;
+  }
+
+  .push-buttons button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .bp-dot {
+    width: 40px;
+    height: 40px;
+  }
+
+  .bp-dot::before {
+    width: 18px;
+    height: 18px;
+  }
+
+  .tt-controls input[type='range'] {
+    height: 40px;
+  }
+
+  .key-input input,
+  .breakpoints input,
+  .isa-item input,
+  .isa-item select,
+  .tutor-settings input:not([type='checkbox']),
+  .tutor-settings a {
+    min-height: 40px;
+  }
+
+  .about a {
+    min-height: 36px;
+  }
+
+  .probes label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+  }
+
+  input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
   }
 }

@@ -13,6 +13,7 @@ import { useEngine } from '../use-engine';
 import { LedBar, NumberDisplay, SevenSegment } from '../ui/devices';
 import { BusInput } from '../ui/widgets';
 import { AsmEditor } from './AsmEditor';
+import { keyCode, typedKey } from './keys';
 import { TutorPanel } from '../tutor/TutorPanel';
 import { programSummary, reportSummary } from '../tutor/tutor';
 import { LogicAnalyzer } from './LogicAnalyzer';
@@ -37,15 +38,6 @@ const SPEEDS: [number, string][] = [
 
 const hex2 = (v: number): string => v.toString(16).toUpperCase().padStart(2, '0');
 const num = (v: SignalValue | undefined): number | undefined => (typeof v === 'number' ? v : undefined);
-
-/** รหัสของปุ่มคีย์บอร์ด: ตัวอักษรใช้ ASCII ปุ่มพิเศษบางปุ่มใช้รหัสมาตรฐาน */
-function keyCode(e: { key: string }): number | undefined {
-  if (e.key.length === 1) {
-    const c = e.key.codePointAt(0)!;
-    return c < 256 ? c : undefined;
-  }
-  return ({ Enter: 13, Backspace: 8, Tab: 9, Escape: 27, ArrowLeft: 17, ArrowUp: 18, ArrowRight: 19, ArrowDown: 20 } as Record<string, number>)[e.key];
-}
 
 export function ComputerPage({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStateAction<SaveFile>> }) {
   const cpu = save.components.find((c) => c.id === CPU_ID);
@@ -474,8 +466,12 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
             คีย์บอร์ด (0xFA):{' '}
             <input
               aria-label="คีย์บอร์ด: คลิกแล้วกดปุ่ม"
-              readOnly
               placeholder="คลิกแล้วกดปุ่ม"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              enterKeyHint="enter"
               value={inputs.key ? `${inputs.key >= 32 && inputs.key < 127 ? `'${String.fromCharCode(inputs.key)}' ` : ''}= ${inputs.key}` : ''}
               onKeyDown={(e) => {
                 const code = keyCode(e);
@@ -483,6 +479,13 @@ function Computer({ save, setSave }: { save: SaveFile; setSave: Dispatch<SetStat
                 e.preventDefault();
                 setInput('key', code);
               }}
+              // แป้นพิมพ์บนจอมือถือ/แท็บเล็ตมักไม่บอกว่ากดปุ่มอะไรใน keydown (key = "Unidentified")
+              // จึงอ่านตัวที่พิมพ์จากเหตุการณ์ input แทน (ช่องไม่ใช่ readOnly ไม่งั้นแป้นพิมพ์บนจอจะไม่ขึ้น)
+              onInput={(e) => {
+                const code = typedKey(e.nativeEvent as InputEvent);
+                if (code !== undefined) setInput('key', code);
+              }}
+              onChange={() => undefined}
             />
           </label>
         </fieldset>
